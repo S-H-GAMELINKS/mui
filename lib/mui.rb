@@ -7,6 +7,7 @@ require_relative "mui/buffer"
 require_relative "mui/window"
 require_relative "mui/mode"
 require_relative "mui/command_line"
+require_relative "mui/motion"
 require_relative "mui/editor"
 
 module Mui

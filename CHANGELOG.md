@@ -8,6 +8,11 @@
   - Command mode: Ex commands
 - Basic cursor movement with `h`, `j`, `k`, `l` and arrow keys in Normal mode
 - Arrow key cursor movement in Insert mode
+- Motion commands:
+  - Word movements: `w` (word forward), `b` (word backward), `e` (word end)
+  - Line movements: `0` (line start), `^` (first non-blank), `$` (line end)
+  - File movements: `gg` (file start), `G` (file end)
+  - Character search: `f{char}`, `F{char}`, `t{char}`, `T{char}`
 - Text editing operations:
   - `i` to insert before cursor
   - `a` to append after cursor

@@ -12,6 +12,7 @@ module Mui
       @command_line = CommandLine.new
       @message = nil
       @running = true
+      @pending_motion = nil
     end
 
     def run
@@ -68,6 +69,12 @@ module Mui
     end
 
     def handle_normal_key(key)
+      # Handle pending motion (g, f, F, t, T)
+      if @pending_motion
+        handle_pending_motion(key)
+        return
+      end
+
       case key
       when "h", Curses::KEY_LEFT
         @window.move_left
@@ -77,6 +84,30 @@ module Mui
         @window.move_up
       when "l", Curses::KEY_RIGHT
         @window.move_right
+      when "w"
+        apply_motion(Motion.word_forward(@buffer, @window.cursor_row, @window.cursor_col))
+      when "b"
+        apply_motion(Motion.word_backward(@buffer, @window.cursor_row, @window.cursor_col))
+      when "e"
+        apply_motion(Motion.word_end(@buffer, @window.cursor_row, @window.cursor_col))
+      when "0"
+        apply_motion(Motion.line_start(@buffer, @window.cursor_row, @window.cursor_col))
+      when "^"
+        apply_motion(Motion.first_non_blank(@buffer, @window.cursor_row, @window.cursor_col))
+      when "$"
+        apply_motion(Motion.line_end(@buffer, @window.cursor_row, @window.cursor_col))
+      when "g"
+        @pending_motion = :g
+      when "G"
+        apply_motion(Motion.file_end(@buffer, @window.cursor_row, @window.cursor_col))
+      when "f"
+        @pending_motion = :f
+      when "F"
+        @pending_motion = :F
+      when "t"
+        @pending_motion = :t
+      when "T"
+        @pending_motion = :T
       when "i"
         @mode = Mode::INSERT
       when "a"
@@ -97,6 +128,39 @@ module Mui
         @mode = Mode::COMMAND
         @command_line.clear
       end
+    end
+
+    def handle_pending_motion(key)
+      char = begin
+        key.is_a?(String) ? key : key.chr
+      rescue StandardError
+        nil
+      end
+      return unless char
+
+      result = case @pending_motion
+               when :g
+                 char == "g" ? Motion.file_start(@buffer, @window.cursor_row, @window.cursor_col) : nil
+               when :f
+                 Motion.find_char_forward(@buffer, @window.cursor_row, @window.cursor_col, char)
+               when :F
+                 Motion.find_char_backward(@buffer, @window.cursor_row, @window.cursor_col, char)
+               when :t
+                 Motion.till_char_forward(@buffer, @window.cursor_row, @window.cursor_col, char)
+               when :T
+                 Motion.till_char_backward(@buffer, @window.cursor_row, @window.cursor_col, char)
+               end
+
+      apply_motion(result) if result
+      @pending_motion = nil
+    end
+
+    def apply_motion(result)
+      return unless result
+
+      @window.cursor_row = result[:row]
+      @window.cursor_col = result[:col]
+      @window.clamp_cursor_to_line(@buffer)
     end
 
     def handle_insert_key(key)
