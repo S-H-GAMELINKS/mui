@@ -2,11 +2,13 @@ PATH
   remote: .
   specs:
     mui (0.1.0)
+      curses
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.3)
+    curses (1.5.3)
     date (3.5.0)
     erb (6.0.0)
     io-console (0.8.1)
@@ -73,6 +75,7 @@ DEPENDENCIES
 
 CHECKSUMS
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
+  curses (1.5.3) sha256=86d219442e7fe78e68c609e6884f08b439b7508cf3f9d5b914f75c106e77bf7c
   date (3.5.0) sha256=5e74fd6c04b0e65d97ad4f3bb5cb2d8efb37f386cc848f46310b4593ffc46ee5
   erb (6.0.0) sha256=2730893f9d8c9733f16cab315a4e4b71c1afa9cabc1a1e7ad1403feba8f52579
   io-console (0.8.1) sha256=1e15440a6b2f67b6ea496df7c474ed62c860ad11237f29b3bd187f054b925fcb

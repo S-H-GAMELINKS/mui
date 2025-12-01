@@ -3,5 +3,4 @@
 
 require "mui"
 
-puts "Mui v#{Mui::VERSION} - A Vim-like TUI editor written in Ruby"
-puts "Coming soon..."
+Mui::Editor.new(ARGV[0]).run
