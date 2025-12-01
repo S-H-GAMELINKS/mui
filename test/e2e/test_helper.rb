@@ -1,0 +1,137 @@
+# frozen_string_literal: true
+
+require_relative "../test_helper"
+
+# ScriptRunner class for E2E tests
+# Allows writing test scenarios in Vim notation
+class ScriptRunner
+  include MuiTestHelper
+
+  attr_reader :editor, :log
+
+  def initialize(file_path = nil)
+    @editor = Mui::Editor.new(file_path)
+    @log = []
+  end
+
+  # Key input in Vim notation
+  # Example: "iHello<Esc>:wq<Enter>"
+  def type(notation)
+    keys = parse_vim_keys(notation)
+    keys.each do |key|
+      snapshot_before = capture_state
+      @editor.handle_key(key)
+      snapshot_after = capture_state
+      @log << {
+        key: key,
+        key_str: key_to_string(key),
+        before: snapshot_before,
+        after: snapshot_after
+      }
+    end
+    self
+  end
+
+  # Capture state snapshot
+  def capture_state
+    {
+      mode: @editor.mode,
+      cursor: [@editor.window.cursor_row, @editor.window.cursor_col],
+      lines: @editor.buffer.lines.map(&:dup),
+      line_count: @editor.buffer.line_count,
+      modified: @editor.buffer.modified,
+      running: @editor.running,
+      message: @editor.message
+    }
+  end
+
+  # Convert key to human-readable format
+  def key_to_string(key)
+    case key
+    when 27 then "<Esc>"
+    when 13 then "<Enter>"
+    when 127 then "<BS>"
+    when Curses::KEY_UP then "<Up>"
+    when Curses::KEY_DOWN then "<Down>"
+    when Curses::KEY_LEFT then "<Left>"
+    when Curses::KEY_RIGHT then "<Right>"
+    when String then key
+    when Integer
+      key >= 32 && key < 127 ? key.chr : key.to_s
+    else
+      key.to_s
+    end
+  end
+
+  # Assertions
+  def assert_mode(expected)
+    actual = @editor.mode
+    raise "Expected mode #{expected}, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_cursor(row, col)
+    actual = [@editor.window.cursor_row, @editor.window.cursor_col]
+    expected = [row, col]
+    raise "Expected cursor #{expected}, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_line(n, expected)
+    actual = @editor.buffer.line(n)
+    raise "Expected line #{n} to be '#{expected}', got '#{actual}'" unless actual == expected
+
+    self
+  end
+
+  def assert_line_count(expected)
+    actual = @editor.buffer.line_count
+    raise "Expected #{expected} lines, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_running(expected)
+    actual = @editor.running
+    raise "Expected running=#{expected}, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_modified(expected)
+    actual = @editor.buffer.modified
+    raise "Expected modified=#{expected}, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_message_contains(substring)
+    actual = @editor.message || ""
+    raise "Expected message to contain '#{substring}', got '#{actual}'" unless actual.include?(substring)
+
+    self
+  end
+
+  def assert_message_nil
+    raise "Expected message to be nil, got '#{@editor.message}'" unless @editor.message.nil?
+
+    self
+  end
+
+  # Get execution log as string
+  def format_log
+    @log.map.with_index do |entry, i|
+      "#{i + 1}. #{entry[:key_str]}: mode=#{entry[:after][:mode]}, " \
+        "cursor=#{entry[:after][:cursor]}, " \
+        "line0=\"#{entry[:after][:lines][0]}\""
+    end.join("\n")
+  end
+
+  # Debug: print log to stdout
+  def print_log
+    puts format_log
+    self
+  end
+end
