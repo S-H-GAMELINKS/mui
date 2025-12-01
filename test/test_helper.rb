@@ -43,12 +43,13 @@ module Curses
     lines: -> { 24 },
     cols: -> { 80 },
     stdscr: -> { FakeStdscr.new },
-    getch: -> {
+    getch: lambda {
       key = Curses.input_queue.shift
       raise StopIteration, "Input queue exhausted" if key.nil?
+
       key
     }
-  }
+  }.freeze
 
   class << self
     ORVERRIDE_METHODS.each do |name, block|
@@ -83,7 +84,7 @@ module MuiTestHelper
       if notation[i] == "<"
         end_idx = notation.index(">", i)
         if end_idx
-          special = notation[i + 1...end_idx]
+          special = notation[(i + 1)...end_idx]
           keys << vim_special_key(special)
           i = end_idx + 1
         else
@@ -124,8 +125,8 @@ end
 # Editor extension for testing
 module Mui
   class Editor
-    attr_reader :buffer, :window, :mode, :command_line, :message, :running, :screen, :input
-    attr_writer :mode, :running
+    attr_accessor :mode, :running
+    attr_reader :buffer, :window, :command_line, :message, :screen, :input
     public :handle_key, :handle_normal_key, :handle_insert_key, :handle_command_key
     public :execute_command, :save_buffer
   end

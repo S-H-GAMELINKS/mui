@@ -40,7 +40,7 @@ class TestInput < Minitest::Test
     end
 
     def test_consumes_keys_in_sequence
-      setup_key_sequence(["a", "b", "c"])
+      setup_key_sequence(%w[a b c])
 
       assert_equal "a", @input.read
       assert_equal "b", @input.read

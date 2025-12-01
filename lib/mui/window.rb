@@ -3,9 +3,7 @@
 module Mui
   class Window
     attr_reader :buffer
-    attr_accessor :x, :y, :width, :height
-    attr_accessor :cursor_row, :cursor_col
-    attr_accessor :scroll_row, :scroll_col
+    attr_accessor :x, :y, :width, :height, :cursor_row, :cursor_col, :scroll_row, :scroll_col
 
     def initialize(buffer, x: 0, y: 0, width: 80, height: 24)
       @buffer = buffer
@@ -63,7 +61,7 @@ module Mui
       status += " [+]" if @buffer.modified
       position = "#{@cursor_row + 1}:#{@cursor_col + 1} "
       padding = @width - status.length - position.length
-      padding = 0 if padding < 0
+      padding = 0 if padding.negative?
       full_status = status + (" " * padding) + position
       screen.put(@y + visible_height, @x, full_status[0, @width])
     end
@@ -78,7 +76,7 @@ module Mui
 
     # カーソル移動
     def move_left
-      @cursor_col -= 1 if @cursor_col > 0
+      @cursor_col -= 1 if @cursor_col.positive?
     end
 
     def move_right
@@ -86,7 +84,7 @@ module Mui
     end
 
     def move_up
-      @cursor_row -= 1 if @cursor_row > 0
+      @cursor_row -= 1 if @cursor_row.positive?
       clamp_cursor_col
     end
 
