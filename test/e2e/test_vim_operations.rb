@@ -101,7 +101,7 @@ class TestE2EVimOperations < Minitest::Test
       .type("i")
       .type("First")
       .type("<Esc>")
-      .type("o")             # New line below
+      .type("o") # New line below
       .assert_mode(Mui::Mode::INSERT)
       .type("Second")
       .type("<Esc>")
@@ -118,7 +118,7 @@ class TestE2EVimOperations < Minitest::Test
       .type("i")
       .type("Second")
       .type("<Esc>")
-      .type("O")             # New line above
+      .type("O") # New line above
       .assert_mode(Mui::Mode::INSERT)
       .type("First")
       .type("<Esc>")
@@ -136,7 +136,7 @@ class TestE2EVimOperations < Minitest::Test
       .type("AC")
       .type("<Esc>")
       .assert_line(0, "AC")
-      .assert_cursor(0, 1)   # At C position
+      .assert_cursor(0, 1) # At C position
 
     # Move to A position with h and use a to append
     runner
@@ -165,11 +165,11 @@ class TestE2EVimOperations < Minitest::Test
       .assert_line_count(10)
       .assert_line(0, "Line 1")
       .assert_line(9, "Line 10")
-      .assert_cursor(9, 6)   # One position back from end of "Line 10"
+      .assert_cursor(9, 6) # One position back from end of "Line 10"
 
     # Move up
     5.times { runner.type("k") }
-    runner.assert_cursor(4, 5)  # "Line 5" position (length 6 so col 5)
+    runner.assert_cursor(4, 5) # "Line 5" position (length 6 so col 5)
   end
 
   def test_backspace_join_lines
@@ -225,12 +225,12 @@ class TestE2EVimOperations < Minitest::Test
       .type("<Enter>")
       .type("Short")
       .type("<Esc>")
-      .assert_cursor(1, 4)    # End of "Short"
+      .assert_cursor(1, 4) # End of "Short"
 
     # Move to longer line above
     runner
       .type("k")
-      .assert_cursor(0, 4)    # Cursor position is maintained
+      .assert_cursor(0, 4) # Cursor position is maintained
 
     # Move to end of line
     runner
@@ -240,7 +240,7 @@ class TestE2EVimOperations < Minitest::Test
     # Move to shorter line below -> cursor gets clamped
     runner
       .type("j")
-      .assert_cursor(1, 4)     # Clamped to end of "Short"
+      .assert_cursor(1, 4) # Clamped to end of "Short"
   end
 
   def test_complete_editing_workflow
@@ -264,11 +264,11 @@ class TestE2EVimOperations < Minitest::Test
     # h moves to B position (col 1)
     # i inserts before B
     runner
-      .type("h")  # Move to "B" position
+      .type("h") # Move to "B" position
       .type("i")
       .type("X")
       .type("<Esc>")
-      .assert_line(0, "ABXC")  # "X" inserted before "B"
+      .assert_line(0, "ABXC") # "X" inserted before "B"
 
     # 4. Add new line
     runner

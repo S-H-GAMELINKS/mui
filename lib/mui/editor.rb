@@ -80,7 +80,7 @@ module Mui
       when "i"
         @mode = Mode::INSERT
       when "a"
-        @window.cursor_col += 1 if @buffer.line(@window.cursor_row).length > 0
+        @window.cursor_col += 1 if @buffer.line(@window.cursor_row).length.positive?
         @mode = Mode::INSERT
       when "o"
         @buffer.insert_line(@window.cursor_row + 1)
@@ -102,10 +102,10 @@ module Mui
     def handle_insert_key(key)
       case key
       when 27 # Escape
-        @window.cursor_col -= 1 if @window.cursor_col > 0
+        @window.cursor_col -= 1 if @window.cursor_col.positive?
         @mode = Mode::NORMAL
       when Curses::KEY_LEFT
-        @window.cursor_col -= 1 if @window.cursor_col > 0
+        @window.cursor_col -= 1 if @window.cursor_col.positive?
       when Curses::KEY_RIGHT
         @window.cursor_col += 1 if @window.cursor_col < @buffer.line(@window.cursor_row).length
       when Curses::KEY_UP
@@ -113,10 +113,10 @@ module Mui
       when Curses::KEY_DOWN
         @window.move_down
       when 127, Curses::KEY_BACKSPACE
-        if @window.cursor_col > 0
+        if @window.cursor_col.positive?
           @window.cursor_col -= 1
           @buffer.delete_char(@window.cursor_row, @window.cursor_col)
-        elsif @window.cursor_row > 0
+        elsif @window.cursor_row.positive?
           prev_line_len = @buffer.line(@window.cursor_row - 1).length
           @buffer.join_lines(@window.cursor_row - 1)
           @window.cursor_row -= 1
@@ -185,19 +185,17 @@ module Mui
     end
 
     def save_buffer(path = nil)
-      begin
-        if path
-          @buffer.save(path)
-        elsif @buffer.name == "[No Name]"
-          @message = "No file name"
-          return
-        else
-          @buffer.save
-        end
-        @message = "\"#{@buffer.name}\" written"
-      rescue StandardError => e
-        @message = "Error: #{e.message}"
+      if path
+        @buffer.save(path)
+      elsif @buffer.name == "[No Name]"
+        @message = "No file name"
+        return
+      else
+        @buffer.save
       end
+      @message = "\"#{@buffer.name}\" written"
+    rescue StandardError => e
+      @message = "Error: #{e.message}"
     end
   end
 end

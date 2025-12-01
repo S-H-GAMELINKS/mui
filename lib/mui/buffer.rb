@@ -21,7 +21,7 @@ module Mui
     end
 
     def save(path = @name)
-      File.write(path, @lines.join("\n") + "\n")
+      File.write(path, "#{@lines.join("\n")}\n")
       @name = path
       @modified = false
     end
@@ -41,7 +41,7 @@ module Mui
     end
 
     def delete_char(row, col)
-      return if col < 0
+      return if col.negative?
       return if @lines[row].nil? || col >= @lines[row].size
 
       @lines[row].slice!(col)
