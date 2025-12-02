@@ -2,10 +2,12 @@
 
 module Mui
   module KeyHandler
-    # Handles key inputs in Normal mode
-    class NormalMode < Base
-      def initialize(window, buffer)
-        super
+    class VisualMode < Base
+      attr_reader :selection
+
+      def initialize(window, buffer, selection)
+        super(window, buffer)
+        @selection = selection
         @pending_motion = nil
       end
 
@@ -13,14 +15,20 @@ module Mui
         if @pending_motion
           handle_pending_motion(key)
         else
-          handle_normal_key(key)
+          handle_visual_key(key)
         end
       end
 
       private
 
-      def handle_normal_key(key)
+      def handle_visual_key(key)
         case key
+        when 27 # Escape
+          result(mode: Mode::NORMAL, clear_selection: true)
+        when "v"
+          handle_toggle_visual
+        when "V"
+          handle_toggle_visual_line
         when "h", Curses::KEY_LEFT
           handle_move_left
         when "j", Curses::KEY_DOWN
@@ -58,24 +66,24 @@ module Mui
         when "T"
           @pending_motion = :T
           result
-        when "i"
-          result(mode: Mode::INSERT)
-        when "a"
-          handle_append
-        when "o"
-          handle_open_below
-        when "O"
-          handle_open_above
-        when "x"
-          handle_delete_char
-        when ":"
-          result(mode: Mode::COMMAND)
-        when "v"
-          result(mode: Mode::VISUAL, start_selection: true)
-        when "V"
-          result(mode: Mode::VISUAL_LINE, start_selection: true, line_mode: true)
         else
           result
+        end
+      end
+
+      def handle_toggle_visual
+        if @selection.line_mode
+          result(mode: Mode::VISUAL, toggle_line_mode: true)
+        else
+          result(mode: Mode::NORMAL, clear_selection: true)
+        end
+      end
+
+      def handle_toggle_visual_line
+        if @selection.line_mode
+          result(mode: Mode::NORMAL, clear_selection: true)
+        else
+          result(mode: Mode::VISUAL_LINE, toggle_line_mode: true)
         end
       end
 
@@ -114,24 +122,27 @@ module Mui
         result
       end
 
-      # Movement handlers
       def handle_move_left
         @window.move_left
+        update_selection
         result
       end
 
       def handle_move_down
         @window.move_down
+        update_selection
         result
       end
 
       def handle_move_up
         @window.move_up
+        update_selection
         result
       end
 
       def handle_move_right
         @window.move_right
+        update_selection
         result
       end
 
@@ -170,40 +181,22 @@ module Mui
         result
       end
 
-      # Edit handlers
-      def handle_append
-        self.cursor_col = cursor_col + 1 if current_line_length.positive?
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_open_below
-        @buffer.insert_line(cursor_row + 1)
-        self.cursor_row = cursor_row + 1
-        self.cursor_col = 0
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_open_above
-        @buffer.insert_line(cursor_row)
-        self.cursor_col = 0
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_delete_char
-        @buffer.delete_char(cursor_row, cursor_col)
-        result
-      end
-
       def apply_motion(motion_result)
         return unless motion_result
 
         self.cursor_row = motion_result[:row]
         self.cursor_col = motion_result[:col]
         @window.clamp_cursor_to_line(@buffer)
+        update_selection
       end
 
-      def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false)
-        { mode: mode, message: message, quit: quit, start_selection: start_selection, line_mode: line_mode }
+      def update_selection
+        @selection.update_end(cursor_row, cursor_col)
+      end
+
+      def result(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false)
+        { mode: mode, message: message, quit: quit, clear_selection: clear_selection,
+          toggle_line_mode: toggle_line_mode }
       end
     end
   end

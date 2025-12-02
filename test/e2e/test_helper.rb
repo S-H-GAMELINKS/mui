@@ -120,6 +120,33 @@ class ScriptRunner
     self
   end
 
+  def assert_selection(start_row, start_col, end_row, end_col)
+    selection = @editor.selection
+    raise "Expected selection to exist" if selection.nil?
+
+    actual = [selection.start_row, selection.start_col, selection.end_row, selection.end_col]
+    expected = [start_row, start_col, end_row, end_col]
+    raise "Expected selection #{expected}, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_no_selection
+    raise "Expected no selection, got #{@editor.selection.inspect}" unless @editor.selection.nil?
+
+    self
+  end
+
+  def assert_line_mode(expected)
+    selection = @editor.selection
+    raise "Expected selection to exist" if selection.nil?
+
+    actual = selection.line_mode
+    raise "Expected line_mode=#{expected}, got #{actual}" unless actual == expected
+
+    self
+  end
+
   # Get execution log as string
   def format_log
     @log.map.with_index do |entry, i|

@@ -126,7 +126,7 @@ end
 module Mui
   class Editor
     attr_accessor :mode, :running
-    attr_reader :buffer, :window, :command_line, :message, :screen, :input, :key_handlers
+    attr_reader :buffer, :window, :command_line, :message, :screen, :input, :key_handlers, :selection
     public :handle_key
 
     # Compatibility methods for tests that use the old API

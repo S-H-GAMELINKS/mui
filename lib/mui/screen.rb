@@ -37,6 +37,17 @@ module Mui
       Curses.addstr(text.length > max_len ? text[0, max_len] : text)
     end
 
+    def put_with_highlight(y, x, text)
+      return if y.negative?
+      return if y >= @height || x >= @width
+
+      Curses.setpos(y, x)
+      max_len = @width - x
+      Curses.attron(Curses::A_REVERSE)
+      Curses.addstr(text.length > max_len ? text[0, max_len] : text)
+      Curses.attroff(Curses::A_REVERSE)
+    end
+
     def move_cursor(y, x)
       x = [[x, 0].max, @width - 1].min
       y = [[y, 0].max, @height - 1].min

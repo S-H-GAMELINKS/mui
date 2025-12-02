@@ -5,5 +5,7 @@ module Mui
     NORMAL = :normal
     INSERT = :insert
     COMMAND = :command
+    VISUAL = :visual
+    VISUAL_LINE = :visual_line
   end
 end

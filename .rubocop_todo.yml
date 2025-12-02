@@ -19,7 +19,9 @@ Layout/LineLength:
 Metrics/AbcSize:
   Exclude:
     - 'lib/mui/key_handler/normal_mode.rb'
+    - 'lib/mui/key_handler/visual_mode.rb'
     - 'lib/mui/motion.rb'
+    - 'lib/mui/selection.rb'
     - 'lib/mui/window.rb'
     - 'test/e2e/test_file_editing.rb'
     - 'test/e2e/test_vim_operations.rb'
@@ -28,24 +30,32 @@ Metrics/AbcSize:
     - 'test/mui/editor/test_insert_mode.rb'
     - 'test/mui/editor/test_normal_mode.rb'
     - 'test/mui/test_buffer.rb'
+    - 'test/mui/test_selection.rb'
     - 'test/mui/test_window.rb'
 
 # Offense count: 5
 # Configuration parameters: CountComments, Max, CountAsOne.
 Metrics/ClassLength:
   Exclude:
+    - 'lib/mui/editor.rb'
     - 'lib/mui/key_handler/normal_mode.rb'
+    - 'lib/mui/key_handler/visual_mode.rb'
+    - 'lib/mui/window.rb'
     - 'test/e2e/test_file_editing.rb'
+    - 'test/e2e/test_helper.rb'
     - 'test/e2e/test_motion.rb'
     - 'test/e2e/test_vim_operations.rb'
+    - 'test/e2e/test_visual_mode.rb'
     - 'test/integration/test_editor_integration.rb'
 
 # Offense count: 7
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
 Metrics/CyclomaticComplexity:
   Exclude:
+    - 'lib/mui/editor.rb'
     - 'lib/mui/key_handler/insert_mode.rb'
     - 'lib/mui/key_handler/normal_mode.rb'
+    - 'lib/mui/key_handler/visual_mode.rb'
     - 'lib/mui/motion.rb'
     - 'test/e2e/test_helper.rb'
     - 'test/test_helper.rb'
@@ -55,14 +65,17 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Exclude:
     - 'lib/mui/command_line.rb'
+    - 'lib/mui/editor.rb'
     - 'lib/mui/key_handler/command_mode.rb'
     - 'lib/mui/key_handler/insert_mode.rb'
     - 'lib/mui/key_handler/normal_mode.rb'
+    - 'lib/mui/key_handler/visual_mode.rb'
     - 'lib/mui/window.rb'
     - 'test/e2e/test_file_editing.rb'
     - 'test/e2e/test_helper.rb'
     - 'test/e2e/test_motion.rb'
     - 'test/e2e/test_vim_operations.rb'
+    - 'test/e2e/test_visual_mode.rb'
     - 'test/integration/test_editor_integration.rb'
     - 'test/mui/editor/test_insert_mode.rb'
     - 'test/mui/test_buffer.rb'
@@ -83,9 +96,11 @@ Naming/MethodName:
   Exclude:
     - 'test/e2e/test_motion.rb'
     - 'test/e2e/test_vim_operations.rb'
+    - 'test/e2e/test_visual_mode.rb'
     - 'test/integration/test_editor_integration.rb'
     - 'test/mui/editor/test_normal_mode.rb'
     - 'test/mui/key_handler/test_normal_mode.rb'
+    - 'test/mui/key_handler/test_visual_mode.rb'
 
 # Offense count: 8
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
@@ -120,6 +135,8 @@ Style/Documentation:
     - 'lib/mui/buffer.rb'
     - 'lib/mui/command_line.rb'
     - 'lib/mui/input.rb'
+    - 'lib/mui/key_handler/visual_mode.rb'
     - 'lib/mui/motion.rb'
     - 'lib/mui/screen.rb'
+    - 'lib/mui/selection.rb'
     - 'lib/mui/window.rb'

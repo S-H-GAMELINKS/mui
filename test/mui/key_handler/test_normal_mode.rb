@@ -274,6 +274,22 @@ class TestKeyHandlerNormalMode < Minitest::Test
 
       assert_equal Mui::Mode::COMMAND, result[:mode]
     end
+
+    def test_v_returns_visual_mode_with_start_selection
+      result = @handler.handle("v")
+
+      assert_equal Mui::Mode::VISUAL, result[:mode]
+      assert result[:start_selection]
+      refute result[:line_mode]
+    end
+
+    def test_V_returns_visual_line_mode_with_start_selection
+      result = @handler.handle("V")
+
+      assert_equal Mui::Mode::VISUAL_LINE, result[:mode]
+      assert result[:start_selection]
+      assert result[:line_mode]
+    end
   end
 
   class TestEditing < Minitest::Test

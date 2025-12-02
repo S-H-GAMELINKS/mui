@@ -13,6 +13,7 @@ module Mui
       @command_line = CommandLine.new
       @message = nil
       @running = true
+      @selection = nil
 
       initialize_key_handlers
     end
@@ -37,6 +38,11 @@ module Mui
       }
     end
 
+    def create_visual_handler(line_mode:)
+      @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode: line_mode)
+      KeyHandler::VisualMode.new(@window, @buffer, @selection)
+    end
+
     def update_window_size
       @window.width = @screen.width
       @window.height = @screen.height
@@ -45,7 +51,7 @@ module Mui
     def render
       @screen.clear
       @window.ensure_cursor_visible
-      @window.render(@screen)
+      @window.render(@screen, selection: @selection)
 
       render_status_area
 
@@ -59,6 +65,10 @@ module Mui
                       @command_line.to_s
                     when Mode::INSERT
                       @message || "-- INSERT --"
+                    when Mode::VISUAL
+                      @message || "-- VISUAL --"
+                    when Mode::VISUAL_LINE
+                      @message || "-- VISUAL LINE --"
                     else
                       @message || "-- NORMAL --"
                     end
@@ -68,16 +78,63 @@ module Mui
     def handle_key(key)
       @message = nil
 
-      handler = @key_handlers[@mode]
+      handler = current_handler
       result = handler.handle(key)
 
       apply_result(result)
     end
 
+    def current_handler
+      if visual_mode?
+        @visual_handler || @key_handlers[Mode::NORMAL]
+      else
+        @key_handlers[@mode]
+      end
+    end
+
+    def visual_mode?
+      @mode == Mode::VISUAL || @mode == Mode::VISUAL_LINE
+    end
+
     def apply_result(result)
-      @mode = result[:mode] if result[:mode]
+      handle_mode_transition(result)
       @message = result[:message] if result[:message]
       @running = false if result[:quit]
+    end
+
+    def handle_mode_transition(result)
+      return unless result[:mode]
+
+      if result[:start_selection]
+        start_visual_mode(result[:mode], result[:line_mode])
+      elsif result[:clear_selection]
+        clear_visual_mode
+        @mode = result[:mode]
+      elsif result[:toggle_line_mode]
+        toggle_visual_line_mode(result[:mode])
+      else
+        @mode = result[:mode]
+      end
+    end
+
+    def start_visual_mode(mode, line_mode)
+      @mode = mode
+      @visual_handler = create_visual_handler(line_mode: line_mode)
+    end
+
+    def clear_visual_mode
+      @selection = nil
+      @visual_handler = nil
+    end
+
+    def toggle_visual_line_mode(new_mode)
+      return unless @selection
+
+      new_line_mode = new_mode == Mode::VISUAL_LINE
+      @selection = Selection.new(@selection.start_row, @selection.start_col, line_mode: new_line_mode)
+      @selection.update_end(@window.cursor_row, @window.cursor_col)
+      @visual_handler = KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @mode = new_mode
     end
   end
 end

@@ -2,10 +2,12 @@
 
 ### Added
 - Initial release of Mui, a Vim-like text editor written in Ruby
-- Vim-like modal editing with three modes:
+- Vim-like modal editing with five modes:
   - Normal mode: Navigation and text manipulation
   - Insert mode: Text input
   - Command mode: Ex commands
+  - Visual mode (`v`): Character-wise selection
+  - Visual Line mode (`V`): Line-wise selection
 - Basic cursor movement with `h`, `j`, `k`, `l` and arrow keys in Normal mode
 - Arrow key cursor movement in Insert mode
 - Motion commands:
@@ -31,10 +33,15 @@
   - Window with scrolling support
   - Status line display
   - Command line input
+- Visual mode features:
+  - Selection highlighting with reverse video
+  - Toggle between Visual and Visual Line mode with `v`/`V`
+  - All motion commands supported (h, j, k, l, w, b, e, 0, ^, $, gg, G, f, F, t, T)
+  - Exit to Normal mode with `Esc`
 - Comprehensive test suite for `Mui::Input` and `Mui::Editor` classes
-  - Unit tests for Buffer, CommandLine, Input, Screen, Window, and Editor modes
+  - Unit tests for Buffer, CommandLine, Input, Screen, Window, Selection, and Editor modes
   - Integration tests for component interactions
-  - E2E tests with ScriptRunner DSL for Vim operation scenarios
+  - E2E tests with ScriptRunner DSL for Vim operation scenarios including Visual mode
 - Test infrastructure with Curses mock and `MuiTestHelper` module
 
 ### Changed

@@ -41,19 +41,73 @@ module Mui
       end
     end
 
-    def render(screen)
+    def render(screen, selection: nil)
       visible_height.times do |i|
         row = @scroll_row + i
-        line = @buffer.line(row)
-        visible_line = if @scroll_col < line.length
-                         line[@scroll_col, visible_width] || ""
-                       else
-                         ""
-                       end
-        screen.put(@y + i, @x, visible_line.ljust(visible_width))
+        render_line(screen, row, i, selection)
       end
 
       render_status_line(screen)
+    end
+
+    def render_line(screen, row, screen_row, selection)
+      line = @buffer.line(row)
+      visible_line = if @scroll_col < line.length
+                       line[@scroll_col, visible_width] || ""
+                     else
+                       ""
+                     end
+      padded_line = visible_line.ljust(visible_width)
+
+      if selection
+        render_line_with_selection(screen, row, screen_row, padded_line, selection)
+      else
+        screen.put(@y + screen_row, @x, padded_line)
+      end
+    end
+
+    def render_line_with_selection(screen, row, screen_row, padded_line, selection)
+      range = selection.normalized_range
+
+      if selection.line_mode
+        render_visual_line_mode_selection(screen, row, screen_row, padded_line, range)
+      else
+        render_visual_mode_selection(screen, row, screen_row, padded_line, range)
+      end
+    end
+
+    def render_visual_line_mode_selection(screen, row, screen_row, padded_line, range)
+      if row.between?(range[:start_row], range[:end_row])
+        screen.put_with_highlight(@y + screen_row, @x, padded_line)
+      else
+        screen.put(@y + screen_row, @x, padded_line)
+      end
+    end
+
+    def render_visual_mode_selection(screen, row, screen_row, padded_line, range)
+      if row < range[:start_row] || row > range[:end_row]
+        screen.put(@y + screen_row, @x, padded_line)
+        return
+      end
+
+      start_col, end_col = calculate_selection_columns(row, range, padded_line.length)
+      render_line_segments(screen, screen_row, padded_line, start_col, end_col)
+    end
+
+    def calculate_selection_columns(row, range, line_length)
+      start_col = row == range[:start_row] ? [range[:start_col] - @scroll_col, 0].max : 0
+      end_col = row == range[:end_row] ? [range[:end_col] - @scroll_col, line_length - 1].min : line_length - 1
+      [start_col, end_col]
+    end
+
+    def render_line_segments(screen, screen_row, padded_line, start_col, end_col)
+      screen.put(@y + screen_row, @x, padded_line[0, start_col]) if start_col.positive?
+      screen.put_with_highlight(@y + screen_row, @x + start_col, padded_line[start_col..end_col])
+      remaining_start = end_col + 1
+      return unless remaining_start < padded_line.length
+
+      screen.put(@y + screen_row, @x + remaining_start,
+                 padded_line[remaining_start..])
     end
 
     def render_status_line(screen)
