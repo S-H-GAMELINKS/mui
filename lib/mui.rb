@@ -8,8 +8,11 @@ require_relative "mui/window"
 require_relative "mui/mode"
 require_relative "mui/command_line"
 require_relative "mui/motion"
+require_relative "mui/key_handler/base"
+require_relative "mui/key_handler/normal_mode"
+require_relative "mui/key_handler/insert_mode"
+require_relative "mui/key_handler/command_mode"
 require_relative "mui/editor"
 
-module Mui
-  class Error < StandardError; end
-end
+# mui(無為) top level module
+module Mui; end
