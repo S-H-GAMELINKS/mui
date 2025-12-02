@@ -2,15 +2,15 @@
 
 require "test_helper"
 
-class TestKeyHandlerVisualMode < Minitest::Test
+class TestKeyHandlerVisualLineMode < Minitest::Test
   class TestBasicMovement < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello"
       @buffer.insert_line(1, "world")
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(0, 2)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(0, 2, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_h_moves_left_and_updates_selection
@@ -56,8 +56,8 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello world foo"
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(0, 0)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_w_moves_to_next_word_and_updates_selection
@@ -94,8 +94,8 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "  hello world"
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(0, 5)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(0, 5, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_0_moves_to_line_start_and_updates_selection
@@ -133,8 +133,8 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @buffer.insert_line(1, "line2")
       @buffer.insert_line(2, "line3")
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(1, 2)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(1, 2, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_gg_moves_to_file_start_and_updates_selection
@@ -165,8 +165,8 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello world"
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(0, 0)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_f_finds_char_forward_and_updates_selection
@@ -196,8 +196,8 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(0, 0)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_escape_returns_to_normal_mode
@@ -207,18 +207,18 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert result[:clear_selection]
     end
 
-    def test_v_in_char_mode_clears_selection
+    def test_v_in_line_mode_toggles_to_char_mode
       result = @handler.handle("v")
+
+      assert_equal Mui::Mode::VISUAL, result[:mode]
+      assert result[:toggle_line_mode]
+    end
+
+    def test_upper_v_in_line_mode_clears_selection
+      result = @handler.handle("V")
 
       assert_equal Mui::Mode::NORMAL, result[:mode]
       assert result[:clear_selection]
-    end
-
-    def test_upper_v_in_char_mode_toggles_to_line_mode
-      result = @handler.handle("V")
-
-      assert_equal Mui::Mode::VISUAL_LINE, result[:mode]
-      assert result[:toggle_line_mode]
     end
   end
 
@@ -228,8 +228,8 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @buffer.lines[0] = "hello"
       @buffer.insert_line(1, "world")
       @window = Mui::Window.new(@buffer)
-      @selection = Mui::Selection.new(0, 2)
-      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @selection = Mui::Selection.new(0, 2, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
     end
 
     def test_start_position_is_preserved_during_movement
@@ -243,6 +243,12 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert_equal 2, @selection.start_col
       assert_equal 1, @selection.end_row
       assert_equal 4, @selection.end_col
+    end
+
+    def test_line_mode_is_preserved
+      @handler.handle("j")
+
+      assert @selection.line_mode
     end
   end
 end

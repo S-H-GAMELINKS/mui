@@ -40,7 +40,12 @@ module Mui
 
     def create_visual_handler(line_mode:)
       @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode: line_mode)
-      KeyHandler::VisualMode.new(@window, @buffer, @selection)
+
+      if line_mode
+        KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
+      else
+        KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      end
     end
 
     def update_window_size
@@ -133,7 +138,11 @@ module Mui
       new_line_mode = new_mode == Mode::VISUAL_LINE
       @selection = Selection.new(@selection.start_row, @selection.start_col, line_mode: new_line_mode)
       @selection.update_end(@window.cursor_row, @window.cursor_col)
-      @visual_handler = KeyHandler::VisualMode.new(@window, @buffer, @selection)
+      @visual_handler = if new_line_mode
+                          KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
+                        else
+                          KeyHandler::VisualMode.new(@window, @buffer, @selection)
+                        end
       @mode = new_mode
     end
   end

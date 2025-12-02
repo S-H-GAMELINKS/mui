@@ -2,6 +2,7 @@
 
 module Mui
   module KeyHandler
+    # Handler for character-wise visual mode (v)
     class VisualMode < Base
       attr_reader :selection
 
@@ -26,9 +27,9 @@ module Mui
         when 27 # Escape
           result(mode: Mode::NORMAL, clear_selection: true)
         when "v"
-          handle_toggle_visual
+          handle_v_key
         when "V"
-          handle_toggle_visual_line
+          handle_upper_v_key
         when "h", Curses::KEY_LEFT
           handle_move_left
         when "j", Curses::KEY_DOWN
@@ -71,20 +72,14 @@ module Mui
         end
       end
 
-      def handle_toggle_visual
-        if @selection.line_mode
-          result(mode: Mode::VISUAL, toggle_line_mode: true)
-        else
-          result(mode: Mode::NORMAL, clear_selection: true)
-        end
+      def handle_v_key
+        # v in visual mode exits to normal mode
+        result(mode: Mode::NORMAL, clear_selection: true)
       end
 
-      def handle_toggle_visual_line
-        if @selection.line_mode
-          result(mode: Mode::NORMAL, clear_selection: true)
-        else
-          result(mode: Mode::VISUAL_LINE, toggle_line_mode: true)
-        end
+      def handle_upper_v_key
+        # V in visual mode switches to visual line mode
+        result(mode: Mode::VISUAL_LINE, toggle_line_mode: true)
       end
 
       def handle_pending_motion(key)

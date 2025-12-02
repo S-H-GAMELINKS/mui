@@ -29,7 +29,7 @@ class TestE2EVisualMode < Minitest::Test
       .assert_line_mode(false)
   end
 
-  def test_V_enters_visual_line_mode
+  def test_upper_v_enters_visual_line_mode
     runner = ScriptRunner.new
 
     runner
@@ -135,7 +135,7 @@ class TestE2EVisualMode < Minitest::Test
       .assert_no_selection
   end
 
-  def test_V_toggles_between_visual_line_and_normal
+  def test_upper_v_toggles_between_visual_line_and_normal
     runner = ScriptRunner.new
 
     runner
@@ -164,7 +164,7 @@ class TestE2EVisualMode < Minitest::Test
       .assert_line_mode(false)
   end
 
-  def test_V_in_visual_char_toggles_to_visual_line
+  def test_upper_v_in_visual_char_toggles_to_visual_line
     runner = ScriptRunner.new
 
     runner

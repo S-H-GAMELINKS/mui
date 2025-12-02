@@ -283,7 +283,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
       refute result[:line_mode]
     end
 
-    def test_V_returns_visual_line_mode_with_start_selection
+    def test_upper_v_returns_visual_line_mode_with_start_selection
       result = @handler.handle("V")
 
       assert_equal Mui::Mode::VISUAL_LINE, result[:mode]
