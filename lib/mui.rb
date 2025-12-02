@@ -9,12 +9,7 @@ require_relative "mui/mode"
 require_relative "mui/command_line"
 require_relative "mui/motion"
 require_relative "mui/selection"
-require_relative "mui/key_handler/base"
-require_relative "mui/key_handler/normal_mode"
-require_relative "mui/key_handler/insert_mode"
-require_relative "mui/key_handler/command_mode"
-require_relative "mui/key_handler/visual_mode"
-require_relative "mui/key_handler/visual_line_mode"
+require_relative "mui/key_handler"
 require_relative "mui/editor"
 
 # mui(無為) top level module
