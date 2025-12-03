@@ -103,22 +103,27 @@ module Mui
 
     def apply_result(result)
       handle_mode_transition(result)
-      @message = result[:message] if result[:message]
-      @running = false if result[:quit]
+      @message = result.message if result.message
+      @running = false if result.quit?
     end
 
     def handle_mode_transition(result)
-      return unless result[:mode]
+      return unless result.mode
 
-      if result[:start_selection]
-        start_visual_mode(result[:mode], result[:line_mode])
-      elsif result[:clear_selection]
-        clear_visual_mode
-        @mode = result[:mode]
-      elsif result[:toggle_line_mode]
-        toggle_visual_line_mode(result[:mode])
+      case result.mode
+      when Mode::VISUAL, Mode::VISUAL_LINE
+        if result.start_selection?
+          start_visual_mode(result.mode, result.line_mode?)
+        elsif result.toggle_line_mode?
+          toggle_visual_line_mode(result.mode)
+        else
+          @mode = result.mode
+        end
+      when Mode::NORMAL
+        clear_visual_mode if result.clear_selection?
+        @mode = result.mode
       else
-        @mode = result[:mode]
+        @mode = result.mode
       end
     end
 

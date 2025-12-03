@@ -203,22 +203,22 @@ class TestKeyHandlerVisualLineMode < Minitest::Test
     def test_escape_returns_to_normal_mode
       result = @handler.handle(27) # Escape
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
-      assert result[:clear_selection]
+      assert_equal Mui::Mode::NORMAL, result.mode
+      assert result.clear_selection?
     end
 
     def test_v_in_line_mode_toggles_to_char_mode
       result = @handler.handle("v")
 
-      assert_equal Mui::Mode::VISUAL, result[:mode]
-      assert result[:toggle_line_mode]
+      assert_equal Mui::Mode::VISUAL, result.mode
+      assert result.toggle_line_mode?
     end
 
     def test_upper_v_in_line_mode_clears_selection
       result = @handler.handle("V")
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
-      assert result[:clear_selection]
+      assert_equal Mui::Mode::NORMAL, result.mode
+      assert result.clear_selection?
     end
   end
 

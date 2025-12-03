@@ -203,7 +203,13 @@ module Mui
       end
 
       def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false)
-        { mode: mode, message: message, quit: quit, start_selection: start_selection, line_mode: line_mode }
+        HandlerResult::NormalModeResult.new(
+          mode: mode,
+          message: message,
+          quit: quit,
+          start_selection: start_selection,
+          line_mode: line_mode
+        )
       end
     end
   end

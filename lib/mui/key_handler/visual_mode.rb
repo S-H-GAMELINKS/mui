@@ -190,8 +190,13 @@ module Mui
       end
 
       def result(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false)
-        { mode: mode, message: message, quit: quit, clear_selection: clear_selection,
-          toggle_line_mode: toggle_line_mode }
+        HandlerResult::VisualModeResult.new(
+          mode: mode,
+          message: message,
+          quit: quit,
+          clear_selection: clear_selection,
+          toggle_line_mode: toggle_line_mode
+        )
       end
     end
   end

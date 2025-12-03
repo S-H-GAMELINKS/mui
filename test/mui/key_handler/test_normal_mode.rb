@@ -234,7 +234,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
     def test_i_returns_insert_mode
       result = @handler.handle("i")
 
-      assert_equal Mui::Mode::INSERT, result[:mode]
+      assert_equal Mui::Mode::INSERT, result.mode
     end
 
     def test_a_returns_insert_mode_and_moves_cursor
@@ -242,7 +242,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
 
       result = @handler.handle("a")
 
-      assert_equal Mui::Mode::INSERT, result[:mode]
+      assert_equal Mui::Mode::INSERT, result.mode
       assert_equal 3, @window.cursor_col
     end
 
@@ -251,7 +251,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
 
       result = @handler.handle("o")
 
-      assert_equal Mui::Mode::INSERT, result[:mode]
+      assert_equal Mui::Mode::INSERT, result.mode
       assert_equal 1, @window.cursor_row
       assert_equal 0, @window.cursor_col
       assert_equal 2, @buffer.line_count
@@ -263,7 +263,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
 
       result = @handler.handle("O")
 
-      assert_equal Mui::Mode::INSERT, result[:mode]
+      assert_equal Mui::Mode::INSERT, result.mode
       assert_equal 1, @window.cursor_row
       assert_equal 0, @window.cursor_col
       assert_equal "", @buffer.line(1)
@@ -272,23 +272,23 @@ class TestKeyHandlerNormalMode < Minitest::Test
     def test_colon_returns_command_mode
       result = @handler.handle(":")
 
-      assert_equal Mui::Mode::COMMAND, result[:mode]
+      assert_equal Mui::Mode::COMMAND, result.mode
     end
 
     def test_v_returns_visual_mode_with_start_selection
       result = @handler.handle("v")
 
-      assert_equal Mui::Mode::VISUAL, result[:mode]
-      assert result[:start_selection]
-      refute result[:line_mode]
+      assert_equal Mui::Mode::VISUAL, result.mode
+      assert result.start_selection?
+      refute result.line_mode?
     end
 
     def test_upper_v_returns_visual_line_mode_with_start_selection
       result = @handler.handle("V")
 
-      assert_equal Mui::Mode::VISUAL_LINE, result[:mode]
-      assert result[:start_selection]
-      assert result[:line_mode]
+      assert_equal Mui::Mode::VISUAL_LINE, result.mode
+      assert result.start_selection?
+      assert result.line_mode?
     end
   end
 
@@ -320,13 +320,13 @@ class TestKeyHandlerNormalMode < Minitest::Test
     def test_movement_returns_nil_mode
       result = @handler.handle("h")
 
-      assert_nil result[:mode]
+      assert_nil result.mode
     end
 
     def test_unknown_key_returns_nil_mode
       result = @handler.handle("z")
 
-      assert_nil result[:mode]
+      assert_nil result.mode
     end
   end
 

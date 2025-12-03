@@ -92,6 +92,10 @@ module Mui
           key.chr
         end
       end
+
+      def result(mode: nil, message: nil, quit: false)
+        HandlerResult::InsertModeResult.new(mode: mode, message: message, quit: quit)
+      end
     end
   end
 end

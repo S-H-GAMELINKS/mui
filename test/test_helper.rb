@@ -132,29 +132,29 @@ module Mui
     # Compatibility methods for tests that use the old API
     def handle_normal_key(key)
       result = @key_handlers[Mode::NORMAL].handle(key)
-      @mode = result[:mode] if result[:mode]
+      @mode = result.mode if result.mode
       result
     end
 
     def handle_insert_key(key)
       result = @key_handlers[Mode::INSERT].handle(key)
-      @mode = result[:mode] if result[:mode]
+      @mode = result.mode if result.mode
       result
     end
 
     def handle_command_key(key)
       result = @key_handlers[Mode::COMMAND].handle(key)
-      @mode = result[:mode] if result[:mode]
-      @message = result[:message] if result[:message]
-      @running = false if result[:quit]
+      @mode = result.mode if result.mode
+      @message = result.message if result.message
+      @running = false if result.quit?
       result
     end
 
     def execute_command
       result = @key_handlers[Mode::COMMAND].send(:execute_action, @command_line.execute)
-      @mode = result[:mode] if result[:mode]
-      @message = result[:message] if result[:message]
-      @running = false if result[:quit]
+      @mode = result.mode if result.mode
+      @message = result.message if result.message
+      @running = false if result.quit?
       result
     end
   end

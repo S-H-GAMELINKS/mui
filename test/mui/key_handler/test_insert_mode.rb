@@ -16,7 +16,7 @@ class TestKeyHandlerInsertMode < Minitest::Test
 
       result = @handler.handle(27)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_moves_cursor_back
@@ -51,7 +51,7 @@ class TestKeyHandlerInsertMode < Minitest::Test
       result = @handler.handle(Curses::KEY_LEFT)
 
       assert_equal 2, @window.cursor_col
-      assert_nil result[:mode]
+      assert_nil result.mode
     end
 
     def test_left_does_not_go_past_zero
@@ -246,13 +246,13 @@ class TestKeyHandlerInsertMode < Minitest::Test
     def test_escape_returns_normal_mode
       result = @handler.handle(27)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_other_keys_return_nil_mode
       result = @handler.handle("a")
 
-      assert_nil result[:mode]
+      assert_nil result.mode
     end
   end
 end

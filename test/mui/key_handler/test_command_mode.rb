@@ -14,7 +14,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
     def test_returns_normal_mode
       result = @handler.handle(27)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_clears_command_line
@@ -55,7 +55,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
     def test_empty_buffer_returns_normal_mode
       result = @handler.handle(127)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_non_empty_buffer_stays_in_command_mode
@@ -63,7 +63,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       result = @handler.handle(127)
 
-      assert_nil result[:mode]
+      assert_nil result.mode
     end
   end
 
@@ -114,7 +114,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       result = @handler.handle(13)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_curses_enter_works
@@ -122,7 +122,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       result = @handler.handle(Curses::KEY_ENTER)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_clears_command_line
@@ -147,7 +147,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       result = @handler.handle(13)
 
-      assert_equal "No file name", result[:message]
+      assert_equal "No file name", result.message
     end
 
     def test_with_file_name_shows_written
@@ -158,7 +158,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input("w")
         result = @handler.handle(13)
 
-        assert_match(/written/, result[:message])
+        assert_match(/written/, result.message)
       end
     end
   end
@@ -176,7 +176,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       result = @handler.handle(13)
 
-      assert result[:quit]
+      assert result.quit?
     end
 
     def test_modified_buffer_shows_warning
@@ -185,8 +185,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @command_line.input("q")
       result = @handler.handle(13)
 
-      assert_match(/No write since last change/, result[:message])
-      refute result[:quit]
+      assert_match(/No write since last change/, result.message)
+      refute result.quit?
     end
   end
 
@@ -205,7 +205,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @command_line.input("!")
       result = @handler.handle(13)
 
-      assert result[:quit]
+      assert result.quit?
     end
   end
 
@@ -226,8 +226,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input("q")
         result = @handler.handle(13)
 
-        assert result[:quit]
-        assert_match(/written/, result[:message])
+        assert result.quit?
+        assert_match(/written/, result.message)
       end
     end
 
@@ -236,8 +236,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @command_line.input("q")
       result = @handler.handle(13)
 
-      assert_equal "No file name", result[:message]
-      refute result[:quit]
+      assert_equal "No file name", result.message
+      refute result.quit?
     end
   end
 
@@ -259,7 +259,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input(path)
         result = @handler.handle(13)
 
-        assert_match(/written/, result[:message])
+        assert_match(/written/, result.message)
         assert_equal "hello\n", File.read(path)
       end
     end
@@ -279,7 +279,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @command_line.input("z")
       result = @handler.handle(13)
 
-      assert_match(/Unknown command: xyz/, result[:message])
+      assert_match(/Unknown command: xyz/, result.message)
     end
   end
 
@@ -294,13 +294,13 @@ class TestKeyHandlerCommandMode < Minitest::Test
     def test_escape_returns_normal_mode
       result = @handler.handle(27)
 
-      assert_equal Mui::Mode::NORMAL, result[:mode]
+      assert_equal Mui::Mode::NORMAL, result.mode
     end
 
     def test_character_input_returns_nil_mode
       result = @handler.handle("w")
 
-      assert_nil result[:mode]
+      assert_nil result.mode
     end
   end
 
@@ -319,7 +319,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @command_line.input("w")
       result = @handler.handle(13)
 
-      assert_match(/Error:/, result[:message])
+      assert_match(/Error:/, result.message)
     end
 
     def test_write_to_readonly_path_shows_error
@@ -334,7 +334,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input("w")
         result = @handler.handle(13)
 
-        assert_match(/Error:/, result[:message])
+        assert_match(/Error:/, result.message)
       ensure
         File.chmod(0o755, readonly_dir) if File.exist?(readonly_dir)
       end

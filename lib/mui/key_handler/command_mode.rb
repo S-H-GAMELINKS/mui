@@ -41,7 +41,11 @@ module Mui
       def handle_enter
         command_result = @command_line.execute
         action_result = execute_action(command_result)
-        action_result.merge(mode: Mode::NORMAL)
+        HandlerResult::CommandModeResult.new(
+          mode: Mode::NORMAL,
+          message: action_result.message,
+          quit: action_result.quit?
+        )
       end
 
       def handle_character_input(key)
@@ -91,10 +95,10 @@ module Mui
 
       def handle_write_quit
         save_result = save_buffer
-        if save_result[:message] && !save_result[:message].include?("written")
+        if save_result.message && !save_result.message.include?("written")
           save_result
         else
-          save_result.merge(quit: true)
+          result(message: save_result.message, quit: true)
         end
       end
 
@@ -117,6 +121,10 @@ module Mui
         result(message: "\"#{@buffer.name}\" written")
       rescue SystemCallError => e
         result(message: "Error: #{e.message}")
+      end
+
+      def result(mode: nil, message: nil, quit: false)
+        HandlerResult::CommandModeResult.new(mode: mode, message: message, quit: quit)
       end
     end
   end
