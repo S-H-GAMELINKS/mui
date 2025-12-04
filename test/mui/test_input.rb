@@ -7,7 +7,7 @@ class TestInput < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @input = Mui::Input.new
+      @input = Mui::Input.new(adapter: test_adapter)
       clear_key_sequence
     end
 
@@ -60,7 +60,7 @@ class TestInput < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @input = Mui::Input.new
+      @input = Mui::Input.new(adapter: test_adapter)
       clear_key_sequence
     end
 
@@ -74,6 +74,14 @@ class TestInput < Minitest::Test
       result = @input.read_nonblock
 
       assert_equal "x", result
+    end
+
+    def test_returns_nil_when_queue_empty
+      setup_key_sequence([])
+
+      result = @input.read_nonblock
+
+      assert_nil result
     end
   end
 end

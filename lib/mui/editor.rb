@@ -5,9 +5,10 @@ module Mui
   class Editor
     attr_reader :buffer, :window, :message, :running
 
-    def initialize(file_path = nil)
-      @screen = Screen.new
-      @input = Input.new
+    def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new)
+      @adapter = adapter
+      @screen = Screen.new(adapter: @adapter)
+      @input = Input.new(adapter: @adapter)
       @buffer = Buffer.new
       @buffer.load(file_path) if file_path
       @window = Window.new(@buffer, width: @screen.width, height: @screen.height)
@@ -37,7 +38,7 @@ module Mui
         handle_key(@input.read)
       end
     ensure
-      @screen.close
+      @adapter.close
     end
 
     def handle_key(key)

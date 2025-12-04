@@ -19,7 +19,7 @@ class TestEditorIntegration < Minitest::Test
       f.write("Hello\nWorld")
       f.flush
 
-      editor = Mui::Editor.new(f.path)
+      editor = create_test_editor(f.path)
 
       assert_equal "Hello", editor.buffer.line(0)
       assert_equal "World", editor.buffer.line(1)
@@ -29,7 +29,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_mode_transition_sequence
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Normal -> Insert
     editor.handle_key("i")
@@ -49,7 +49,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_insert_text_and_navigate
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Input "Hello" in Insert mode
     editor.handle_key("i")
@@ -71,7 +71,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_delete_flow
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Input text
     editor.handle_key("i")
@@ -87,7 +87,7 @@ class TestEditorIntegration < Minitest::Test
 
   def test_command_execution_flow
     Tempfile.create(["test", ".txt"]) do |f|
-      editor = Mui::Editor.new
+      editor = create_test_editor
 
       # Input text
       editor.handle_key("i")
@@ -105,7 +105,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_multiline_input_and_navigation
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Input multiple lines
     editor.handle_key("i")
@@ -131,7 +131,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_backspace_joins_lines
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Input 2 lines
     editor.handle_key("i")
@@ -160,7 +160,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_o_and_O_new_line_insertion
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Initial text
     editor.handle_key("i")
@@ -188,7 +188,7 @@ class TestEditorIntegration < Minitest::Test
   end
 
   def test_quit_with_unsaved_changes_blocked
-    editor = Mui::Editor.new
+    editor = create_test_editor
 
     # Input text (modified = true)
     editor.handle_key("i")

@@ -8,7 +8,7 @@ class TestEditorExecuteCommand < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       clear_key_sequence
     end
 
@@ -40,7 +40,7 @@ class TestEditorExecuteCommand < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       clear_key_sequence
     end
 
@@ -63,7 +63,7 @@ class TestEditorExecuteCommand < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       clear_key_sequence
     end
 
@@ -112,7 +112,7 @@ class TestEditorExecuteCommand < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       clear_key_sequence
     end
 
@@ -140,7 +140,7 @@ class TestEditorExecuteCommand < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       clear_key_sequence
     end
 

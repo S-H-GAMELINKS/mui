@@ -3,76 +3,99 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "curses"
-
-# Mocked Curses's method for testing
-module Curses
-  # Key input queue (for testing)
-  @input_queue = []
-
-  class << self
-    attr_accessor :input_queue
-  end
-
-  FakeStdscr = Data.define do
-    def keypad(val)
-      val
-    end
-
-    def nodelay=(val)
-      val
-    end
-  end
-
-  ORVERRIDE_METHODS = {
-    init_screen: -> {},
-    close_screen: -> {},
-    raw: -> {},
-    noraw: -> {},
-    echo: -> {},
-    noecho: -> {},
-    start_color: -> {},
-    use_default_colors: -> {},
-    doupdate: -> {},
-    beep: -> {},
-    clear: -> {},
-    refresh: -> {},
-    curs_set: ->(val) { val },
-    init_pair: ->(*args) { args },
-    setpos: ->(y, x) { [y, x] },
-    addstr: ->(str) { str },
-    lines: -> { 24 },
-    cols: -> { 80 },
-    stdscr: -> { FakeStdscr.new },
-    getch: lambda {
-      key = Curses.input_queue.shift
-      raise StopIteration, "Input queue exhausted" if key.nil?
-
-      key
-    }
-  }.freeze
-
-  class << self
-    ORVERRIDE_METHODS.each do |name, block|
-      undef_method name if method_defined?(name)
-      define_method(name, block)
-    end
-  end
-end
-
 require "mui"
 
 require "minitest/autorun"
 
+module Mui
+  module TerminalAdapter
+    # Test adapter for unit testing without actual terminal
+    class Test < Base
+      attr_accessor :input_queue, :width, :height
+
+      def initialize(width: 80, height: 24)
+        @width = width
+        @height = height
+        @input_queue = []
+        @output_buffer = []
+        @cursor_y = 0
+        @cursor_x = 0
+        @highlight_mode = false
+      end
+
+      def init
+        # No-op for testing
+      end
+
+      def close
+        # No-op for testing
+      end
+
+      def clear
+        @output_buffer = []
+      end
+
+      def refresh
+        # No-op for testing
+      end
+
+      def setpos(y, x)
+        @cursor_y = y
+        @cursor_x = x
+        [y, x]
+      end
+
+      def addstr(str)
+        @output_buffer << { y: @cursor_y, x: @cursor_x, text: str, highlight: @highlight_mode }
+        str
+      end
+
+      def with_highlight
+        @highlight_mode = true
+        result = yield
+        @highlight_mode = false
+        result
+      end
+
+      def getch
+        raise StopIteration, "Input queue exhausted" if @input_queue.empty?
+
+        @input_queue.shift
+      end
+
+      def getch_nonblock
+        return nil if @input_queue.empty?
+
+        @input_queue.shift
+      end
+
+      # Test helpers
+
+      def output_at(y, x)
+        @output_buffer.find { |entry| entry[:y] == y && entry[:x] == x }
+      end
+
+      def all_output
+        @output_buffer.dup
+      end
+    end
+  end
+end
+
 # Test helper module
 module MuiTestHelper
+  def test_adapter
+    @test_adapter ||= Mui::TerminalAdapter::Test.new
+  end
+
   # Set up key input sequence
   def setup_key_sequence(keys)
-    Curses.input_queue = keys.dup
+    test_adapter.input_queue = keys.dup
   end
 
   # Clear key input sequence
   def clear_key_sequence
-    Curses.input_queue = []
+    test_adapter.input_queue = []
   end
 
   # Parse Vim-style key notation
@@ -119,6 +142,11 @@ module MuiTestHelper
     else
       raise "Unknown special key: <#{name}>"
     end
+  end
+
+  # Create editor with test adapter
+  def create_test_editor(file_path = nil)
+    Mui::Editor.new(file_path, adapter: test_adapter)
   end
 end
 

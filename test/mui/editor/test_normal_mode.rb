@@ -7,7 +7,7 @@ class TestEditorNormalMode < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       @editor.mode = Mui::Mode::NORMAL
       clear_key_sequence
     end
@@ -135,7 +135,7 @@ class TestEditorNormalMode < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       @editor.mode = Mui::Mode::NORMAL
       clear_key_sequence
     end
@@ -209,7 +209,7 @@ class TestEditorNormalMode < Minitest::Test
     include MuiTestHelper
 
     def setup
-      @editor = Mui::Editor.new
+      @editor = create_test_editor
       @editor.mode = Mui::Mode::NORMAL
       clear_key_sequence
     end

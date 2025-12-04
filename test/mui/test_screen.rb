@@ -3,8 +3,10 @@
 require "test_helper"
 
 class TestScreen < Minitest::Test
+  include MuiTestHelper
+
   def setup
-    @screen = Mui::Screen.new
+    @screen = Mui::Screen.new(adapter: test_adapter)
   end
 
   def teardown

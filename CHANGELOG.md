@@ -1,6 +1,11 @@
 ## [Unreleased]
 
 ### Added
+- TerminalAdapter abstraction layer for custom terminal implementations
+  - `Mui::TerminalAdapter::Base` abstract base class defining the terminal interface
+  - `Mui::TerminalAdapter::Curses` default implementation using Curses library
+  - Users can create custom adapters by subclassing `Base` and passing to `Editor.new(adapter:)`
+  - Example: `Mui::Editor.new(file_path, adapter: MyCustomAdapter.new)`
 - Initial release of Mui, a Vim-like text editor written in Ruby
 - Vim-like modal editing with five modes:
   - Normal mode: Navigation and text manipulation

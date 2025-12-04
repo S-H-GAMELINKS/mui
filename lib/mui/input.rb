@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-require "curses"
-
 module Mui
   class Input
+    def initialize(adapter:)
+      @adapter = adapter
+    end
+
     def read
-      Curses.getch
+      @adapter.getch
     end
 
     def read_nonblock
-      Curses.stdscr.nodelay = true
-      key = Curses.getch
-      Curses.stdscr.nodelay = false
-      key
+      @adapter.getch_nonblock
     end
   end
 end
