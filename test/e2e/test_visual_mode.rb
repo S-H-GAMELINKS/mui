@@ -285,4 +285,39 @@ class TestE2EVisualMode < Minitest::Test
       .assert_cursor(0, 2)
       .assert_selection(0, 6, 0, 2)
   end
+
+  def test_visual_mode_c_clears_selection
+    runner = ScriptRunner.new
+
+    runner
+      .type("iHello World<Esc>")
+      .type("0v")
+      .assert_mode(Mui::Mode::VISUAL)
+      .type("llll")
+      .assert_selection(0, 0, 0, 4)
+
+    # c should clear selection and enter insert mode
+    runner
+      .type("c")
+      .assert_mode(Mui::Mode::INSERT)
+      .assert_no_selection
+  end
+
+  def test_visual_line_mode_c_clears_selection
+    runner = ScriptRunner.new
+
+    runner
+      .type("iLine1<Enter>Line2<Enter>Line3<Esc>")
+      .type("gg")
+      .type("V")
+      .assert_mode(Mui::Mode::VISUAL_LINE)
+      .type("j")
+      .assert_selection(0, 0, 1, 0)
+
+    # c should clear selection and enter insert mode
+    runner
+      .type("c")
+      .assert_mode(Mui::Mode::INSERT)
+      .assert_no_selection
+  end
 end

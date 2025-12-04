@@ -27,12 +27,11 @@ module Mui
     def transition(result)
       return unless result.mode
 
+      clear_visual_mode if result.clear_selection?
+
       case result.mode
       when Mode::VISUAL, Mode::VISUAL_LINE
         handle_visual_transition(result)
-      when Mode::NORMAL
-        clear_visual_mode if result.clear_selection?
-        @mode = result.mode
       else
         @mode = result.mode
       end
