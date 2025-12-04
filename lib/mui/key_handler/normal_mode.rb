@@ -4,8 +4,9 @@ module Mui
   module KeyHandler
     # Handles key inputs in Normal mode
     class NormalMode < Base
-      def initialize(window, buffer)
-        super
+      def initialize(window, buffer, register = nil)
+        super(window, buffer)
+        @register = register || Register.new
         @pending_motion = nil
       end
 
@@ -74,6 +75,13 @@ module Mui
         when "c"
           @pending_motion = :c
           result
+        when "y"
+          @pending_motion = :y
+          result
+        when "p"
+          handle_paste_after
+        when "P"
+          handle_paste_before
         when ":"
           result(mode: Mode::COMMAND)
         when "v"
@@ -102,6 +110,12 @@ module Mui
           handle_change_to_file_start(char)
         when :cf, :cF, :ct, :cT
           handle_change_find_char(char)
+        when :y
+          handle_yank_pending(char)
+        when :yg
+          handle_yank_to_file_start(char)
+        when :yf, :yF, :yt, :yT
+          handle_yank_find_char(char)
         else
           motion_result = execute_pending_motion(char)
           apply_motion(motion_result) if motion_result
@@ -480,6 +494,254 @@ module Mui
           self.cursor_col = motion_result[:col]
         end
         # Don't clamp cursor - keep it at original position for insert mode
+      end
+
+      # Yank operator handlers
+      def handle_yank_pending(char)
+        case char
+        when "y"
+          handle_yank_line
+        when "w"
+          handle_yank_motion(:word_forward)
+        when "e"
+          handle_yank_motion(:word_end)
+        when "b"
+          handle_yank_motion(:word_backward)
+        when "0"
+          handle_yank_to_line_start
+        when "$"
+          handle_yank_to_line_end
+        when "g"
+          @pending_motion = :yg
+          result
+        when "G"
+          handle_yank_to_file_end
+        when "f"
+          @pending_motion = :yf
+          result
+        when "F"
+          @pending_motion = :yF
+          result
+        when "t"
+          @pending_motion = :yt
+          result
+        when "T"
+          @pending_motion = :yT
+          result
+        else
+          clear_pending
+        end
+      end
+
+      def handle_yank_line
+        text = @buffer.line(cursor_row)
+        @register.set(text, linewise: true)
+        clear_pending
+      end
+
+      def handle_yank_motion(motion_type)
+        start_pos = { row: cursor_row, col: cursor_col }
+        effective_motion = motion_type == :word_forward ? :word_end : motion_type
+        end_pos = calculate_motion_end(effective_motion)
+        return clear_pending unless end_pos
+
+        inclusive = effective_motion == :word_end
+        text = extract_text(start_pos, end_pos, inclusive: inclusive)
+        @register.set(text, linewise: false)
+        clear_pending
+      end
+
+      def handle_yank_to_line_start
+        return clear_pending if cursor_col.zero?
+
+        text = @buffer.line(cursor_row)[0...cursor_col]
+        @register.set(text, linewise: false)
+        clear_pending
+      end
+
+      def handle_yank_to_line_end
+        line = @buffer.line(cursor_row)
+        return clear_pending if line.empty?
+
+        text = line[cursor_col..]
+        @register.set(text, linewise: false)
+        clear_pending
+      end
+
+      def handle_yank_to_file_end
+        lines = (cursor_row...@buffer.line_count).map { |r| @buffer.line(r) }
+        text = lines.join("\n")
+        @register.set(text, linewise: true)
+        clear_pending
+      end
+
+      def handle_yank_to_file_start(char)
+        return clear_pending unless char == "g"
+
+        lines = (0..cursor_row).map { |r| @buffer.line(r) }
+        text = lines.join("\n")
+        @register.set(text, linewise: true)
+        clear_pending
+      end
+
+      def handle_yank_find_char(char)
+        motion_result = case @pending_motion
+                        when :yf
+                          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
+                        when :yF
+                          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
+                        when :yt
+                          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
+                        when :yT
+                          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
+                        end
+        return clear_pending unless motion_result
+
+        execute_yank_find_char(motion_result)
+        clear_pending
+      end
+
+      def execute_yank_find_char(motion_result)
+        line = @buffer.line(cursor_row)
+        text = case @pending_motion
+               when :yf, :yt
+                 line[cursor_col..motion_result[:col]]
+               when :yF, :yT
+                 line[motion_result[:col]...cursor_col]
+               end
+        @register.set(text, linewise: false)
+      end
+
+      # Paste handlers
+      def handle_paste_after
+        return result if @register.empty?
+
+        if @register.linewise?
+          paste_line_after
+        else
+          paste_char_after
+        end
+        result
+      end
+
+      def handle_paste_before
+        return result if @register.empty?
+
+        if @register.linewise?
+          paste_line_before
+        else
+          paste_char_before
+        end
+        result
+      end
+
+      def paste_line_after
+        text = @register.get
+        lines = text.split("\n", -1)
+        lines.reverse_each do |line|
+          @buffer.insert_line(cursor_row + 1, line)
+        end
+        self.cursor_row = cursor_row + 1
+        self.cursor_col = 0
+      end
+
+      def paste_line_before
+        text = @register.get
+        lines = text.split("\n", -1)
+        lines.reverse_each do |line|
+          @buffer.insert_line(cursor_row, line)
+        end
+        self.cursor_col = 0
+      end
+
+      def paste_char_after
+        text = @register.get
+        line = @buffer.line(cursor_row)
+        insert_col = line.empty? ? 0 : cursor_col + 1
+
+        if text.include?("\n")
+          paste_multiline_char(text, line, insert_col)
+        else
+          @buffer.lines[cursor_row] = line[0...insert_col].to_s + text + line[insert_col..].to_s
+          self.cursor_col = insert_col + text.length - 1
+          @window.clamp_cursor_to_line(@buffer)
+        end
+      end
+
+      def paste_char_before
+        text = @register.get
+        line = @buffer.line(cursor_row)
+
+        if text.include?("\n")
+          paste_multiline_char(text, line, cursor_col)
+        else
+          @buffer.lines[cursor_row] = line[0...cursor_col].to_s + text + line[cursor_col..].to_s
+          self.cursor_col = cursor_col + text.length - 1
+          @window.clamp_cursor_to_line(@buffer)
+        end
+      end
+
+      def paste_multiline_char(text, line, insert_col)
+        lines = text.split("\n", -1)
+        before = line[0...insert_col].to_s
+        after = line[insert_col..].to_s
+
+        # First line: before + first part of pasted text
+        @buffer.lines[cursor_row] = before + lines.first
+
+        # Middle lines: insert as new lines
+        lines[1...-1].each_with_index do |pasted_line, idx|
+          @buffer.insert_line(cursor_row + 1 + idx, pasted_line)
+        end
+
+        # Last line: last part of pasted text + after
+        if lines.length > 1
+          last_line_row = cursor_row + lines.length - 1
+          @buffer.insert_line(last_line_row, lines.last + after)
+        end
+
+        # Position cursor at the end of pasted text (before 'after' part)
+        self.cursor_row = cursor_row + lines.length - 1
+        self.cursor_col = lines.last.length - 1
+        self.cursor_col = 0 if cursor_col.negative?
+        @window.clamp_cursor_to_line(@buffer)
+      end
+
+      def extract_text(start_pos, end_pos, inclusive: false)
+        if start_pos[:row] == end_pos[:row]
+          extract_text_same_line(start_pos, end_pos, inclusive: inclusive)
+        else
+          extract_text_across_lines(start_pos, end_pos, inclusive: inclusive)
+        end
+      end
+
+      def extract_text_same_line(start_pos, end_pos, inclusive: false)
+        from_col = [start_pos[:col], end_pos[:col]].min
+        to_col = [start_pos[:col], end_pos[:col]].max
+        to_col -= 1 unless inclusive
+        return "" if to_col < from_col
+
+        @buffer.line(start_pos[:row])[from_col..to_col] || ""
+      end
+
+      def extract_text_across_lines(start_pos, end_pos, inclusive: false)
+        from_row, to_row = [start_pos[:row], end_pos[:row]].minmax
+        from_col = from_row == start_pos[:row] ? start_pos[:col] : end_pos[:col]
+        to_col = to_row == end_pos[:row] ? end_pos[:col] : start_pos[:col]
+        to_col -= 1 unless inclusive
+
+        lines = []
+        (from_row..to_row).each do |row|
+          line = @buffer.line(row)
+          lines << if row == from_row
+                     line[from_col..]
+                   elsif row == to_row
+                     line[0..to_col]
+                   else
+                     line
+                   end
+        end
+        lines.join("\n")
       end
 
       def calculate_motion_end(motion_type)

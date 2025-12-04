@@ -465,4 +465,126 @@ class TestE2EVimOperations < Minitest::Test
       .assert_line(0, "New content")
       .assert_line(1, "Line 3")
   end
+
+  def test_yy_yank_line
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("gg") # Move to Line 1
+
+    runner
+      .type("yy")
+      .assert_line_count(3) # No change to buffer
+
+    # p should paste the line below
+    runner
+      .type("p")
+      .assert_line_count(4)
+      .assert_line(0, "Line 1")
+      .assert_line(1, "Line 1")
+      .assert_line(2, "Line 2")
+      .assert_line(3, "Line 3")
+  end
+
+  def test_yw_yank_word
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world foo")
+      .type("<Esc>")
+      .type("0") # Move to start
+
+    runner
+      .type("yw")
+      .assert_line(0, "hello world foo") # No change
+
+    # p should paste the word after cursor
+    runner
+      .type("p")
+      .assert_line(0, "hhelloello world foo")
+  end
+
+  def test_y_dollar_yank_to_line_end
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0") # Move to start
+      .type("w") # Move to "world"
+      .assert_cursor(0, 6)
+
+    runner
+      .type("y$")
+      .assert_line(0, "hello world") # No change
+
+    # p should paste after cursor
+    runner
+      .type("p")
+      .assert_line(0, "hello wworldorld")
+  end
+
+  def test_P_paste_before
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0") # Move to start
+      .type("yw") # Yank "hello"
+      .type("w") # Move to "world"
+      .assert_cursor(0, 6)
+
+    # P should paste before cursor
+    runner
+      .type("P")
+      .assert_line(0, "hello helloworld")
+  end
+
+  def test_yy_p_paste_line_below
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("gg") # Move to Line 1
+      .type("j") # Move to Line 2
+
+    runner
+      .type("yy")
+      .type("p")
+      .assert_line_count(4)
+      .assert_line(0, "Line 1")
+      .assert_line(1, "Line 2")
+      .assert_line(2, "Line 2")
+      .assert_line(3, "Line 3")
+  end
+
+  def test_yy_P_paste_line_above
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("gg") # Move to Line 1
+      .type("j") # Move to Line 2
+
+    runner
+      .type("yy")
+      .type("P")
+      .assert_line_count(4)
+      .assert_line(0, "Line 1")
+      .assert_line(1, "Line 2")
+      .assert_line(2, "Line 2")
+      .assert_line(3, "Line 3")
+      .assert_cursor(1, 0) # Cursor stays on pasted line
+  end
 end

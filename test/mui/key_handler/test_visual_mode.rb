@@ -444,4 +444,132 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert_equal 0, @window.cursor_col
     end
   end
+
+  class TestYankOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+      @register = Mui::Register.new
+    end
+
+    def test_y_yanks_character_selection
+      @selection = Mui::Selection.new(0, 2)
+      @selection.update_end(0, 6)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      result = @handler.handle("y")
+
+      assert_equal "llo w", @register.get
+      refute @register.linewise?
+      assert_equal Mui::Mode::NORMAL, result.mode
+      assert result.clear_selection?
+    end
+
+    def test_y_yanks_multi_line_selection
+      @selection = Mui::Selection.new(0, 6)
+      @selection.update_end(1, 6)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      result = @handler.handle("y")
+
+      assert_equal "world\nsecond ", @register.get
+      refute @register.linewise?
+      assert_equal Mui::Mode::NORMAL, result.mode
+    end
+
+    def test_y_yanks_reverse_selection
+      @window.cursor_col = 2
+      @selection = Mui::Selection.new(0, 6)
+      @selection.update_end(0, 2)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("y")
+
+      assert_equal "llo w", @register.get
+      refute @register.linewise?
+    end
+
+    def test_y_moves_cursor_to_selection_start
+      @selection = Mui::Selection.new(0, 3)
+      @selection.update_end(0, 8)
+      @window.cursor_col = 8
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("y")
+
+      assert_equal 3, @window.cursor_col
+    end
+
+    def test_y_does_not_modify_buffer
+      @selection = Mui::Selection.new(0, 2)
+      @selection.update_end(0, 6)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("y")
+
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal 3, @buffer.line_count
+    end
+  end
+
+  class TestYankOperatorLineMode < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+      @register = Mui::Register.new
+    end
+
+    def test_y_yanks_single_line_in_line_mode
+      @selection = Mui::Selection.new(1, 0, line_mode: true)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register)
+      @window.cursor_row = 1
+
+      result = @handler.handle("y")
+
+      assert_equal "second line", @register.get
+      assert @register.linewise?
+      assert_equal Mui::Mode::NORMAL, result.mode
+    end
+
+    def test_y_yanks_multiple_lines_in_line_mode
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @selection.update_end(1, 0)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("y")
+
+      assert_equal "hello world\nsecond line", @register.get
+      assert @register.linewise?
+    end
+
+    def test_y_moves_cursor_to_first_yanked_line
+      @selection = Mui::Selection.new(1, 0, line_mode: true)
+      @selection.update_end(2, 0)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register)
+      @window.cursor_row = 2
+
+      @handler.handle("y")
+
+      assert_equal 1, @window.cursor_row
+    end
+
+    def test_y_does_not_modify_buffer_in_line_mode
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @selection.update_end(1, 0)
+      @handler = Mui::KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("y")
+
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "second line", @buffer.line(1)
+      assert_equal "third line", @buffer.line(2)
+      assert_equal 3, @buffer.line_count
+    end
+  end
 end

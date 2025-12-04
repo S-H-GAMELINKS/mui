@@ -1,6 +1,20 @@
 ## [Unreleased]
 
 ### Added
+- Yank operator (`y`):
+  - `yy` to yank current line
+  - `y` + motion: `yw`, `ye`, `yb`, `y0`, `y$`, `ygg`, `yG`
+  - `yf{char}`, `yt{char}`, `yF{char}`, `yT{char}` to yank to/till character
+  - `y` in Visual mode to yank selection (character-wise and line-wise)
+  - `yw` behaves like `ye` (yanks to end of word) matching Vim behavior
+- Paste commands:
+  - `p` to paste after cursor (character-wise) or below current line (line-wise)
+  - `P` to paste before cursor (character-wise) or above current line (line-wise)
+  - Multi-line character-wise paste support
+- Register system for yank/paste operations
+  - Default register for storing yanked text
+  - Named registers support (foundation for future use)
+  - Linewise flag to distinguish line-wise vs character-wise yanks
 - TerminalAdapter abstraction layer for custom terminal implementations
   - `Mui::TerminalAdapter::Base` abstract base class defining the terminal interface
   - `Mui::TerminalAdapter::Curses` default implementation using Curses library

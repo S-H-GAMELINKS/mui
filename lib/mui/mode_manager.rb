@@ -3,12 +3,13 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection
+    attr_reader :mode, :selection, :register
 
     def initialize(window:, buffer:, command_line:)
       @window = window
       @buffer = buffer
       @command_line = command_line
+      @register = Register.new
       @mode = Mode::NORMAL
       @selection = nil
       @visual_handler = nil
@@ -45,7 +46,7 @@ module Mui
 
     def initialize_key_handlers
       @key_handlers = {
-        Mode::NORMAL => KeyHandler::NormalMode.new(@window, @buffer),
+        Mode::NORMAL => KeyHandler::NormalMode.new(@window, @buffer, @register),
         Mode::INSERT => KeyHandler::InsertMode.new(@window, @buffer),
         Mode::COMMAND => KeyHandler::CommandMode.new(@window, @buffer, @command_line)
       }
@@ -85,9 +86,9 @@ module Mui
       @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode: line_mode)
 
       if line_mode
-        KeyHandler::VisualLineMode.new(@window, @buffer, @selection)
+        KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register)
       else
-        KeyHandler::VisualMode.new(@window, @buffer, @selection)
+        KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
       end
     end
   end

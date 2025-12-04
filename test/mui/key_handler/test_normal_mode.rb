@@ -669,4 +669,176 @@ class TestKeyHandlerNormalMode < Minitest::Test
       assert_nil result.mode
     end
   end
+
+  class TestYankOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @buffer.insert_line(2, "third line")
+      @window = Mui::Window.new(@buffer)
+      @register = Mui::Register.new
+      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register)
+    end
+
+    def test_yy_yanks_current_line
+      @window.cursor_row = 1
+
+      @handler.handle("y")
+      @handler.handle("y")
+
+      assert_equal "second line", @register.get
+      assert @register.linewise?
+    end
+
+    def test_yw_yanks_word
+      @window.cursor_col = 0
+
+      @handler.handle("y")
+      @handler.handle("w")
+
+      assert_equal "hello", @register.get
+      refute @register.linewise?
+    end
+
+    def test_ye_yanks_to_end_of_word
+      @window.cursor_col = 0
+
+      @handler.handle("y")
+      @handler.handle("e")
+
+      assert_equal "hello", @register.get
+    end
+
+    def test_y_dollar_yanks_to_line_end
+      @window.cursor_col = 6
+
+      @handler.handle("y")
+      @handler.handle("$")
+
+      assert_equal "world", @register.get
+    end
+
+    def test_y0_yanks_to_line_start
+      @window.cursor_col = 6
+
+      @handler.handle("y")
+      @handler.handle("0")
+
+      assert_equal "hello ", @register.get
+    end
+
+    def test_yG_yanks_to_file_end
+      @window.cursor_row = 1
+
+      @handler.handle("y")
+      @handler.handle("G")
+
+      assert_equal "second line\nthird line", @register.get
+      assert @register.linewise?
+    end
+
+    def test_ygg_yanks_to_file_start
+      @window.cursor_row = 2
+
+      @handler.handle("y")
+      @handler.handle("g")
+      @handler.handle("g")
+
+      assert_equal "hello world\nsecond line\nthird line", @register.get
+      assert @register.linewise?
+    end
+
+    def test_yf_yanks_to_char
+      @window.cursor_col = 0
+
+      @handler.handle("y")
+      @handler.handle("f")
+      @handler.handle("o")
+
+      assert_equal "hello", @register.get
+    end
+
+    def test_yt_yanks_till_char
+      @window.cursor_col = 0
+
+      @handler.handle("y")
+      @handler.handle("t")
+      @handler.handle("o")
+
+      assert_equal "hell", @register.get
+    end
+  end
+
+  class TestPasteOperator < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @window = Mui::Window.new(@buffer)
+      @register = Mui::Register.new
+      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register)
+    end
+
+    def test_p_pastes_charwise_after_cursor
+      @register.set("XYZ", linewise: false)
+      @window.cursor_col = 4
+
+      @handler.handle("p")
+
+      assert_equal "helloXYZ world", @buffer.line(0)
+    end
+
+    def test_P_pastes_charwise_before_cursor
+      @register.set("XYZ", linewise: false)
+      @window.cursor_col = 5
+
+      @handler.handle("P")
+
+      assert_equal "helloXYZ world", @buffer.line(0)
+    end
+
+    def test_p_pastes_linewise_below_cursor
+      @register.set("new line", linewise: true)
+      @window.cursor_row = 0
+
+      @handler.handle("p")
+
+      assert_equal 3, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "new line", @buffer.line(1)
+      assert_equal "second line", @buffer.line(2)
+    end
+
+    def test_P_pastes_linewise_above_cursor
+      @register.set("new line", linewise: true)
+      @window.cursor_row = 1
+
+      @handler.handle("P")
+
+      assert_equal 3, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "new line", @buffer.line(1)
+      assert_equal "second line", @buffer.line(2)
+    end
+
+    def test_p_with_empty_register_does_nothing
+      @handler.handle("p")
+
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal 2, @buffer.line_count
+    end
+
+    def test_yy_p_duplicates_line
+      @window.cursor_row = 0
+
+      @handler.handle("y")
+      @handler.handle("y")
+      @handler.handle("p")
+
+      assert_equal 3, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+      assert_equal "hello world", @buffer.line(1)
+    end
+  end
 end

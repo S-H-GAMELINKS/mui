@@ -6,9 +6,10 @@ module Mui
     class VisualMode < Base
       attr_reader :selection
 
-      def initialize(window, buffer, selection)
+      def initialize(window, buffer, selection, register = nil)
         super(window, buffer)
         @selection = selection
+        @register = register || Register.new
         @pending_motion = nil
       end
 
@@ -71,6 +72,8 @@ module Mui
           handle_delete
         when "c"
           handle_change
+        when "y"
+          handle_yank
         else
           result
         end
@@ -104,6 +107,47 @@ module Mui
           delete_range(range)
         end
         result(mode: Mode::INSERT, clear_selection: true)
+      end
+
+      def handle_yank
+        range = @selection.normalized_range
+        if @selection.line_mode
+          yank_lines(range)
+        else
+          yank_range(range)
+        end
+        self.cursor_row = range[:start_row]
+        self.cursor_col = range[:start_col]
+        result(mode: Mode::NORMAL, clear_selection: true)
+      end
+
+      def yank_lines(range)
+        lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
+        @register.set(lines.join("\n"), linewise: true)
+      end
+
+      def yank_range(range)
+        text = extract_selection_text(range)
+        @register.set(text, linewise: false)
+      end
+
+      def extract_selection_text(range)
+        if range[:start_row] == range[:end_row]
+          @buffer.line(range[:start_row])[range[:start_col]..range[:end_col]] || ""
+        else
+          lines = []
+          (range[:start_row]..range[:end_row]).each do |row|
+            line = @buffer.line(row)
+            lines << if row == range[:start_row]
+                       line[range[:start_col]..]
+                     elsif row == range[:end_row]
+                       line[0..range[:end_col]]
+                     else
+                       line
+                     end
+          end
+          lines.join("\n")
+        end
       end
 
       def change_lines(range)

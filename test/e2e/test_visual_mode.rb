@@ -320,4 +320,104 @@ class TestE2EVisualMode < Minitest::Test
       .assert_mode(Mui::Mode::INSERT)
       .assert_no_selection
   end
+
+  def test_visual_mode_y_yanks_selection
+    runner = ScriptRunner.new
+
+    runner
+      .type("iHello World<Esc>")
+      .type("0v")
+      .type("llll")
+      .assert_selection(0, 0, 0, 4)
+
+    # y should yank selection and return to normal mode
+    runner
+      .type("y")
+      .assert_mode(Mui::Mode::NORMAL)
+      .assert_no_selection
+      .assert_line(0, "Hello World")
+
+    # p should paste yanked text
+    runner
+      .type("p")
+      .assert_line(0, "HHelloello World")
+  end
+
+  def test_visual_line_mode_y_yanks_lines
+    runner = ScriptRunner.new
+
+    runner
+      .type("iLine1<Enter>Line2<Enter>Line3<Esc>")
+      .type("gg")
+      .type("V")
+      .assert_mode(Mui::Mode::VISUAL_LINE)
+      .type("j")
+      .assert_selection(0, 0, 1, 0)
+
+    # y should yank lines and return to normal mode
+    runner
+      .type("y")
+      .assert_mode(Mui::Mode::NORMAL)
+      .assert_no_selection
+      .assert_line_count(3)
+
+    # p should paste yanked lines below
+    runner
+      .type("p")
+      .assert_line_count(5)
+      .assert_line(0, "Line1")
+      .assert_line(1, "Line1")
+      .assert_line(2, "Line2")
+      .assert_line(3, "Line2")
+      .assert_line(4, "Line3")
+  end
+
+  def test_visual_mode_y_moves_cursor_to_selection_start
+    runner = ScriptRunner.new
+
+    runner
+      .type("iHello World<Esc>")
+      .type("0llv")
+      .type("llll")
+      .assert_cursor(0, 6)
+      .assert_selection(0, 2, 0, 6)
+
+    # y should move cursor to selection start
+    runner
+      .type("y")
+      .assert_cursor(0, 2)
+  end
+
+  def test_visual_mode_y_multiline_and_paste
+    runner = ScriptRunner.new
+
+    # Create 3 lines and select across 2 lines (charwise)
+    runner
+      .type("iLine1<Enter>Line2<Enter>Line3<Esc>")
+      .type("gg")
+      .type("llv") # Start visual at col 2 of Line1
+      .type("jll") # Extend to col 4 of Line2
+      .assert_selection(0, 2, 1, 4)
+
+    # Yank and verify buffer unchanged
+    # Selection is "ne1\nLine2" (col 2-4 of Line1 + col 0-4 of Line2)
+    runner
+      .type("y")
+      .assert_mode(Mui::Mode::NORMAL)
+      .assert_line_count(3)
+      .assert_line(0, "Line1")
+      .assert_line(1, "Line2")
+      .assert_line(2, "Line3")
+
+    # Go to Line3 and paste - should insert multiline text after 'L'
+    # "L" + "ne1\nLine2" + "ine3" = "Lne1" and "Line2ine3"
+    runner
+      .type("G0") # Go to start of Line3
+      .type("p")
+      .assert_line_count(4)
+      .assert_line(0, "Line1")
+      .assert_line(1, "Line2")
+      .assert_line(2, "Lne1")
+      .assert_line(3, "Line2ine3")
+  end
 end
