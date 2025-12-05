@@ -572,4 +572,70 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert_equal 3, @buffer.line_count
     end
   end
+
+  class TestNamedRegisters < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @register = Mui::Register.new
+      @window = Mui::Window.new(@buffer)
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(0, 4)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+    end
+
+    def test_quote_a_y_yanks_to_named_register
+      @handler.handle('"')
+      @handler.handle("a")
+      @handler.handle("y")
+
+      assert_equal "hello", @register.get(name: "a")
+      refute @register.linewise?(name: "a")
+    end
+
+    def test_d_saves_to_delete_history
+      @handler.handle("d")
+
+      assert_equal "hello", @register.get(name: "1")
+      refute @register.linewise?(name: "1")
+    end
+
+    def test_quote_underscore_d_does_not_save
+      @handler.handle('"')
+      @handler.handle("_")
+      @handler.handle("d")
+
+      assert_nil @register.get
+      assert_nil @register.get(name: "1")
+    end
+
+    def test_y_saves_to_yank_register
+      @handler.handle("y")
+
+      assert_equal "hello", @register.get(name: "0")
+    end
+
+    def test_d_does_not_affect_yank_register
+      @handler.handle("y")
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(0, 4)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("d")
+
+      assert_equal "hello", @register.get(name: "0")
+    end
+
+    def test_line_mode_d_saves_linewise
+      @selection = Mui::Selection.new(0, 0, line_mode: true)
+      @selection.update_end(0, 0)
+      @handler = Mui::KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+
+      @handler.handle("d")
+
+      assert_equal "hello world", @register.get(name: "1")
+      assert @register.linewise?(name: "1")
+    end
+  end
 end

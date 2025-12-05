@@ -841,4 +841,121 @@ class TestKeyHandlerNormalMode < Minitest::Test
       assert_equal "hello world", @buffer.line(1)
     end
   end
+
+  class TestNamedRegisters < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "second line")
+      @register = Mui::Register.new
+      @window = Mui::Window.new(@buffer)
+      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register)
+    end
+
+    def test_quote_a_yy_yanks_to_named_register
+      @window.cursor_row = 0
+
+      @handler.handle('"')
+      @handler.handle("a")
+      @handler.handle("y")
+      @handler.handle("y")
+
+      assert_equal "hello world", @register.get(name: "a")
+      assert @register.linewise?(name: "a")
+    end
+
+    def test_quote_a_p_pastes_from_named_register
+      @register.yank("from a", linewise: false, name: "a")
+      @window.cursor_col = 4
+
+      @handler.handle('"')
+      @handler.handle("a")
+      @handler.handle("p")
+
+      assert_equal "hellofrom a world", @buffer.line(0)
+    end
+
+    def test_dd_saves_to_delete_history
+      @window.cursor_row = 0
+
+      @handler.handle("d")
+      @handler.handle("d")
+
+      assert_equal "hello world", @register.get(name: "1")
+      assert @register.linewise?(name: "1")
+    end
+
+    def test_delete_history_shifts
+      @window.cursor_row = 0
+
+      @handler.handle("d")
+      @handler.handle("d")
+      # Now at "second line"
+      @handler.handle("d")
+      @handler.handle("d")
+
+      assert_equal "second line", @register.get(name: "1")
+      assert_equal "hello world", @register.get(name: "2")
+    end
+
+    def test_yy_saves_to_yank_register
+      @window.cursor_row = 0
+
+      @handler.handle("y")
+      @handler.handle("y")
+
+      assert_equal "hello world", @register.get(name: "0")
+    end
+
+    def test_dd_does_not_affect_yank_register
+      @window.cursor_row = 0
+      @handler.handle("y")
+      @handler.handle("y")
+
+      @handler.handle("d")
+      @handler.handle("d")
+
+      assert_equal "hello world", @register.get(name: "0")
+      assert_equal "hello world", @register.get(name: "1")
+    end
+
+    def test_quote_underscore_dd_does_not_save_to_registers
+      @window.cursor_row = 0
+
+      @handler.handle('"')
+      @handler.handle("_")
+      @handler.handle("d")
+      @handler.handle("d")
+
+      assert_nil @register.get
+      assert_nil @register.get(name: "1")
+    end
+
+    def test_quote_0_p_pastes_from_yank_register
+      @window.cursor_row = 0
+      @handler.handle("y")
+      @handler.handle("y")
+
+      @handler.handle("d")
+      @handler.handle("d")
+
+      @handler.handle('"')
+      @handler.handle("0")
+      @handler.handle("p")
+
+      assert_equal "second line", @buffer.line(0)
+      assert_equal "hello world", @buffer.line(1)
+    end
+
+    def test_cw_saves_to_delete_history
+      @window.cursor_col = 0
+      @window.cursor_row = 0
+
+      @handler.handle("c")
+      @handler.handle("w")
+
+      assert_equal "hello", @register.get(name: "1")
+      refute @register.linewise?(name: "1")
+    end
+  end
 end

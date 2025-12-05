@@ -8,6 +8,7 @@ module Mui
         super(window, buffer)
         @register = register || Register.new
         @pending_motion = nil
+        @pending_register = nil
       end
 
       def handle(key)
@@ -88,6 +89,9 @@ module Mui
           result(mode: Mode::VISUAL, start_selection: true)
         when "V"
           result(mode: Mode::VISUAL_LINE, start_selection: true, line_mode: true)
+        when '"'
+          @pending_motion = :register_select
+          result
         else
           result
         end
@@ -98,6 +102,8 @@ module Mui
         return clear_pending unless char
 
         case @pending_motion
+        when :register_select
+          handle_register_select(char)
         when :d
           handle_delete_pending(char)
         when :dg
@@ -146,7 +152,24 @@ module Mui
 
       def clear_pending
         @pending_motion = nil
+        @pending_register = nil
         result
+      end
+
+      def handle_register_select(char)
+        if valid_register_name?(char)
+          @pending_register = char
+          @pending_motion = nil
+          result
+        else
+          clear_pending
+        end
+      end
+
+      def valid_register_name?(char)
+        Register::NAMED_REGISTERS.include?(char) ||
+          Register::DELETE_HISTORY_REGISTERS.include?(char) ||
+          [Register::YANK_REGISTER, Register::BLACK_HOLE_REGISTER, Register::UNNAMED_REGISTER].include?(char)
       end
 
       # Movement handlers
@@ -267,6 +290,8 @@ module Mui
       end
 
       def handle_delete_line
+        text = @buffer.line(cursor_row)
+        @register.delete(text, linewise: true, name: @pending_register)
         @buffer.delete_line(cursor_row)
         self.cursor_row = [cursor_row, @buffer.line_count - 1].min
         @window.clamp_cursor_to_line(@buffer)
@@ -279,6 +304,8 @@ module Mui
         return clear_pending unless end_pos
 
         inclusive = motion_type == :word_end
+        text = extract_text(start_pos, end_pos, inclusive: inclusive)
+        @register.delete(text, linewise: false, name: @pending_register)
         execute_delete(start_pos, end_pos, inclusive: inclusive)
         clear_pending
       end
@@ -286,16 +313,20 @@ module Mui
       def handle_delete_to_line_start
         return clear_pending if cursor_col.zero?
 
+        text = @buffer.line(cursor_row)[0...cursor_col]
+        @register.delete(text, linewise: false, name: @pending_register)
         @buffer.delete_range(cursor_row, 0, cursor_row, cursor_col - 1)
         self.cursor_col = 0
         clear_pending
       end
 
       def handle_delete_to_line_end
-        line_length = @buffer.line(cursor_row).length
-        return clear_pending if line_length.zero?
+        line = @buffer.line(cursor_row)
+        return clear_pending if line.empty?
 
-        end_col = line_length - 1
+        text = line[cursor_col..]
+        @register.delete(text, linewise: false, name: @pending_register)
+        end_col = line.length - 1
         @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
         @window.clamp_cursor_to_line(@buffer)
         clear_pending
@@ -306,6 +337,8 @@ module Mui
         if cursor_row == last_row
           handle_delete_line
         else
+          lines = (cursor_row..last_row).map { |r| @buffer.line(r) }
+          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
           (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
           self.cursor_row = [cursor_row, @buffer.line_count - 1].min
           @window.clamp_cursor_to_line(@buffer)
@@ -319,6 +352,8 @@ module Mui
         if cursor_row.zero?
           handle_delete_to_line_start
         else
+          lines = (0..cursor_row).map { |r| @buffer.line(r) }
+          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
           cursor_row.times { @buffer.delete_line(0) }
           @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
           self.cursor_row = 0
@@ -345,6 +380,15 @@ module Mui
       end
 
       def execute_delete_find_char(motion_result)
+        line = @buffer.line(cursor_row)
+        text = case @pending_motion
+               when :df, :dt
+                 line[cursor_col..motion_result[:col]]
+               when :dF, :dT
+                 line[motion_result[:col]...cursor_col]
+               end
+        @register.delete(text, linewise: false, name: @pending_register) if text
+
         case @pending_motion
         when :df, :dt
           @buffer.delete_range(cursor_row, cursor_col, cursor_row, motion_result[:col])
@@ -393,9 +437,12 @@ module Mui
       end
 
       def handle_change_line
+        text = @buffer.line(cursor_row)
+        @register.delete(text, linewise: true, name: @pending_register)
         @buffer.lines[cursor_row] = +""
         self.cursor_col = 0
         @pending_motion = nil
+        @pending_register = nil
         result(mode: Mode::INSERT)
       end
 
@@ -407,34 +454,45 @@ module Mui
         return clear_pending unless end_pos
 
         inclusive = effective_motion == :word_end
+        text = extract_text(start_pos, end_pos, inclusive: inclusive)
+        @register.delete(text, linewise: false, name: @pending_register)
         execute_delete(start_pos, end_pos, inclusive: inclusive, clamp: false)
         @pending_motion = nil
+        @pending_register = nil
         result(mode: Mode::INSERT)
       end
 
       def handle_change_to_line_start
         if cursor_col.zero?
           @pending_motion = nil
+          @pending_register = nil
           return result(mode: Mode::INSERT)
         end
 
+        text = @buffer.line(cursor_row)[0...cursor_col]
+        @register.delete(text, linewise: false, name: @pending_register)
         @buffer.delete_range(cursor_row, 0, cursor_row, cursor_col - 1)
         self.cursor_col = 0
         @pending_motion = nil
+        @pending_register = nil
         result(mode: Mode::INSERT)
       end
 
       def handle_change_to_line_end
-        line_length = @buffer.line(cursor_row).length
-        if line_length.zero?
+        line = @buffer.line(cursor_row)
+        if line.empty?
           @pending_motion = nil
+          @pending_register = nil
           return result(mode: Mode::INSERT)
         end
 
-        end_col = line_length - 1
+        text = line[cursor_col..]
+        @register.delete(text, linewise: false, name: @pending_register)
+        end_col = line.length - 1
         @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
         # Don't clamp cursor - keep it at original position for insert mode
         @pending_motion = nil
+        @pending_register = nil
         result(mode: Mode::INSERT)
       end
 
@@ -443,11 +501,14 @@ module Mui
         if cursor_row == last_row
           handle_change_line
         else
+          lines = (cursor_row..last_row).map { |r| @buffer.line(r) }
+          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
           (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
           @buffer.insert_line(cursor_row) if @buffer.line_count == cursor_row
           self.cursor_row = [cursor_row, @buffer.line_count - 1].min
           self.cursor_col = 0
           @pending_motion = nil
+          @pending_register = nil
           result(mode: Mode::INSERT)
         end
       end
@@ -458,11 +519,14 @@ module Mui
         if cursor_row.zero?
           handle_change_to_line_start
         else
+          lines = (0..cursor_row).map { |r| @buffer.line(r) }
+          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
           cursor_row.times { @buffer.delete_line(0) }
           @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
           self.cursor_row = 0
           self.cursor_col = 0
           @pending_motion = nil
+          @pending_register = nil
           result(mode: Mode::INSERT)
         end
       end
@@ -482,10 +546,20 @@ module Mui
 
         execute_change_find_char(motion_result)
         @pending_motion = nil
+        @pending_register = nil
         result(mode: Mode::INSERT)
       end
 
       def execute_change_find_char(motion_result)
+        line = @buffer.line(cursor_row)
+        text = case @pending_motion
+               when :cf, :ct
+                 line[cursor_col..motion_result[:col]]
+               when :cF, :cT
+                 line[motion_result[:col]...cursor_col]
+               end
+        @register.delete(text, linewise: false, name: @pending_register) if text
+
         case @pending_motion
         when :cf, :ct
           @buffer.delete_range(cursor_row, cursor_col, cursor_row, motion_result[:col])
@@ -535,7 +609,7 @@ module Mui
 
       def handle_yank_line
         text = @buffer.line(cursor_row)
-        @register.set(text, linewise: true)
+        @register.yank(text, linewise: true, name: @pending_register)
         clear_pending
       end
 
@@ -547,7 +621,7 @@ module Mui
 
         inclusive = effective_motion == :word_end
         text = extract_text(start_pos, end_pos, inclusive: inclusive)
-        @register.set(text, linewise: false)
+        @register.yank(text, linewise: false, name: @pending_register)
         clear_pending
       end
 
@@ -555,7 +629,7 @@ module Mui
         return clear_pending if cursor_col.zero?
 
         text = @buffer.line(cursor_row)[0...cursor_col]
-        @register.set(text, linewise: false)
+        @register.yank(text, linewise: false, name: @pending_register)
         clear_pending
       end
 
@@ -564,14 +638,14 @@ module Mui
         return clear_pending if line.empty?
 
         text = line[cursor_col..]
-        @register.set(text, linewise: false)
+        @register.yank(text, linewise: false, name: @pending_register)
         clear_pending
       end
 
       def handle_yank_to_file_end
         lines = (cursor_row...@buffer.line_count).map { |r| @buffer.line(r) }
         text = lines.join("\n")
-        @register.set(text, linewise: true)
+        @register.yank(text, linewise: true, name: @pending_register)
         clear_pending
       end
 
@@ -580,7 +654,7 @@ module Mui
 
         lines = (0..cursor_row).map { |r| @buffer.line(r) }
         text = lines.join("\n")
-        @register.set(text, linewise: true)
+        @register.yank(text, linewise: true, name: @pending_register)
         clear_pending
       end
 
@@ -609,34 +683,38 @@ module Mui
                when :yF, :yT
                  line[motion_result[:col]...cursor_col]
                end
-        @register.set(text, linewise: false)
+        @register.yank(text, linewise: false, name: @pending_register)
       end
 
       # Paste handlers
       def handle_paste_after
-        return result if @register.empty?
+        name = @pending_register
+        @pending_register = nil
+        return result if @register.empty?(name: name)
 
-        if @register.linewise?
-          paste_line_after
+        if @register.linewise?(name: name)
+          paste_line_after(name: name)
         else
-          paste_char_after
+          paste_char_after(name: name)
         end
         result
       end
 
       def handle_paste_before
-        return result if @register.empty?
+        name = @pending_register
+        @pending_register = nil
+        return result if @register.empty?(name: name)
 
-        if @register.linewise?
-          paste_line_before
+        if @register.linewise?(name: name)
+          paste_line_before(name: name)
         else
-          paste_char_before
+          paste_char_before(name: name)
         end
         result
       end
 
-      def paste_line_after
-        text = @register.get
+      def paste_line_after(name: nil)
+        text = @register.get(name: name)
         lines = text.split("\n", -1)
         lines.reverse_each do |line|
           @buffer.insert_line(cursor_row + 1, line)
@@ -645,8 +723,8 @@ module Mui
         self.cursor_col = 0
       end
 
-      def paste_line_before
-        text = @register.get
+      def paste_line_before(name: nil)
+        text = @register.get(name: name)
         lines = text.split("\n", -1)
         lines.reverse_each do |line|
           @buffer.insert_line(cursor_row, line)
@@ -654,8 +732,8 @@ module Mui
         self.cursor_col = 0
       end
 
-      def paste_char_after
-        text = @register.get
+      def paste_char_after(name: nil)
+        text = @register.get(name: name)
         line = @buffer.line(cursor_row)
         insert_col = line.empty? ? 0 : cursor_col + 1
 
@@ -668,8 +746,8 @@ module Mui
         end
       end
 
-      def paste_char_before
-        text = @register.get
+      def paste_char_before(name: nil)
+        text = @register.get(name: name)
         line = @buffer.line(cursor_row)
 
         if text.include?("\n")

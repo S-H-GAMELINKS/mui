@@ -1,6 +1,17 @@
 ## [Unreleased]
 
 ### Added
+- Vim-compatible named registers:
+  - Named registers (`"a` - `"z`): 26 user-specified registers
+  - Unnamed register (`""`): Default register
+  - Yank register (`"0`): Stores last yank, not affected by delete
+  - Delete history registers (`"1` - `"9`): Stores delete history, shifts on each delete
+  - Black hole register (`"_`): Discards content without saving
+  - Usage: `"ayy` (yank to register a), `"ap` (paste from register a)
+- Delete/change operators now save to registers (Vim-compatible behavior):
+  - `dd`, `dw`, etc. save deleted text to unnamed register and delete history
+  - `cc`, `cw`, etc. save changed text to unnamed register and delete history
+  - Visual mode `d`/`c` also save to registers
 - Yank operator (`y`):
   - `yy` to yank current line
   - `y` + motion: `yw`, `ye`, `yb`, `y0`, `y$`, `ygg`, `yG`
@@ -13,7 +24,7 @@
   - Multi-line character-wise paste support
 - Register system for yank/paste operations
   - Default register for storing yanked text
-  - Named registers support (foundation for future use)
+  - Named registers support
   - Linewise flag to distinguish line-wise vs character-wise yanks
 - TerminalAdapter abstraction layer for custom terminal implementations
   - `Mui::TerminalAdapter::Base` abstract base class defining the terminal interface

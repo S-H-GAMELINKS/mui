@@ -11,6 +11,7 @@ module Mui
         @selection = selection
         @register = register || Register.new
         @pending_motion = nil
+        @pending_register = nil
       end
 
       def handle(key)
@@ -74,6 +75,9 @@ module Mui
           handle_change
         when "y"
           handle_yank
+        when '"'
+          @pending_motion = :register_select
+          result
         else
           result
         end
@@ -96,6 +100,7 @@ module Mui
         else
           delete_range(range)
         end
+        @pending_register = nil
         result(mode: Mode::NORMAL, clear_selection: true)
       end
 
@@ -104,8 +109,9 @@ module Mui
         if @selection.line_mode
           change_lines(range)
         else
-          delete_range(range)
+          change_range(range)
         end
+        @pending_register = nil
         result(mode: Mode::INSERT, clear_selection: true)
       end
 
@@ -116,6 +122,7 @@ module Mui
         else
           yank_range(range)
         end
+        @pending_register = nil
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
         result(mode: Mode::NORMAL, clear_selection: true)
@@ -123,12 +130,12 @@ module Mui
 
       def yank_lines(range)
         lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
-        @register.set(lines.join("\n"), linewise: true)
+        @register.yank(lines.join("\n"), linewise: true, name: @pending_register)
       end
 
       def yank_range(range)
         text = extract_selection_text(range)
-        @register.set(text, linewise: false)
+        @register.yank(text, linewise: false, name: @pending_register)
       end
 
       def extract_selection_text(range)
@@ -151,6 +158,8 @@ module Mui
       end
 
       def change_lines(range)
+        lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
+        @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
         (range[:end_row] - range[:start_row] + 1).times do
           @buffer.delete_line(range[:start_row])
         end
@@ -159,7 +168,18 @@ module Mui
         self.cursor_col = 0
       end
 
+      def change_range(range)
+        text = extract_selection_text(range)
+        @register.delete(text, linewise: false, name: @pending_register)
+        @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
+        self.cursor_row = range[:start_row]
+        self.cursor_col = range[:start_col]
+        @window.clamp_cursor_to_line(@buffer)
+      end
+
       def delete_lines(range)
+        lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
+        @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
         (range[:end_row] - range[:start_row] + 1).times do
           @buffer.delete_line(range[:start_row])
         end
@@ -169,6 +189,8 @@ module Mui
       end
 
       def delete_range(range)
+        text = extract_selection_text(range)
+        @register.delete(text, linewise: false, name: @pending_register)
         @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
@@ -179,9 +201,27 @@ module Mui
         char = key_to_char(key)
         return clear_pending unless char
 
+        return handle_register_select(char) if @pending_motion == :register_select
+
         motion_result = execute_pending_motion(char)
         apply_motion(motion_result) if motion_result
         clear_pending
+      end
+
+      def handle_register_select(char)
+        if valid_register_name?(char)
+          @pending_register = char
+          @pending_motion = nil
+          result
+        else
+          clear_pending
+        end
+      end
+
+      def valid_register_name?(char)
+        Register::NAMED_REGISTERS.include?(char) ||
+          Register::DELETE_HISTORY_REGISTERS.include?(char) ||
+          [Register::YANK_REGISTER, Register::BLACK_HOLE_REGISTER, Register::UNNAMED_REGISTER].include?(char)
       end
 
       def key_to_char(key)
@@ -207,6 +247,7 @@ module Mui
 
       def clear_pending
         @pending_motion = nil
+        @pending_register = nil
         result
       end
 

@@ -147,6 +147,26 @@ class ScriptRunner
     self
   end
 
+  def assert_register(name, expected_content, linewise: nil)
+    register = @editor.register
+    actual = register.get(name: name)
+    raise "Expected register '#{name}' to be '#{expected_content}', got '#{actual}'" unless actual == expected_content
+
+    unless linewise.nil?
+      actual_linewise = register.linewise?(name: name)
+      raise "Expected register '#{name}' linewise=#{linewise}, got #{actual_linewise}" unless actual_linewise == linewise
+    end
+
+    self
+  end
+
+  def assert_register_empty(name)
+    register = @editor.register
+    raise "Expected register '#{name}' to be empty, got '#{register.get(name: name)}'" unless register.empty?(name: name)
+
+    self
+  end
+
   # Get execution log as string
   def format_log
     @log.map.with_index do |entry, i|

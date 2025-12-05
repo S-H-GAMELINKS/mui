@@ -31,6 +31,10 @@ module Mui
       @mode_manager.selection
     end
 
+    def register
+      @mode_manager.register
+    end
+
     def run
       while @running
         update_window_size
