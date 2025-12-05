@@ -1,6 +1,29 @@
 ## [Unreleased]
 
 ### Added
+- Japanese and multibyte character input support:
+  - Full UTF-8 input handling in Insert mode via IME
+  - Proper display width calculation for CJK characters (East Asian Width)
+  - Cursor position correctly accounts for double-width characters
+  - UTF-8 byte sequence assembly in terminal adapter
+- Plugin system:
+  - `Mui.use "gem_name"` to declare plugin gems
+  - Lazy gem installation via `bundler/inline` on editor startup
+  - Class-based plugins: `class MyPlugin < Mui::Plugin`
+  - DSL-based plugins: `Mui.define_plugin(:name) { ... }`
+  - Plugin API: `command`, `keymap`, `autocmd`
+  - Plugin dependencies with topological sort for load order
+  - CommandContext for plugin access to editor internals
+- Autocmd event system:
+  - 10 events: BufEnter, BufLeave, BufWrite, BufWritePre, BufWritePost, ModeChanged, CursorMoved, TextChanged, InsertEnter, InsertLeave
+  - Pattern matching for file paths (e.g., `"*.rb"`)
+  - `Mui.autocmd :BufEnter, pattern: "*.rb" do |ctx| ... end`
+- Custom commands:
+  - `Mui.command :name do |ctx| ... end`
+  - Execute via `:name` in command mode
+- Custom keymaps:
+  - `Mui.keymap :normal, "key" do |ctx| ... end`
+  - Per-mode key bindings
 - Configuration file support:
   - `~/.muirc` for global settings
   - `.lmuirc` for local (per-project) settings

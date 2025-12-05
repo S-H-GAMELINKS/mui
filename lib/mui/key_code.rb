@@ -8,6 +8,8 @@ module Mui
     ENTER_CR = 13
     ENTER_LF = 10
     PRINTABLE_MIN = 32
-    PRINTABLE_MAX = 127
+    # Extended to support Unicode characters (including CJK)
+    # 0x10FFFF is the maximum valid Unicode code point
+    PRINTABLE_MAX = 0x10FFFF
   end
 end

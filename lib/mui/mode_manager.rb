@@ -3,14 +3,15 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input
+    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor
 
-    def initialize(window:, buffer:, command_line:, undo_manager: nil)
+    def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil)
       @window = window
       @buffer = buffer
       @command_line = command_line
       @register = Register.new
       @undo_manager = undo_manager
+      @editor = editor
       @search_state = SearchState.new
       @search_input = SearchInput.new
       @mode = Mode::NORMAL
@@ -63,10 +64,15 @@ module Mui
         Mode::SEARCH_FORWARD => KeyHandler::SearchMode.new(@window, @buffer, @search_input, @search_state),
         Mode::SEARCH_BACKWARD => KeyHandler::SearchMode.new(@window, @buffer, @search_input, @search_state)
       }
+
+      # Set mode_manager reference for plugin keymap support
+      @key_handlers.each_value { |handler| handler.mode_manager = self }
     end
 
     def create_insert_handler(group_started: false)
-      KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started: group_started)
+      handler = KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started: group_started)
+      handler.mode_manager = self
+      handler
     end
 
     def handle_insert_transition(result)
@@ -108,11 +114,13 @@ module Mui
     def create_visual_handler(line_mode:)
       @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode: line_mode)
 
-      if line_mode
-        KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
-      else
-        KeyHandler::VisualMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
-      end
+      handler = if line_mode
+                  KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
+                else
+                  KeyHandler::VisualMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
+                end
+      handler.mode_manager = self
+      handler
     end
 
     def handle_search_forward_transition

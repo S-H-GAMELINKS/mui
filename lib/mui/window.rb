@@ -168,7 +168,10 @@ module Mui
     end
 
     def screen_cursor_x
-      @x + @cursor_col - @scroll_col
+      line = @buffer.line(@cursor_row) || ""
+      # Calculate display width from scroll_col to cursor_col
+      visible_text = line[@scroll_col...@cursor_col] || ""
+      @x + UnicodeWidth.string_width(visible_text)
     end
 
     def screen_cursor_y

@@ -237,6 +237,10 @@ class TestWindow < Minitest::Test
     end
 
     def test_returns_cursor_position_adjusted_for_window_and_scroll
+      # Add enough lines and content for the test
+      20.times { @buffer.insert_line(@buffer.line_count, "") }
+      @buffer.replace_line(10, "0123456789abcdefghij")
+
       @window.x = 5
       @window.y = 2
       @window.cursor_row = 10
@@ -244,8 +248,35 @@ class TestWindow < Minitest::Test
       @window.scroll_row = 3
       @window.scroll_col = 5
 
+      # screen_cursor_x = window.x + display_width(text[scroll_col...cursor_col])
+      # = 5 + width("56789abcde") = 5 + 10 = 15
       assert_equal 15, @window.screen_cursor_x
       assert_equal 9, @window.screen_cursor_y
+    end
+
+    def test_cursor_position_with_japanese_text
+      @buffer.replace_line(0, "Hello世界Test")
+
+      @window.x = 0
+      @window.cursor_row = 0
+      @window.cursor_col = 7 # After "Hello世界" (5 + 2 chars)
+      @window.scroll_col = 0
+
+      # "Hello世界" = 5 (ASCII) + 4 (2 wide chars) = 9 display width
+      assert_equal 9, @window.screen_cursor_x
+    end
+
+    def test_cursor_position_with_scroll_and_japanese
+      @buffer.replace_line(0, "あいうえおABCDE")
+
+      @window.x = 0
+      @window.cursor_row = 0
+      @window.cursor_col = 7  # After "あいうえおAB"
+      @window.scroll_col = 2  # Skip "あい"
+
+      # visible: "うえおAB" from scroll_col=2 to cursor_col=7
+      # "うえおAB" = 6 (3 wide chars) + 2 (ASCII) = 8 display width
+      assert_equal 8, @window.screen_cursor_x
     end
   end
 end

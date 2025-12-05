@@ -9,10 +9,12 @@ module Mui
     # Base class for mode-specific key handlers
     class Base
       attr_reader :window, :buffer
+      attr_accessor :mode_manager
 
       def initialize(window, buffer)
         @window = window
         @buffer = buffer
+        @mode_manager = nil
       end
 
       # Handle a key input

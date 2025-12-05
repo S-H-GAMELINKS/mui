@@ -95,10 +95,15 @@ module Mui
 
       def extract_printable_char(key)
         if key.is_a?(String)
+          # Curses returns multibyte characters as String
           key
-        elsif key.is_a?(Integer) && key >= KeyCode::PRINTABLE_MIN && key < KeyCode::PRINTABLE_MAX
-          key.chr
+        elsif key.is_a?(Integer) && key >= KeyCode::PRINTABLE_MIN && key <= KeyCode::PRINTABLE_MAX
+          # Use UTF-8 encoding to support Unicode characters
+          key.chr(Encoding::UTF_8)
         end
+      rescue RangeError
+        # Invalid Unicode code point
+        nil
       end
 
       def result(mode: nil, message: nil, quit: false)

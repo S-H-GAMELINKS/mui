@@ -82,6 +82,53 @@ module Mui
   end
 end
 
+# Mock classes for unit testing
+class MockBuffer
+  attr_accessor :lines, :cursor_x, :cursor_y, :modified, :file_path
+
+  def initialize(lines = [""])
+    @lines = lines.map(&:dup)
+    @cursor_x = 0
+    @cursor_y = 0
+    @modified = false
+    @file_path = nil
+  end
+
+  def line(index)
+    @lines[index] || ""
+  end
+
+  def current_line
+    line(@cursor_y)
+  end
+
+  def line_count
+    @lines.length
+  end
+end
+
+class MockWindow
+  attr_accessor :cursor_row, :cursor_col
+
+  def initialize(buffer)
+    @buffer = buffer
+    @cursor_row = 0
+    @cursor_col = 0
+  end
+end
+
+class MockEditor
+  attr_accessor :message, :running, :command_registry
+
+  def initialize(buffer, window)
+    @buffer = buffer
+    @window = window
+    @message = nil
+    @running = true
+    @command_registry = Mui::CommandRegistry.new
+  end
+end
+
 # Test helper module
 module MuiTestHelper
   def test_adapter

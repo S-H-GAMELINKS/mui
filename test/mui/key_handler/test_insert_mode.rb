@@ -233,6 +233,53 @@ class TestKeyHandlerInsertMode < Minitest::Test
       assert_equal "hi", @buffer.line(0)
       assert_equal 2, @window.cursor_col
     end
+
+    def test_inserts_japanese_string_character
+      # Japanese hiragana "あ" - Curses returns multibyte chars as String
+      @handler.handle("あ")
+
+      assert_equal "あ", @buffer.line(0)
+      assert_equal 1, @window.cursor_col
+    end
+
+    def test_inserts_multiple_japanese_characters
+      @handler.handle("こ")
+      @handler.handle("ん")
+      @handler.handle("に")
+      @handler.handle("ち")
+      @handler.handle("は")
+
+      assert_equal "こんにちは", @buffer.line(0)
+      assert_equal 5, @window.cursor_col
+    end
+
+    def test_inserts_mixed_ascii_and_japanese
+      @handler.handle("H")
+      @handler.handle("e")
+      @handler.handle("l")
+      @handler.handle("l")
+      @handler.handle("o")
+      @handler.handle("世")
+      @handler.handle("界")
+
+      assert_equal "Hello世界", @buffer.line(0)
+      assert_equal 7, @window.cursor_col
+    end
+
+    def test_inserts_unicode_integer_codepoint
+      # Japanese "あ" has Unicode codepoint 0x3042 (12354)
+      @handler.handle(0x3042)
+
+      assert_equal "あ", @buffer.line(0)
+      assert_equal 1, @window.cursor_col
+    end
+
+    def test_inserts_emoji_string
+      @handler.handle("🎉")
+
+      assert_equal "🎉", @buffer.line(0)
+      assert_equal 1, @window.cursor_col
+    end
   end
 
   class TestReturnValue < Minitest::Test

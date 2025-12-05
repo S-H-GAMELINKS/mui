@@ -2,7 +2,7 @@
 
 module Mui
   class Config
-    attr_reader :options, :plugins, :keymaps
+    attr_reader :options, :plugins, :keymaps, :commands, :autocmds
 
     def initialize
       @options = {
@@ -10,6 +10,8 @@ module Mui
       }
       @plugins = []
       @keymaps = {}
+      @commands = {}
+      @autocmds = {}
     end
 
     def set(key, value)
@@ -35,6 +37,15 @@ module Mui
     def add_keymap(mode, key, block)
       @keymaps[mode] ||= {}
       @keymaps[mode][key] = block
+    end
+
+    def add_command(name, block)
+      @commands[name.to_sym] = block
+    end
+
+    def add_autocmd(event, pattern, block)
+      @autocmds[event.to_sym] ||= []
+      @autocmds[event.to_sym] << { pattern: pattern, handler: block }
     end
   end
 end

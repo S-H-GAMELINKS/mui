@@ -26,10 +26,11 @@ class TestMuiApi < Minitest::Test
     assert_equal "mui", Mui.config.get(:colorscheme)
   end
 
-  def test_use_delegates_to_config
+  def test_use_adds_gem_to_plugin_manager
     Mui.use "mui-lsp", "~> 0.1"
-    assert_equal 1, Mui.config.plugins.length
-    assert_equal "mui-lsp", Mui.config.plugins.first[:gem]
+    assert_equal 1, Mui.plugin_manager.pending_gems.length
+    assert_equal "mui-lsp", Mui.plugin_manager.pending_gems.first[:gem]
+    assert_equal "~> 0.1", Mui.plugin_manager.pending_gems.first[:version]
   end
 
   def test_keymap_delegates_to_config

@@ -14,11 +14,39 @@ module Mui
       end
 
       def handle(key)
+        # Check plugin keymaps first (only when no pending motion)
+        unless @pending_motion
+          plugin_result = check_plugin_keymap(key, :normal)
+          return plugin_result if plugin_result
+        end
+
         if @pending_motion
           handle_pending_motion(key)
         else
           handle_normal_key(key)
         end
+      end
+
+      def check_plugin_keymap(key, mode_symbol)
+        return nil unless @mode_manager&.editor
+
+        key_str = begin
+          key.is_a?(String) ? key : key.chr
+        rescue StandardError
+          nil
+        end
+        return nil unless key_str
+
+        plugin_handler = Mui.config.keymaps[mode_symbol]&.[](key_str)
+        return nil unless plugin_handler
+
+        context = CommandContext.new(
+          editor: @mode_manager.editor,
+          buffer: @buffer,
+          window: @window
+        )
+        plugin_handler.call(context)
+        result
       end
 
       private

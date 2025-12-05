@@ -5,6 +5,9 @@ module Mui
     attr_reader :lines, :name
     attr_accessor :modified, :undo_manager
 
+    # Alias for autocmd pattern matching
+    alias file_path name
+
     def initialize(name = "[No Name]")
       @name = name
       @lines = [empty_line]

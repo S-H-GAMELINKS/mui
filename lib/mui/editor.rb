@@ -3,7 +3,8 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :buffer, :window, :message, :running, :undo_manager
+    attr_reader :buffer, :window, :undo_manager, :autocmd, :command_registry
+    attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
       Mui.load_config if load_config
@@ -23,12 +24,25 @@ module Mui
       @undo_manager = UndoManager.new
       @buffer.undo_manager = @undo_manager
 
+      @autocmd = Autocmd.new
+      @command_registry = CommandRegistry.new
+
+      # Install and load plugins via bundler/inline
+      Mui.plugin_manager.install_and_load
+
+      # Load plugin autocmds
+      load_plugin_autocmds
+
       @mode_manager = ModeManager.new(
         window: @window,
         buffer: @buffer,
         command_line: @command_line,
-        undo_manager: @undo_manager
+        undo_manager: @undo_manager,
+        editor: self
       )
+
+      # Trigger BufEnter event
+      trigger_autocmd(:BufEnter)
     end
 
     def mode
@@ -106,6 +120,19 @@ module Mui
       Themes.send(scheme_name.to_sym)
     rescue NoMethodError
       Themes.mui
+    end
+
+    def load_plugin_autocmds
+      Mui.config.autocmds.each do |event, handlers|
+        handlers.each do |h|
+          @autocmd.register(event, pattern: h[:pattern], &h[:handler])
+        end
+      end
+    end
+
+    def trigger_autocmd(event)
+      context = CommandContext.new(editor: self, buffer: @buffer, window: @window)
+      @autocmd.trigger(event, context)
     end
   end
 end

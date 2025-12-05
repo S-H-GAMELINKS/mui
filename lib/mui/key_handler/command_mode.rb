@@ -75,10 +75,31 @@ module Mui
         when :write_as
           handle_write_as(command_result[:path])
         when :unknown
-          result(message: "Unknown command: #{command_result[:command]}")
+          # Check plugin commands before reporting unknown
+          plugin_result = try_plugin_command(command_result[:command])
+          plugin_result || result(message: "Unknown command: #{command_result[:command]}")
         else
           result
         end
+      end
+
+      def try_plugin_command(command_str)
+        return nil unless @mode_manager&.editor
+
+        parts = command_str.to_s.split(/\s+/, 2)
+        cmd_name = parts[0]
+        args = parts[1]
+
+        plugin_command = Mui.config.commands[cmd_name.to_sym]
+        return nil unless plugin_command
+
+        context = CommandContext.new(
+          editor: @mode_manager.editor,
+          buffer: @buffer,
+          window: @window
+        )
+        plugin_command.call(context, args)
+        result
       end
 
       def handle_write
