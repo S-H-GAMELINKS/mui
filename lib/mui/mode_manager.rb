@@ -3,7 +3,7 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection, :register, :undo_manager
+    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input
 
     def initialize(window:, buffer:, command_line:, undo_manager: nil)
       @window = window
@@ -11,6 +11,8 @@ module Mui
       @command_line = command_line
       @register = Register.new
       @undo_manager = undo_manager
+      @search_state = SearchState.new
+      @search_input = SearchInput.new
       @mode = Mode::NORMAL
       @selection = nil
       @visual_handler = nil
@@ -36,6 +38,10 @@ module Mui
         handle_visual_transition(result)
       when Mode::INSERT
         handle_insert_transition(result)
+      when Mode::SEARCH_FORWARD
+        handle_search_forward_transition
+      when Mode::SEARCH_BACKWARD
+        handle_search_backward_transition
       else
         @mode = result.mode
       end
@@ -49,11 +55,13 @@ module Mui
 
     def initialize_key_handlers
       @key_handlers = {
-        Mode::NORMAL => KeyHandler::NormalMode.new(@window, @buffer, @register, undo_manager: @undo_manager),
+        Mode::NORMAL => KeyHandler::NormalMode.new(@window, @buffer, @register, undo_manager: @undo_manager, search_state: @search_state),
         # Use group_started: true to prevent begin_group on initialization
         # The handler will be replaced when actually entering Insert mode
         Mode::INSERT => KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started: true),
-        Mode::COMMAND => KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+        Mode::COMMAND => KeyHandler::CommandMode.new(@window, @buffer, @command_line),
+        Mode::SEARCH_FORWARD => KeyHandler::SearchMode.new(@window, @buffer, @search_input, @search_state),
+        Mode::SEARCH_BACKWARD => KeyHandler::SearchMode.new(@window, @buffer, @search_input, @search_state)
       }
     end
 
@@ -105,6 +113,18 @@ module Mui
       else
         KeyHandler::VisualMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
       end
+    end
+
+    def handle_search_forward_transition
+      @search_input.clear
+      @search_input.set_prompt("/")
+      @mode = Mode::SEARCH_FORWARD
+    end
+
+    def handle_search_backward_transition
+      @search_input.clear
+      @search_input.set_prompt("?")
+      @mode = Mode::SEARCH_BACKWARD
     end
   end
 end

@@ -4,10 +4,11 @@ module Mui
   module KeyHandler
     # Handles key inputs in Normal mode
     class NormalMode < Base
-      def initialize(window, buffer, register = nil, undo_manager: nil)
+      def initialize(window, buffer, register = nil, undo_manager: nil, search_state: nil)
         super(window, buffer)
         @register = register || Register.new
         @undo_manager = undo_manager
+        @search_state = search_state
         @pending_motion = nil
         @pending_register = nil
       end
@@ -97,6 +98,14 @@ module Mui
           handle_undo
         when 18 # Ctrl-r
           handle_redo
+        when "/"
+          result(mode: Mode::SEARCH_FORWARD)
+        when "?"
+          result(mode: Mode::SEARCH_BACKWARD)
+        when "n"
+          handle_search_next
+        when "N"
+          handle_search_previous
         else
           result
         end
@@ -910,6 +919,41 @@ module Mui
           result
         else
           result(message: "Already at newest change")
+        end
+      end
+
+      # Search handlers
+      def handle_search_next
+        return result(message: "No previous search pattern") unless @search_state&.has_pattern?
+
+        match = if @search_state.direction == :forward
+                  @search_state.find_next(cursor_row, cursor_col)
+                else
+                  @search_state.find_previous(cursor_row, cursor_col)
+                end
+
+        if match
+          apply_motion(match)
+          result
+        else
+          result(message: "Pattern not found: #{@search_state.pattern}")
+        end
+      end
+
+      def handle_search_previous
+        return result(message: "No previous search pattern") unless @search_state&.has_pattern?
+
+        match = if @search_state.direction == :forward
+                  @search_state.find_previous(cursor_row, cursor_col)
+                else
+                  @search_state.find_next(cursor_row, cursor_col)
+                end
+
+        if match
+          apply_motion(match)
+          result
+        else
+          result(message: "Pattern not found: #{@search_state.pattern}")
         end
       end
     end
