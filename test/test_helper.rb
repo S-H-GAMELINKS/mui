@@ -139,6 +139,8 @@ module MuiTestHelper
       Curses::KEY_UP
     when "down"
       Curses::KEY_DOWN
+    when "c-r"
+      18 # Ctrl-r
     else
       raise "Unknown special key: <#{name}>"
     end

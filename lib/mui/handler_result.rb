@@ -36,9 +36,10 @@ module Mui
 
     # Result for NormalMode - handles visual mode start
     class NormalModeResult < Base
-      def initialize(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false)
+      def initialize(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)
         @start_selection = start_selection
         @line_mode = line_mode
+        @group_started = group_started
         super(mode: mode, message: message, quit: quit)
       end
 
@@ -49,13 +50,18 @@ module Mui
       def line_mode?
         @line_mode
       end
+
+      def group_started?
+        @group_started
+      end
     end
 
     # Result for VisualMode - handles selection clear and line mode toggle
     class VisualModeResult < Base
-      def initialize(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false)
+      def initialize(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false, group_started: false)
         @clear_selection = clear_selection
         @toggle_line_mode = toggle_line_mode
+        @group_started = group_started
         super(mode: mode, message: message, quit: quit)
       end
 
@@ -65,6 +71,10 @@ module Mui
 
       def toggle_line_mode?
         @toggle_line_mode
+      end
+
+      def group_started?
+        @group_started
       end
     end
 

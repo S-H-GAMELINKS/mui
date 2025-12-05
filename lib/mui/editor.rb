@@ -3,7 +3,7 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :buffer, :window, :message, :running
+    attr_reader :buffer, :window, :message, :running, :undo_manager
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new)
       @adapter = adapter
@@ -16,10 +16,14 @@ module Mui
       @message = nil
       @running = true
 
+      @undo_manager = UndoManager.new
+      @buffer.undo_manager = @undo_manager
+
       @mode_manager = ModeManager.new(
         window: @window,
         buffer: @buffer,
-        command_line: @command_line
+        command_line: @command_line,
+        undo_manager: @undo_manager
       )
     end
 

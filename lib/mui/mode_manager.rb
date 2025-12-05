@@ -3,13 +3,14 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection, :register
+    attr_reader :mode, :selection, :register, :undo_manager
 
-    def initialize(window:, buffer:, command_line:)
+    def initialize(window:, buffer:, command_line:, undo_manager: nil)
       @window = window
       @buffer = buffer
       @command_line = command_line
       @register = Register.new
+      @undo_manager = undo_manager
       @mode = Mode::NORMAL
       @selection = nil
       @visual_handler = nil
@@ -33,6 +34,8 @@ module Mui
       case result.mode
       when Mode::VISUAL, Mode::VISUAL_LINE
         handle_visual_transition(result)
+      when Mode::INSERT
+        handle_insert_transition(result)
       else
         @mode = result.mode
       end
@@ -46,10 +49,22 @@ module Mui
 
     def initialize_key_handlers
       @key_handlers = {
-        Mode::NORMAL => KeyHandler::NormalMode.new(@window, @buffer, @register),
-        Mode::INSERT => KeyHandler::InsertMode.new(@window, @buffer),
+        Mode::NORMAL => KeyHandler::NormalMode.new(@window, @buffer, @register, undo_manager: @undo_manager),
+        # Use group_started: true to prevent begin_group on initialization
+        # The handler will be replaced when actually entering Insert mode
+        Mode::INSERT => KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started: true),
         Mode::COMMAND => KeyHandler::CommandMode.new(@window, @buffer, @command_line)
       }
+    end
+
+    def create_insert_handler(group_started: false)
+      KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started: group_started)
+    end
+
+    def handle_insert_transition(result)
+      group_started = result.respond_to?(:group_started?) && result.group_started?
+      @key_handlers[Mode::INSERT] = create_insert_handler(group_started: group_started)
+      @mode = Mode::INSERT
     end
 
     def handle_visual_transition(result)
@@ -86,9 +101,9 @@ module Mui
       @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode: line_mode)
 
       if line_mode
-        KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register)
+        KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
       else
-        KeyHandler::VisualMode.new(@window, @buffer, @selection, @register)
+        KeyHandler::VisualMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)
       end
     end
   end

@@ -6,10 +6,11 @@ module Mui
     class VisualMode < Base
       attr_reader :selection
 
-      def initialize(window, buffer, selection, register = nil)
+      def initialize(window, buffer, selection, register = nil, undo_manager: nil)
         super(window, buffer)
         @selection = selection
         @register = register || Register.new
+        @undo_manager = undo_manager
         @pending_motion = nil
         @pending_register = nil
       end
@@ -109,10 +110,11 @@ module Mui
         if @selection.line_mode
           change_lines(range)
         else
+          @undo_manager&.begin_group
           change_range(range)
         end
         @pending_register = nil
-        result(mode: Mode::INSERT, clear_selection: true)
+        result(mode: Mode::INSERT, clear_selection: true, group_started: true)
       end
 
       def handle_yank
@@ -160,10 +162,12 @@ module Mui
       def change_lines(range)
         lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
         @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
+        @undo_manager&.begin_group
         (range[:end_row] - range[:start_row] + 1).times do
           @buffer.delete_line(range[:start_row])
         end
         @buffer.insert_line(range[:start_row])
+        # NOTE: group will be closed when leaving Insert mode
         self.cursor_row = range[:start_row]
         self.cursor_col = 0
       end
@@ -180,9 +184,11 @@ module Mui
       def delete_lines(range)
         lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
         @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
+        @undo_manager&.begin_group unless @undo_manager&.in_group?
         (range[:end_row] - range[:start_row] + 1).times do
           @buffer.delete_line(range[:start_row])
         end
+        @undo_manager&.end_group
         self.cursor_row = [range[:start_row], @buffer.line_count - 1].min
         self.cursor_col = 0
         @window.clamp_cursor_to_line(@buffer)
@@ -323,13 +329,14 @@ module Mui
         @selection.update_end(cursor_row, cursor_col)
       end
 
-      def result(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false)
+      def result(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false, group_started: false)
         HandlerResult::VisualModeResult.new(
           mode: mode,
           message: message,
           quit: quit,
           clear_selection: clear_selection,
-          toggle_line_mode: toggle_line_mode
+          toggle_line_mode: toggle_line_mode,
+          group_started: group_started
         )
       end
     end

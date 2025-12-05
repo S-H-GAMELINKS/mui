@@ -4,6 +4,13 @@ module Mui
   module KeyHandler
     # Handles key inputs in Insert mode
     class InsertMode < Base
+      def initialize(window, buffer, undo_manager: nil, group_started: false)
+        super(window, buffer)
+        @undo_manager = undo_manager
+        # Start undo group unless already started (e.g., by change operator)
+        @undo_manager&.begin_group unless group_started
+      end
+
       def handle(key)
         case key
         when KeyCode::ESCAPE
@@ -28,6 +35,7 @@ module Mui
       private
 
       def handle_escape
+        @undo_manager&.end_group
         self.cursor_col = cursor_col - 1 if cursor_col.positive?
         result(mode: Mode::NORMAL)
       end

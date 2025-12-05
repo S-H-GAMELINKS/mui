@@ -4,9 +4,10 @@ module Mui
   module KeyHandler
     # Handles key inputs in Normal mode
     class NormalMode < Base
-      def initialize(window, buffer, register = nil)
+      def initialize(window, buffer, register = nil, undo_manager: nil)
         super(window, buffer)
         @register = register || Register.new
+        @undo_manager = undo_manager
         @pending_motion = nil
         @pending_register = nil
       end
@@ -92,6 +93,10 @@ module Mui
         when '"'
           @pending_motion = :register_select
           result
+        when "u"
+          handle_undo
+        when 18 # Ctrl-r
+          handle_redo
         else
           result
         end
@@ -235,16 +240,18 @@ module Mui
       end
 
       def handle_open_below
+        @undo_manager&.begin_group
         @buffer.insert_line(cursor_row + 1)
         self.cursor_row = cursor_row + 1
         self.cursor_col = 0
-        result(mode: Mode::INSERT)
+        result(mode: Mode::INSERT, group_started: true)
       end
 
       def handle_open_above
+        @undo_manager&.begin_group
         @buffer.insert_line(cursor_row)
         self.cursor_col = 0
-        result(mode: Mode::INSERT)
+        result(mode: Mode::INSERT, group_started: true)
       end
 
       def handle_delete_char
@@ -339,7 +346,9 @@ module Mui
         else
           lines = (cursor_row..last_row).map { |r| @buffer.line(r) }
           @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
+          @undo_manager&.begin_group
           (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
+          @undo_manager&.end_group
           self.cursor_row = [cursor_row, @buffer.line_count - 1].min
           @window.clamp_cursor_to_line(@buffer)
           clear_pending
@@ -354,8 +363,10 @@ module Mui
         else
           lines = (0..cursor_row).map { |r| @buffer.line(r) }
           @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
+          @undo_manager&.begin_group
           cursor_row.times { @buffer.delete_line(0) }
           @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
+          @undo_manager&.end_group
           self.cursor_row = 0
           self.cursor_col = 0
           clear_pending
@@ -872,14 +883,34 @@ module Mui
         @window.clamp_cursor_to_line(@buffer)
       end
 
-      def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false)
+      def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)
         HandlerResult::NormalModeResult.new(
           mode: mode,
           message: message,
           quit: quit,
           start_selection: start_selection,
-          line_mode: line_mode
+          line_mode: line_mode,
+          group_started: group_started
         )
+      end
+
+      # Undo/Redo handlers
+      def handle_undo
+        if @undo_manager&.undo(@buffer)
+          @window.clamp_cursor_to_line(@buffer)
+          result
+        else
+          result(message: "Already at oldest change")
+        end
+      end
+
+      def handle_redo
+        if @undo_manager&.redo(@buffer)
+          @window.clamp_cursor_to_line(@buffer)
+          result
+        else
+          result(message: "Already at newest change")
+        end
       end
     end
   end

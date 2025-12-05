@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 ### Added
+- Undo/Redo functionality:
+  - `u` to undo last change
+  - `Ctrl-r` to redo undone change
+  - Vim-compatible undo granularity: Insert mode session as single undo unit
+  - Support for all editing operations (insert, delete, change, visual mode operations)
+  - Maximum 1000 undo history entries
 - Vim-compatible named registers:
   - Named registers (`"a` - `"z`): 26 user-specified registers
   - Unnamed register (`""`): Default register
