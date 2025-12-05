@@ -41,16 +41,16 @@ module Mui
       end
     end
 
-    def render(screen, selection: nil)
+    def render(screen, selection: nil, search_state: nil)
       visible_height.times do |i|
         row = @scroll_row + i
-        render_line(screen, row, i, selection)
+        render_line(screen, row, i, selection, search_state)
       end
 
       render_status_line(screen)
     end
 
-    def render_line(screen, row, screen_row, selection)
+    def render_line(screen, row, screen_row, selection, search_state = nil)
       line = @buffer.line(row)
       visible_line = if @scroll_col < line.length
                        line[@scroll_col, visible_width] || ""
@@ -61,6 +61,8 @@ module Mui
 
       if selection
         render_line_with_selection(screen, row, screen_row, padded_line, selection)
+      elsif search_state&.has_pattern?
+        render_line_with_search_highlight(screen, row, screen_row, padded_line, search_state)
       else
         screen.put(@y + screen_row, @x, padded_line)
       end
@@ -108,6 +110,44 @@ module Mui
 
       screen.put(@y + screen_row, @x + remaining_start,
                  padded_line[remaining_start..])
+    end
+
+    def render_line_with_search_highlight(screen, row, screen_row, padded_line, search_state)
+      matches = search_state.matches_for_row(row)
+      if matches.empty?
+        screen.put(@y + screen_row, @x, padded_line)
+        return
+      end
+
+      render_line_with_multiple_highlights(screen, screen_row, padded_line, matches)
+    end
+
+    def render_line_with_multiple_highlights(screen, screen_row, padded_line, matches)
+      current_pos = 0
+      sorted_matches = matches.sort_by { |m| m[:col] }
+
+      sorted_matches.each do |match|
+        # Adjust for horizontal scroll
+        start_col = match[:col] - @scroll_col
+        end_col = match[:end_col] - @scroll_col
+
+        next if end_col.negative? || start_col >= padded_line.length
+
+        start_col = [start_col, 0].max
+        end_col = [end_col, padded_line.length - 1].min
+
+        # Render text before this match
+        screen.put(@y + screen_row, @x + current_pos, padded_line[current_pos...start_col]) if current_pos < start_col
+
+        # Render the highlighted match
+        screen.put_with_highlight(@y + screen_row, @x + start_col, padded_line[start_col..end_col])
+        current_pos = end_col + 1
+      end
+
+      # Render remaining text after all matches
+      return unless current_pos < padded_line.length
+
+      screen.put(@y + screen_row, @x + current_pos, padded_line[current_pos..])
     end
 
     def render_status_line(screen)

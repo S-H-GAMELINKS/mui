@@ -65,7 +65,7 @@ module Mui
     def render
       @screen.clear
       @window.ensure_cursor_visible
-      @window.render(@screen, selection: @mode_manager.selection)
+      @window.render(@screen, selection: @mode_manager.selection, search_state: @mode_manager.search_state)
 
       render_status_area
 
@@ -83,6 +83,8 @@ module Mui
                       @message || "-- VISUAL --"
                     when Mode::VISUAL_LINE
                       @message || "-- VISUAL LINE --"
+                    when Mode::SEARCH_FORWARD, Mode::SEARCH_BACKWARD
+                      @mode_manager.search_input.to_s
                     else
                       @message || "-- NORMAL --"
                     end

@@ -85,5 +85,17 @@ module Mui
     # Result for CommandMode - uses base functionality only
     class CommandModeResult < Base
     end
+
+    # Result for SearchMode - handles search execution
+    class SearchModeResult < Base
+      def initialize(mode: nil, message: nil, quit: false, cancelled: false)
+        @cancelled = cancelled
+        super(mode: mode, message: message, quit: quit)
+      end
+
+      def cancelled?
+        @cancelled
+      end
+    end
   end
 end

@@ -1,6 +1,13 @@
 ## [Unreleased]
 
 ### Added
+- Search functionality:
+  - `/` to search forward (supports regular expressions)
+  - `?` to search backward (supports regular expressions)
+  - `n` to jump to next match (respects search direction)
+  - `N` to jump to previous match (reverses search direction)
+  - Wrap-around search (continues from beginning/end of file)
+  - Search match highlighting across visible lines
 - Undo/Redo functionality:
   - `u` to undo last change
   - `Ctrl-r` to redo undone change
