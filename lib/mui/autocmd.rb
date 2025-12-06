@@ -25,7 +25,7 @@ module Mui
       event = event.to_sym
       raise ArgumentError, "Unknown event: #{event}" unless EVENTS.include?(event)
 
-      @handlers[event] << { pattern: pattern, handler: block }
+      @handlers[event] << { pattern:, handler: block }
     end
 
     def trigger(event, context)

@@ -30,7 +30,7 @@ module Mui
 
     # Stub for future plugin support
     def use_plugin(gem_name, version = nil)
-      @plugins << { gem: gem_name, version: version }
+      @plugins << { gem: gem_name, version: }
     end
 
     # Stub for future keymap support
@@ -45,7 +45,7 @@ module Mui
 
     def add_autocmd(event, pattern, block)
       @autocmds[event.to_sym] ||= []
-      @autocmds[event.to_sym] << { pattern: pattern, handler: block }
+      @autocmds[event.to_sym] << { pattern:, handler: block }
     end
   end
 end

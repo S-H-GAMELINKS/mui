@@ -65,7 +65,7 @@ module Mui
     end
 
     def define_plugin(name, dependencies: [], &block)
-      plugin_manager.register(name, block, dependencies: dependencies)
+      plugin_manager.register(name, block, dependencies:)
     end
 
     def load_config

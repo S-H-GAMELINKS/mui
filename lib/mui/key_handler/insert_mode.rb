@@ -94,7 +94,7 @@ module Mui
       end
 
       def result(mode: nil, message: nil, quit: false)
-        HandlerResult::InsertModeResult.new(mode: mode, message: message, quit: quit)
+        HandlerResult::InsertModeResult.new(mode:, message:, quit:)
       end
     end
   end

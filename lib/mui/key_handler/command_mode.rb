@@ -137,7 +137,7 @@ module Mui
       end
 
       def result(mode: nil, message: nil, quit: false)
-        HandlerResult::CommandModeResult.new(mode: mode, message: message, quit: quit)
+        HandlerResult::CommandModeResult.new(mode:, message:, quit:)
       end
     end
   end

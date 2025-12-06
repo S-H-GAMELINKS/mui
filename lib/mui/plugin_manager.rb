@@ -16,7 +16,7 @@ module Mui
 
     # Called from Mui.use - register gem (don't install yet)
     def add_gem(gem_name, version = nil)
-      @pending_gems << { gem: gem_name, version: version }
+      @pending_gems << { gem: gem_name, version: }
     end
 
     # Register plugin definition (DSL or class)

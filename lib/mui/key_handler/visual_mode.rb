@@ -331,12 +331,12 @@ module Mui
 
       def result(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false, group_started: false)
         HandlerResult::VisualModeResult.new(
-          mode: mode,
-          message: message,
-          quit: quit,
-          clear_selection: clear_selection,
-          toggle_line_mode: toggle_line_mode,
-          group_started: group_started
+          mode:,
+          message:,
+          quit:,
+          clear_selection:,
+          toggle_line_mode:,
+          group_started:
         )
       end
     end

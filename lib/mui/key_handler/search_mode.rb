@@ -73,7 +73,7 @@ module Mui
       end
 
       def result(mode: nil, message: nil, quit: false, cancelled: false)
-        HandlerResult::SearchModeResult.new(mode: mode, message: message, quit: quit, cancelled: cancelled)
+        HandlerResult::SearchModeResult.new(mode:, message:, quit:, cancelled:)
       end
     end
   end

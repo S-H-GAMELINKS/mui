@@ -40,7 +40,7 @@ module Mui
         @start_selection = start_selection
         @line_mode = line_mode
         @group_started = group_started
-        super(mode: mode, message: message, quit: quit)
+        super(mode:, message:, quit:)
       end
 
       def start_selection?
@@ -62,7 +62,7 @@ module Mui
         @clear_selection = clear_selection
         @toggle_line_mode = toggle_line_mode
         @group_started = group_started
-        super(mode: mode, message: message, quit: quit)
+        super(mode:, message:, quit:)
       end
 
       def clear_selection?
@@ -90,7 +90,7 @@ module Mui
     class SearchModeResult < Base
       def initialize(mode: nil, message: nil, quit: false, cancelled: false)
         @cancelled = cancelled
-        super(mode: mode, message: message, quit: quit)
+        super(mode:, message:, quit:)
       end
 
       def cancelled?

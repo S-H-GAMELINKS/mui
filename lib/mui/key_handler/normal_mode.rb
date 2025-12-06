@@ -348,9 +348,9 @@ module Mui
         return clear_pending unless end_pos
 
         inclusive = motion_type == :word_end
-        text = extract_text(start_pos, end_pos, inclusive: inclusive)
+        text = extract_text(start_pos, end_pos, inclusive:)
         @register.delete(text, linewise: false, name: @pending_register)
-        execute_delete(start_pos, end_pos, inclusive: inclusive)
+        execute_delete(start_pos, end_pos, inclusive:)
         clear_pending
       end
 
@@ -502,9 +502,9 @@ module Mui
         return clear_pending unless end_pos
 
         inclusive = effective_motion == :word_end
-        text = extract_text(start_pos, end_pos, inclusive: inclusive)
+        text = extract_text(start_pos, end_pos, inclusive:)
         @register.delete(text, linewise: false, name: @pending_register)
-        execute_delete(start_pos, end_pos, inclusive: inclusive, clamp: false)
+        execute_delete(start_pos, end_pos, inclusive:, clamp: false)
         @pending_motion = nil
         @pending_register = nil
         result(mode: Mode::INSERT)
@@ -668,7 +668,7 @@ module Mui
         return clear_pending unless end_pos
 
         inclusive = effective_motion == :word_end
-        text = extract_text(start_pos, end_pos, inclusive: inclusive)
+        text = extract_text(start_pos, end_pos, inclusive:)
         @register.yank(text, linewise: false, name: @pending_register)
         clear_pending
       end
@@ -738,12 +738,12 @@ module Mui
       def handle_paste_after
         name = @pending_register
         @pending_register = nil
-        return result if @register.empty?(name: name)
+        return result if @register.empty?(name:)
 
-        if @register.linewise?(name: name)
-          paste_line_after(name: name)
+        if @register.linewise?(name:)
+          paste_line_after(name:)
         else
-          paste_char_after(name: name)
+          paste_char_after(name:)
         end
         result
       end
@@ -751,18 +751,18 @@ module Mui
       def handle_paste_before
         name = @pending_register
         @pending_register = nil
-        return result if @register.empty?(name: name)
+        return result if @register.empty?(name:)
 
-        if @register.linewise?(name: name)
-          paste_line_before(name: name)
+        if @register.linewise?(name:)
+          paste_line_before(name:)
         else
-          paste_char_before(name: name)
+          paste_char_before(name:)
         end
         result
       end
 
       def paste_line_after(name: nil)
-        text = @register.get(name: name)
+        text = @register.get(name:)
         lines = text.split("\n", -1)
         lines.reverse_each do |line|
           @buffer.insert_line(cursor_row + 1, line)
@@ -772,7 +772,7 @@ module Mui
       end
 
       def paste_line_before(name: nil)
-        text = @register.get(name: name)
+        text = @register.get(name:)
         lines = text.split("\n", -1)
         lines.reverse_each do |line|
           @buffer.insert_line(cursor_row, line)
@@ -781,7 +781,7 @@ module Mui
       end
 
       def paste_char_after(name: nil)
-        text = @register.get(name: name)
+        text = @register.get(name:)
         line = @buffer.line(cursor_row)
         insert_col = line.empty? ? 0 : cursor_col + 1
 
@@ -795,7 +795,7 @@ module Mui
       end
 
       def paste_char_before(name: nil)
-        text = @register.get(name: name)
+        text = @register.get(name:)
         line = @buffer.line(cursor_row)
 
         if text.include?("\n")
@@ -835,9 +835,9 @@ module Mui
 
       def extract_text(start_pos, end_pos, inclusive: false)
         if start_pos[:row] == end_pos[:row]
-          extract_text_same_line(start_pos, end_pos, inclusive: inclusive)
+          extract_text_same_line(start_pos, end_pos, inclusive:)
         else
-          extract_text_across_lines(start_pos, end_pos, inclusive: inclusive)
+          extract_text_across_lines(start_pos, end_pos, inclusive:)
         end
       end
 
@@ -883,9 +883,9 @@ module Mui
 
       def execute_delete(start_pos, end_pos, inclusive: false, clamp: true)
         if start_pos[:row] == end_pos[:row]
-          execute_delete_same_line(start_pos, end_pos, inclusive: inclusive, clamp: clamp)
+          execute_delete_same_line(start_pos, end_pos, inclusive:, clamp:)
         else
-          execute_delete_across_lines(start_pos, end_pos, inclusive: inclusive, clamp: clamp)
+          execute_delete_across_lines(start_pos, end_pos, inclusive:, clamp:)
         end
       end
 
@@ -922,12 +922,12 @@ module Mui
 
       def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)
         HandlerResult::NormalModeResult.new(
-          mode: mode,
-          message: message,
-          quit: quit,
-          start_selection: start_selection,
-          line_mode: line_mode,
-          group_started: group_started
+          mode:,
+          message:,
+          quit:,
+          start_selection:,
+          line_mode:,
+          group_started:
         )
       end
 

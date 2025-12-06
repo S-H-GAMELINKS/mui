@@ -28,10 +28,10 @@ module Mui
       return if name == BLACK_HOLE_REGISTER
 
       if name && NAMED_REGISTERS.include?(name)
-        @named_registers[name] = { content: text, linewise: linewise }
+        @named_registers[name] = { content: text, linewise: }
       else
-        @unnamed = { content: text, linewise: linewise }
-        @yank_register = { content: text, linewise: linewise }
+        @unnamed = { content: text, linewise: }
+        @yank_register = { content: text, linewise: }
       end
     end
 
@@ -41,9 +41,9 @@ module Mui
       return if name == BLACK_HOLE_REGISTER
 
       if name && NAMED_REGISTERS.include?(name)
-        @named_registers[name] = { content: text, linewise: linewise }
+        @named_registers[name] = { content: text, linewise: }
       else
-        @unnamed = { content: text, linewise: linewise }
+        @unnamed = { content: text, linewise: }
         shift_delete_history(text, linewise)
       end
     end
@@ -51,9 +51,9 @@ module Mui
     # Legacy method for backward compatibility
     def set(text, linewise: false, name: nil)
       if name
-        @named_registers[name] = { content: text, linewise: linewise }
+        @named_registers[name] = { content: text, linewise: }
       else
-        @unnamed = { content: text, linewise: linewise }
+        @unnamed = { content: text, linewise: }
       end
     end
 
@@ -92,7 +92,7 @@ module Mui
     end
 
     def empty?(name: nil)
-      get(name: name).nil?
+      get(name:).nil?
     end
 
     # For backward compatibility
@@ -103,7 +103,7 @@ module Mui
     private
 
     def shift_delete_history(text, linewise)
-      @delete_history.unshift({ content: text, linewise: linewise })
+      @delete_history.unshift({ content: text, linewise: })
       @delete_history = @delete_history.first(9)
     end
   end
