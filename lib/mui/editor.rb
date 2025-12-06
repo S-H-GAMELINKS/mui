@@ -11,6 +11,7 @@ module Mui
 
       @adapter = adapter
       @color_manager = ColorManager.new
+      @adapter.color_resolver = @color_manager
       @color_scheme = load_color_scheme
       @screen = Screen.new(adapter: @adapter, color_manager: @color_manager)
       @input = Input.new(adapter: @adapter)

@@ -130,5 +130,7 @@ module Mui
 
       COLOR_MAP[color] || EXTENDED_COLOR_MAP[color] || -1
     end
+
+    alias resolve color_code
   end
 end

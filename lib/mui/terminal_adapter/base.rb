@@ -4,6 +4,8 @@ module Mui
   module TerminalAdapter
     # Abstract base class for terminal adapters
     class Base
+      attr_accessor :color_resolver
+
       # Initialize terminal
       def init
         raise MethodNotOverriddenError, __method__
