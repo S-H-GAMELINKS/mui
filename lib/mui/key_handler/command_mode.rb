@@ -4,8 +4,8 @@ module Mui
   module KeyHandler
     # Handles key inputs in Command mode
     class CommandMode < Base
-      def initialize(window, buffer, command_line)
-        super(window, buffer)
+      def initialize(mode_manager, buffer, command_line)
+        super(mode_manager, buffer)
         @command_line = command_line
       end
 
@@ -88,7 +88,7 @@ module Mui
         context = CommandContext.new(
           editor: @mode_manager.editor,
           buffer: @buffer,
-          window: @window
+          window:
         )
         plugin_command.call(context, args)
         result

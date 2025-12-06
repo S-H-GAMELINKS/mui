@@ -9,9 +9,10 @@ class TestSearchMode < Minitest::Test
     @buffer.lines[1] = "foo bar baz"
     @buffer.lines[2] = "hello again"
     @window = Mui::Window.new(@buffer)
+    @mode_manager = MockModeManager.new(@window)
     @search_input = Mui::SearchInput.new("/")
     @search_state = Mui::SearchState.new
-    @handler = Mui::KeyHandler::SearchMode.new(@window, @buffer, @search_input, @search_state)
+    @handler = Mui::KeyHandler::SearchMode.new(@mode_manager, @buffer, @search_input, @search_state)
   end
 
   def test_escape_cancels_search
@@ -103,9 +104,10 @@ class TestSearchMode < Minitest::Test
     buffer = Mui::Buffer.new
     buffer.lines[0] = "test123"
     window = Mui::Window.new(buffer)
+    mode_manager = MockModeManager.new(window)
     search_input = Mui::SearchInput.new("/")
     search_state = Mui::SearchState.new
-    handler = Mui::KeyHandler::SearchMode.new(window, buffer, search_input, search_state)
+    handler = Mui::KeyHandler::SearchMode.new(mode_manager, buffer, search_input, search_state)
 
     search_input.input("\\d+")
     handler.handle(Mui::KeyCode::ENTER_CR)

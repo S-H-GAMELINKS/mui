@@ -4,8 +4,8 @@ module Mui
   module KeyHandler
     # Handles key inputs in Insert mode
     class InsertMode < Base
-      def initialize(window, buffer, undo_manager: nil, group_started: false)
-        super(window, buffer)
+      def initialize(mode_manager, buffer, undo_manager: nil, group_started: false)
+        super(mode_manager, buffer)
         @undo_manager = undo_manager
         # Start undo group unless already started (e.g., by change operator)
         @undo_manager&.begin_group unless group_started
@@ -51,12 +51,12 @@ module Mui
       end
 
       def handle_move_up
-        @window.move_up
+        window.move_up
         result
       end
 
       def handle_move_down
-        @window.move_down
+        window.move_down
         result
       end
 

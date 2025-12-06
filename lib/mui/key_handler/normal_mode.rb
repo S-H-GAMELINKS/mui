@@ -4,8 +4,8 @@ module Mui
   module KeyHandler
     # Handles key inputs in Normal mode
     class NormalMode < Base
-      def initialize(window, buffer, register = nil, undo_manager: nil, search_state: nil)
-        super(window, buffer)
+      def initialize(mode_manager, buffer, register = nil, undo_manager: nil, search_state: nil)
+        super(mode_manager, buffer)
         @register = register || Register.new
         @undo_manager = undo_manager
         @search_state = search_state
@@ -43,7 +43,7 @@ module Mui
         context = CommandContext.new(
           editor: @mode_manager.editor,
           buffer: @buffer,
-          window: @window
+          window:
         )
         plugin_handler.call(context)
         result
@@ -216,22 +216,22 @@ module Mui
 
       # Movement handlers
       def handle_move_left
-        @window.move_left
+        window.move_left
         result
       end
 
       def handle_move_down
-        @window.move_down
+        window.move_down
         result
       end
 
       def handle_move_up
-        @window.move_up
+        window.move_up
         result
       end
 
       def handle_move_right
-        @window.move_right
+        window.move_right
         result
       end
 
@@ -338,7 +338,7 @@ module Mui
         @register.delete(text, linewise: true, name: @pending_register)
         @buffer.delete_line(cursor_row)
         self.cursor_row = [cursor_row, @buffer.line_count - 1].min
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
         clear_pending
       end
 
@@ -372,7 +372,7 @@ module Mui
         @register.delete(text, linewise: false, name: @pending_register)
         end_col = line.length - 1
         @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
         clear_pending
       end
 
@@ -387,7 +387,7 @@ module Mui
           (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
           @undo_manager&.end_group
           self.cursor_row = [cursor_row, @buffer.line_count - 1].min
-          @window.clamp_cursor_to_line(@buffer)
+          window.clamp_cursor_to_line(@buffer)
           clear_pending
         end
       end
@@ -444,7 +444,7 @@ module Mui
           @buffer.delete_range(cursor_row, motion_result[:col], cursor_row, cursor_col - 1)
           self.cursor_col = motion_result[:col]
         end
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
       end
 
       # Change operator handlers
@@ -790,7 +790,7 @@ module Mui
         else
           @buffer.lines[cursor_row] = line[0...insert_col].to_s + text + line[insert_col..].to_s
           self.cursor_col = insert_col + text.length - 1
-          @window.clamp_cursor_to_line(@buffer)
+          window.clamp_cursor_to_line(@buffer)
         end
       end
 
@@ -803,7 +803,7 @@ module Mui
         else
           @buffer.lines[cursor_row] = line[0...cursor_col].to_s + text + line[cursor_col..].to_s
           self.cursor_col = cursor_col + text.length - 1
-          @window.clamp_cursor_to_line(@buffer)
+          window.clamp_cursor_to_line(@buffer)
         end
       end
 
@@ -830,7 +830,7 @@ module Mui
         self.cursor_row = cursor_row + lines.length - 1
         self.cursor_col = lines.last.length - 1
         self.cursor_col = 0 if cursor_col.negative?
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
       end
 
       def extract_text(start_pos, end_pos, inclusive: false)
@@ -897,7 +897,7 @@ module Mui
 
         @buffer.delete_range(start_pos[:row], from_col, start_pos[:row], to_col)
         self.cursor_col = from_col
-        @window.clamp_cursor_to_line(@buffer) if clamp
+        window.clamp_cursor_to_line(@buffer) if clamp
       end
 
       def execute_delete_across_lines(start_pos, end_pos, inclusive: false, clamp: true)
@@ -909,7 +909,7 @@ module Mui
         @buffer.delete_range(from_row, from_col, to_row, to_col)
         self.cursor_row = from_row
         self.cursor_col = from_col
-        @window.clamp_cursor_to_line(@buffer) if clamp
+        window.clamp_cursor_to_line(@buffer) if clamp
       end
 
       def apply_motion(motion_result)
@@ -917,7 +917,7 @@ module Mui
 
         self.cursor_row = motion_result[:row]
         self.cursor_col = motion_result[:col]
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
       end
 
       def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)
@@ -934,7 +934,7 @@ module Mui
       # Undo/Redo handlers
       def handle_undo
         if @undo_manager&.undo(@buffer)
-          @window.clamp_cursor_to_line(@buffer)
+          window.clamp_cursor_to_line(@buffer)
           result
         else
           result(message: "Already at oldest change")
@@ -943,7 +943,7 @@ module Mui
 
       def handle_redo
         if @undo_manager&.redo(@buffer)
-          @window.clamp_cursor_to_line(@buffer)
+          window.clamp_cursor_to_line(@buffer)
           result
         else
           result(message: "Already at newest change")

@@ -8,13 +8,16 @@ module Mui
 
     # Base class for mode-specific key handlers
     class Base
-      attr_reader :window, :buffer
+      attr_reader :buffer
       attr_accessor :mode_manager
 
-      def initialize(window, buffer)
-        @window = window
+      def initialize(mode_manager, buffer)
+        @mode_manager = mode_manager
         @buffer = buffer
-        @mode_manager = nil
+      end
+
+      def window
+        @mode_manager&.active_window
       end
 
       # Handle a key input
@@ -27,19 +30,19 @@ module Mui
       private
 
       def cursor_row
-        @window.cursor_row
+        window.cursor_row
       end
 
       def cursor_col
-        @window.cursor_col
+        window.cursor_col
       end
 
       def cursor_row=(value)
-        @window.cursor_row = value
+        window.cursor_row = value
       end
 
       def cursor_col=(value)
-        @window.cursor_col = value
+        window.cursor_col = value
       end
 
       def current_line

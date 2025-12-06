@@ -4,8 +4,8 @@ module Mui
   module KeyHandler
     # Handles key inputs in Search mode (/ and ?)
     class SearchMode < Base
-      def initialize(window, buffer, search_input, search_state)
-        super(window, buffer)
+      def initialize(mode_manager, buffer, search_input, search_state)
+        super(mode_manager, buffer)
         @search_input = search_input
         @search_state = search_state
       end
@@ -64,8 +64,8 @@ module Mui
                 end
 
         if match
-          @window.cursor_row = match[:row]
-          @window.cursor_col = match[:col]
+          window.cursor_row = match[:row]
+          window.cursor_col = match[:col]
           result(mode: Mode::NORMAL)
         else
           result(mode: Mode::NORMAL, message: "Pattern not found: #{pattern}")

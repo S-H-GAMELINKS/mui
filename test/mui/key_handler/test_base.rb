@@ -7,7 +7,8 @@ class TestKeyHandlerBase < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::Base.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::Base.new(@mode_manager, @buffer)
     end
 
     def test_stores_window
@@ -23,7 +24,8 @@ class TestKeyHandlerBase < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::Base.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::Base.new(@mode_manager, @buffer)
     end
 
     def test_raises_method_not_overridden_error

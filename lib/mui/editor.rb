@@ -38,7 +38,7 @@ module Mui
       load_plugin_autocmds
 
       @mode_manager = ModeManager.new(
-        window:,
+        window: @window_manager,
         buffer: @buffer,
         command_line: @command_line,
         undo_manager: @undo_manager,

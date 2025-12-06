@@ -6,8 +6,8 @@ module Mui
     class VisualMode < Base
       attr_reader :selection
 
-      def initialize(window, buffer, selection, register = nil, undo_manager: nil)
-        super(window, buffer)
+      def initialize(mode_manager, buffer, selection, register = nil, undo_manager: nil)
+        super(mode_manager, buffer)
         @selection = selection
         @register = register || Register.new
         @undo_manager = undo_manager
@@ -178,7 +178,7 @@ module Mui
         @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
       end
 
       def delete_lines(range)
@@ -191,7 +191,7 @@ module Mui
         @undo_manager&.end_group
         self.cursor_row = [range[:start_row], @buffer.line_count - 1].min
         self.cursor_col = 0
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
       end
 
       def delete_range(range)
@@ -200,7 +200,7 @@ module Mui
         @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
       end
 
       def handle_pending_motion(key)
@@ -258,25 +258,25 @@ module Mui
       end
 
       def handle_move_left
-        @window.move_left
+        window.move_left
         update_selection
         result
       end
 
       def handle_move_down
-        @window.move_down
+        window.move_down
         update_selection
         result
       end
 
       def handle_move_up
-        @window.move_up
+        window.move_up
         update_selection
         result
       end
 
       def handle_move_right
-        @window.move_right
+        window.move_right
         update_selection
         result
       end
@@ -321,7 +321,7 @@ module Mui
 
         self.cursor_row = motion_result[:row]
         self.cursor_col = motion_result[:col]
-        @window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(@buffer)
         update_selection
       end
 

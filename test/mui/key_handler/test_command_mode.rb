@@ -8,7 +8,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_returns_normal_mode
@@ -32,7 +33,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_deletes_last_char
@@ -72,7 +74,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_inserts_string_character
@@ -106,7 +109,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_returns_normal_mode
@@ -139,7 +143,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_no_file_name_shows_error
@@ -168,7 +173,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_unmodified_buffer_quits
@@ -195,7 +201,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_force_quits_even_with_modified_buffer
@@ -214,7 +221,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_saves_and_quits
@@ -247,7 +255,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_saves_to_specified_path
@@ -270,7 +279,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_shows_unknown_command_message
@@ -288,7 +298,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_escape_returns_normal_mode
@@ -310,7 +321,8 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
       @command_line = Mui::CommandLine.new
-      @handler = Mui::KeyHandler::CommandMode.new(@window, @buffer, @command_line)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
     end
 
     def test_write_to_nonexistent_directory_shows_error

@@ -8,7 +8,8 @@ class TestKeyHandlerInsertMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::InsertMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::InsertMode.new(@mode_manager, @buffer)
     end
 
     def test_returns_normal_mode
@@ -42,7 +43,8 @@ class TestKeyHandlerInsertMode < Minitest::Test
       @buffer.lines[0] = "hello"
       @buffer.insert_line(1, "world")
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::InsertMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::InsertMode.new(@mode_manager, @buffer)
     end
 
     def test_left_moves_cursor_left
@@ -108,7 +110,8 @@ class TestKeyHandlerInsertMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = +"hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::InsertMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::InsertMode.new(@mode_manager, @buffer)
     end
 
     def test_deletes_char_before_cursor
@@ -157,7 +160,8 @@ class TestKeyHandlerInsertMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = +"hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::InsertMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::InsertMode.new(@mode_manager, @buffer)
     end
 
     def test_splits_line_at_cursor
@@ -202,7 +206,8 @@ class TestKeyHandlerInsertMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = +""
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::InsertMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::InsertMode.new(@mode_manager, @buffer)
     end
 
     def test_inserts_string_character
@@ -287,7 +292,8 @@ class TestKeyHandlerInsertMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = +"hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::InsertMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::InsertMode.new(@mode_manager, @buffer)
     end
 
     def test_escape_returns_normal_mode

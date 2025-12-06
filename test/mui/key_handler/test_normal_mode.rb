@@ -9,7 +9,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.lines[0] = "hello"
       @buffer.insert_line(1, "world")
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_h_moves_left
@@ -67,7 +68,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello world foo"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_w_moves_to_next_word
@@ -100,7 +102,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "  hello world"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_0_moves_to_line_start
@@ -135,7 +138,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.insert_line(1, "line2")
       @buffer.insert_line(2, "line3")
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_gg_moves_to_file_start
@@ -174,7 +178,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello world"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_f_finds_char_forward
@@ -228,7 +233,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_i_returns_insert_mode
@@ -297,7 +303,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = +"hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_x_deletes_character
@@ -314,7 +321,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_movement_returns_nil_mode
@@ -335,7 +343,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer = Mui::Buffer.new
       @buffer.lines[0] = "hello"
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_returns_nil_for_out_of_range_integer
@@ -372,7 +381,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.insert_line(1, "second line")
       @buffer.insert_line(2, "third line")
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_dd_deletes_current_line
@@ -522,7 +532,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.insert_line(1, "second line")
       @buffer.insert_line(2, "third line")
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer)
     end
 
     def test_cc_clears_line_and_enters_insert_mode
@@ -678,7 +689,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.insert_line(2, "third line")
       @window = Mui::Window.new(@buffer)
       @register = Mui::Register.new
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer, @register)
     end
 
     def test_yy_yanks_current_line
@@ -777,7 +789,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.insert_line(1, "second line")
       @window = Mui::Window.new(@buffer)
       @register = Mui::Register.new
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer, @register)
     end
 
     def test_p_pastes_charwise_after_cursor
@@ -849,7 +862,8 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @buffer.insert_line(1, "second line")
       @register = Mui::Register.new
       @window = Mui::Window.new(@buffer)
-      @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register)
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer, @register)
     end
 
     def test_quote_a_yy_yanks_to_named_register

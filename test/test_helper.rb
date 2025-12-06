@@ -115,6 +115,24 @@ class MockWindow
     @cursor_row = 0
     @cursor_col = 0
   end
+
+  def move_up
+    @cursor_row -= 1 if @cursor_row.positive?
+  end
+
+  def move_down
+    @cursor_row += 1
+  end
+end
+
+# Mock ModeManager for KeyHandler unit tests
+class MockModeManager
+  attr_accessor :active_window, :editor
+
+  def initialize(window)
+    @active_window = window
+    @editor = nil
+  end
 end
 
 class MockEditor

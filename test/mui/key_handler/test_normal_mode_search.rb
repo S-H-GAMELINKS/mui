@@ -9,9 +9,10 @@ class TestNormalModeSearch < Minitest::Test
     @buffer.lines[1] = "foo bar"
     @buffer.lines[2] = "hello again"
     @window = Mui::Window.new(@buffer)
+    @mode_manager = MockModeManager.new(@window)
     @register = Mui::Register.new
     @search_state = Mui::SearchState.new
-    @handler = Mui::KeyHandler::NormalMode.new(@window, @buffer, @register, search_state: @search_state)
+    @handler = Mui::KeyHandler::NormalMode.new(@mode_manager, @buffer, @register, search_state: @search_state)
   end
 
   def test_slash_enters_search_forward_mode
