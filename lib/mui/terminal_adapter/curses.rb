@@ -41,22 +41,9 @@ module Mui
       def color_code(color)
         return -1 if color.nil?
         return color if color.is_a?(Integer)
+        return @color_resolver.resolve(color) if @color_resolver
 
-        case color
-        when :black then ::Curses::COLOR_BLACK
-        when :red then ::Curses::COLOR_RED
-        when :green then ::Curses::COLOR_GREEN
-        when :yellow then ::Curses::COLOR_YELLOW
-        when :blue then ::Curses::COLOR_BLUE
-        when :magenta then ::Curses::COLOR_MAGENTA
-        when :cyan then ::Curses::COLOR_CYAN
-        when :white then ::Curses::COLOR_WHITE
-        else
-          # Check extended colors from ColorManager
-          ColorManager::COLOR_MAP[color] ||
-            ColorManager::EXTENDED_COLOR_MAP[color] ||
-            -1
-        end
+        -1
       end
 
       public
