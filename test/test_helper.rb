@@ -195,7 +195,7 @@ module MuiTestHelper
 
   # Create editor with test adapter
   def create_test_editor(file_path = nil)
-    Mui::Editor.new(file_path, adapter: test_adapter)
+    Mui::Editor.new(file_path, adapter: test_adapter, load_config: false)
   end
 end
 
@@ -203,7 +203,7 @@ end
 module Mui
   class Editor
     attr_accessor :running
-    attr_reader :buffer, :window, :command_line, :message, :screen, :input, :mode_manager
+    attr_reader :buffer, :window_manager, :command_line, :message, :screen, :input, :mode_manager
     public :handle_key
 
     # Setter for test compatibility

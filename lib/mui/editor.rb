@@ -3,7 +3,7 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :buffer, :window, :undo_manager, :autocmd, :command_registry
+    attr_reader :buffer, :window_manager, :undo_manager, :autocmd, :command_registry
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -17,7 +17,10 @@ module Mui
       @input = Input.new(adapter: @adapter)
       @buffer = Buffer.new
       @buffer.load(file_path) if file_path
-      @window = Window.new(@buffer, width: @screen.width, height: @screen.height, color_scheme: @color_scheme)
+
+      @window_manager = WindowManager.new(@screen, color_scheme: @color_scheme)
+      @window_manager.add_window(@buffer)
+
       @command_line = CommandLine.new
       @message = nil
       @running = true
@@ -35,7 +38,7 @@ module Mui
       load_plugin_autocmds
 
       @mode_manager = ModeManager.new(
-        window: @window,
+        window:,
         buffer: @buffer,
         command_line: @command_line,
         undo_manager: @undo_manager,
@@ -44,6 +47,10 @@ module Mui
 
       # Trigger BufEnter event
       trigger_autocmd(:BufEnter)
+    end
+
+    def window
+      @window_manager.active_window
     end
 
     def mode
@@ -77,18 +84,17 @@ module Mui
     private
 
     def update_window_size
-      @window.width = @screen.width
-      @window.height = @screen.height
+      @window_manager.update_sizes
     end
 
     def render
       @screen.clear
-      @window.ensure_cursor_visible
-      @window.render(@screen, selection: @mode_manager.selection, search_state: @mode_manager.search_state)
+      window.ensure_cursor_visible
+      @window_manager.render_all(@screen, selection: @mode_manager.selection, search_state: @mode_manager.search_state)
 
       render_status_area
 
-      @screen.move_cursor(@window.screen_cursor_y, @window.screen_cursor_x)
+      @screen.move_cursor(window.screen_cursor_y, window.screen_cursor_x)
       @screen.refresh
     end
 
@@ -132,7 +138,7 @@ module Mui
     end
 
     def trigger_autocmd(event)
-      context = CommandContext.new(editor: self, buffer: @buffer, window: @window)
+      context = CommandContext.new(editor: self, buffer: @buffer, window:)
       @autocmd.trigger(event, context)
     end
   end

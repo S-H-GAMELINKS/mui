@@ -10,7 +10,7 @@ class ScriptRunner
   attr_reader :editor, :log
 
   def initialize(file_path = nil)
-    @editor = Mui::Editor.new(file_path, adapter: test_adapter)
+    @editor = Mui::Editor.new(file_path, adapter: test_adapter, load_config: false)
     @log = []
   end
 

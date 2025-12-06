@@ -137,6 +137,7 @@ Style/Documentation:
     - 'lib/mui/status_line_renderer.rb'
     - 'lib/mui/themes/default.rb'
     - 'lib/mui/window.rb'
+    - 'lib/mui/window_manager.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: ExactNameMatch, AllowPredicates, AllowDSLWriters, IgnoreClassMethods, AllowedMethods.
