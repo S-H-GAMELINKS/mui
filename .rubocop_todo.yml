@@ -134,6 +134,7 @@ Style/Documentation:
     - 'lib/mui/search_input.rb'
     - 'lib/mui/search_state.rb'
     - 'lib/mui/selection.rb'
+    - 'lib/mui/status_line_renderer.rb'
     - 'lib/mui/themes/default.rb'
     - 'lib/mui/window.rb'
 
