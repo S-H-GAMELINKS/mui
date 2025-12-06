@@ -16,6 +16,7 @@ module Mui
       @scroll_row = 0
       @scroll_col = 0
       @color_scheme = color_scheme
+      @line_renderer = create_line_renderer
     end
 
     def visible_height
@@ -43,112 +44,20 @@ module Mui
     end
 
     def render(screen, selection: nil, search_state: nil)
+      options = build_render_options(selection, search_state)
+
       visible_height.times do |i|
         row = @scroll_row + i
-        render_line(screen, row, i, selection, search_state)
+        render_line(screen, row, i, options)
       end
 
       render_status_line(screen)
     end
 
-    def render_line(screen, row, screen_row, selection, search_state = nil)
-      line = @buffer.line(row)
-      visible_line = if @scroll_col < line.length
-                       line[@scroll_col, visible_width] || ""
-                     else
-                       ""
-                     end
-      padded_line = visible_line.ljust(visible_width)
-
-      if selection
-        render_line_with_selection(screen, row, screen_row, padded_line, selection)
-      elsif search_state&.has_pattern?
-        render_line_with_search_highlight(screen, row, screen_row, padded_line, search_state)
-      else
-        put_normal_text(screen, @y + screen_row, @x, padded_line)
-      end
-    end
-
-    def render_line_with_selection(screen, row, screen_row, padded_line, selection)
-      range = selection.normalized_range
-
-      if selection.line_mode
-        render_visual_line_mode_selection(screen, row, screen_row, padded_line, range)
-      else
-        render_visual_mode_selection(screen, row, screen_row, padded_line, range)
-      end
-    end
-
-    def render_visual_line_mode_selection(screen, row, screen_row, padded_line, range)
-      if row.between?(range[:start_row], range[:end_row])
-        put_visual_highlight(screen, @y + screen_row, @x, padded_line)
-      else
-        put_normal_text(screen, @y + screen_row, @x, padded_line)
-      end
-    end
-
-    def render_visual_mode_selection(screen, row, screen_row, padded_line, range)
-      if row < range[:start_row] || row > range[:end_row]
-        put_normal_text(screen, @y + screen_row, @x, padded_line)
-        return
-      end
-
-      start_col, end_col = calculate_selection_columns(row, range, padded_line.length)
-      render_line_segments(screen, screen_row, padded_line, start_col, end_col)
-    end
-
-    def calculate_selection_columns(row, range, line_length)
-      start_col = row == range[:start_row] ? [range[:start_col] - @scroll_col, 0].max : 0
-      end_col = row == range[:end_row] ? [range[:end_col] - @scroll_col, line_length - 1].min : line_length - 1
-      [start_col, end_col]
-    end
-
-    def render_line_segments(screen, screen_row, padded_line, start_col, end_col)
-      put_normal_text(screen, @y + screen_row, @x, padded_line[0, start_col]) if start_col.positive?
-      put_visual_highlight(screen, @y + screen_row, @x + start_col, padded_line[start_col..end_col])
-      remaining_start = end_col + 1
-      return unless remaining_start < padded_line.length
-
-      put_normal_text(screen, @y + screen_row, @x + remaining_start,
-                      padded_line[remaining_start..])
-    end
-
-    def render_line_with_search_highlight(screen, row, screen_row, padded_line, search_state)
-      matches = search_state.matches_for_row(row)
-      if matches.empty?
-        put_normal_text(screen, @y + screen_row, @x, padded_line)
-        return
-      end
-
-      render_line_with_multiple_highlights(screen, screen_row, padded_line, matches)
-    end
-
-    def render_line_with_multiple_highlights(screen, screen_row, padded_line, matches)
-      current_pos = 0
-      sorted_matches = matches.sort_by { |m| m[:col] }
-
-      sorted_matches.each do |match|
-        # Adjust for horizontal scroll
-        start_col = match[:col] - @scroll_col
-        end_col = match[:end_col] - @scroll_col
-
-        next if end_col.negative? || start_col >= padded_line.length
-
-        start_col = [start_col, 0].max
-        end_col = [end_col, padded_line.length - 1].min
-
-        # Render text before this match
-        put_normal_text(screen, @y + screen_row, @x + current_pos, padded_line[current_pos...start_col]) if current_pos < start_col
-
-        # Render the highlighted match
-        put_search_highlight(screen, @y + screen_row, @x + start_col, padded_line[start_col..end_col])
-        current_pos = end_col + 1
-      end
-
-      # Render remaining text after all matches
-      return unless current_pos < padded_line.length
-
-      put_normal_text(screen, @y + screen_row, @x + current_pos, padded_line[current_pos..])
+    def render_line(screen, row, screen_row, options)
+      line = prepare_visible_line(row)
+      adjusted_options = adjust_options_for_scroll(options)
+      @line_renderer.render(screen, line, row, @x, @y + screen_row, adjusted_options)
     end
 
     def render_status_line(screen)
@@ -204,36 +113,37 @@ module Mui
 
     private
 
+    def create_line_renderer
+      renderer = LineRenderer.new(@color_scheme)
+      renderer.add_highlighter(Highlighters::SelectionHighlighter.new(@color_scheme))
+      renderer.add_highlighter(Highlighters::SearchHighlighter.new(@color_scheme))
+      renderer
+    end
+
+    def prepare_visible_line(row)
+      line = @buffer.line(row)
+      visible_line = @scroll_col < line.length ? line[@scroll_col, visible_width] || "" : ""
+      visible_line.ljust(visible_width)
+    end
+
+    def build_render_options(selection, search_state)
+      { selection:, search_state:, scroll_col: @scroll_col }
+    end
+
+    def adjust_options_for_scroll(options)
+      return options unless options[:selection] || options[:search_state]
+
+      adjusted = options.dup
+      adjusted[:scroll_col] = @scroll_col
+      adjusted
+    end
+
     def max_cursor_col
       [@buffer.line(@cursor_row).length - 1, 0].max
     end
 
     def clamp_cursor_col
       @cursor_col = max_cursor_col if @cursor_col > max_cursor_col
-    end
-
-    def put_visual_highlight(screen, y, x, text)
-      if @color_scheme
-        screen.put_with_style(y, x, text, @color_scheme[:visual_selection])
-      else
-        screen.put_with_highlight(y, x, text)
-      end
-    end
-
-    def put_search_highlight(screen, y, x, text)
-      if @color_scheme
-        screen.put_with_style(y, x, text, @color_scheme[:search_highlight])
-      else
-        screen.put_with_highlight(y, x, text)
-      end
-    end
-
-    def put_normal_text(screen, y, x, text)
-      if @color_scheme
-        screen.put_with_style(y, x, text, @color_scheme[:normal])
-      else
-        screen.put(y, x, text)
-      end
     end
   end
 end

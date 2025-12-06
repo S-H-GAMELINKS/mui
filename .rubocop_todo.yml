@@ -44,7 +44,7 @@ Metrics/ParameterLists:
 
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/PerceivedComplexity:
-  Max: 12
+  Max: 13
 
 Naming/AccessorMethodName:
   Exclude:
@@ -74,6 +74,7 @@ Naming/MethodParameterName:
     - 'lib/mui/buffer.rb'
     - 'lib/mui/color_manager.rb'
     - 'lib/mui/color_scheme.rb'
+    - 'lib/mui/line_renderer.rb'
     - 'lib/mui/plugin.rb'
     - 'lib/mui/screen.rb'
     - 'lib/mui/terminal_adapter/base.rb'
@@ -122,7 +123,12 @@ Style/Documentation:
     - 'lib/mui/color_scheme.rb'
     - 'lib/mui/command_line.rb'
     - 'lib/mui/config.rb'
+    - 'lib/mui/highlight.rb'
+    - 'lib/mui/highlighters/base.rb'
+    - 'lib/mui/highlighters/search_highlighter.rb'
+    - 'lib/mui/highlighters/selection_highlighter.rb'
     - 'lib/mui/input.rb'
+    - 'lib/mui/line_renderer.rb'
     - 'lib/mui/motion.rb'
     - 'lib/mui/screen.rb'
     - 'lib/mui/search_input.rb'
