@@ -38,61 +38,67 @@ module Mui
       @lines[n] || ""
     end
 
-    # Methods with undo recording
-
     def insert_char(row, col, char)
-      @undo_manager&.record(InsertCharAction.new(row, col, char))
-      insert_char_without_record(row, col, char)
+      with_undo(InsertCharAction.new(row, col, char)) do
+        insert_char_without_record(row, col, char)
+      end
     end
 
     def delete_char(row, col)
-      return if col.negative?
-      return if @lines[row].nil? || col >= @lines[row].size
+      return unless valid_char_position?(row, col)
 
       char = @lines[row][col]
-      @undo_manager&.record(DeleteCharAction.new(row, col, char))
-      delete_char_without_record(row, col)
+      with_undo(DeleteCharAction.new(row, col, char)) do
+        delete_char_without_record(row, col)
+      end
     end
 
     def insert_line(row, text = nil)
-      @undo_manager&.record(InsertLineAction.new(row, text&.dup || empty_line))
-      insert_line_without_record(row, text)
+      actual_text = text&.dup || empty_line
+      with_undo(InsertLineAction.new(row, actual_text)) do
+        insert_line_without_record(row, actual_text)
+      end
     end
 
     def delete_line(row)
       text = @lines[row]&.dup
-      @undo_manager&.record(DeleteLineAction.new(row, text)) if text
-      delete_line_without_record(row)
+      return unless text
+
+      with_undo(DeleteLineAction.new(row, text)) do
+        delete_line_without_record(row)
+      end
     end
 
     def split_line(row, col)
       return unless @lines[row]
 
-      @undo_manager&.record(SplitLineAction.new(row, col))
-      split_line_without_record(row, col)
+      with_undo(SplitLineAction.new(row, col)) do
+        split_line_without_record(row, col)
+      end
     end
 
     def join_lines(row)
       return if row >= line_count - 1
 
       col = @lines[row]&.size || 0
-      @undo_manager&.record(JoinLinesAction.new(row, col))
-      join_lines_without_record(row)
+      with_undo(JoinLinesAction.new(row, col)) do
+        join_lines_without_record(row)
+      end
     end
 
     def delete_range(start_row, start_col, end_row, end_col)
       deleted_lines = capture_range(start_row, start_col, end_row, end_col)
-      @undo_manager&.record(DeleteRangeAction.new(start_row, start_col, end_row, end_col, deleted_lines))
-      delete_range_without_record(start_row, start_col, end_row, end_col)
+      with_undo(DeleteRangeAction.new(start_row, start_col, end_row, end_col, deleted_lines)) do
+        delete_range_without_record(start_row, start_col, end_row, end_col)
+      end
     end
 
     def replace_line(row, text)
       old_text = @lines[row]&.dup || empty_line
-      @undo_manager&.record(ReplaceLineAction.new(row, old_text, text.dup))
-      replace_line_without_record(row, text)
+      with_undo(ReplaceLineAction.new(row, old_text, text.dup)) do
+        replace_line_without_record(row, text)
+      end
     end
-
-    # Methods without undo recording (used by undo/redo)
 
     def insert_char_without_record(row, col, char)
       @lines[row] ||= empty_line
@@ -101,8 +107,7 @@ module Mui
     end
 
     def delete_char_without_record(row, col)
-      return if col.negative?
-      return if @lines[row].nil? || col >= @lines[row].size
+      return unless valid_char_position?(row, col)
 
       @lines[row].slice!(col)
       @modified = true
@@ -176,6 +181,15 @@ module Mui
     end
 
     private
+
+    def with_undo(action)
+      @undo_manager&.record(action)
+      yield
+    end
+
+    def valid_char_position?(row, col)
+      !col.negative? && @lines[row] && col < @lines[row].size
+    end
 
     def empty_line
       String.new
