@@ -11,18 +11,6 @@ Gemspec/RequiredRubyVersion:
   Exclude:
     - 'test/fixtures/mui-test-plugin/mui-test-plugin.gemspec'
 
-# This cop supports safe autocorrection (--autocorrect).
-Layout/EmptyLineAfterMagicComment:
-  Exclude:
-    - 'test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: final_newline, final_blank_line
-Layout/TrailingEmptyLines:
-  Exclude:
-    - 'test.rb'
-
 # Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches, IgnoreDuplicateElseBranch.
 Lint/DuplicateBranch:
   Exclude:
