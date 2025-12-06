@@ -76,7 +76,7 @@ module Mui
       while (match_data = line.match(regex, offset))
         col = match_data.begin(0)
         end_col = match_data.end(0) - 1
-        @matches << { row: row, col: col, end_col: end_col }
+        @matches << { row:, col:, end_col: }
         # Move offset past the end of the match to avoid overlapping matches
         offset = match_data.end(0)
         # Handle zero-length matches to prevent infinite loop

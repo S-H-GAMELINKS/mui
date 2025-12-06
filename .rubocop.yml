@@ -3,6 +3,9 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   NewCops: enable
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 

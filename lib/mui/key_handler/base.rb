@@ -64,7 +64,7 @@ module Mui
       end
 
       def result(mode: nil, message: nil, quit: false)
-        HandlerResult::Base.new(mode: mode, message: message, quit: quit)
+        HandlerResult::Base.new(mode:, message:, quit:)
       end
     end
   end

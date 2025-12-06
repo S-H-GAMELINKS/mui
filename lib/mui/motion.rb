@@ -7,20 +7,20 @@ module Mui
     class << self
       # Basic movements
       def left(_buffer, row, col)
-        col.positive? ? { row: row, col: col - 1 } : nil
+        col.positive? ? { row:, col: col - 1 } : nil
       end
 
       def right(buffer, row, col)
         line = buffer.line(row)
-        col < line.size - 1 ? { row: row, col: col + 1 } : nil
+        col < line.size - 1 ? { row:, col: col + 1 } : nil
       end
 
       def up(_buffer, row, col)
-        row.positive? ? { row: row - 1, col: col } : nil
+        row.positive? ? { row: row - 1, col: } : nil
       end
 
       def down(buffer, row, col)
-        row < buffer.line_count - 1 ? { row: row + 1, col: col } : nil
+        row < buffer.line_count - 1 ? { row: row + 1, col: } : nil
       end
 
       # Word movements
@@ -42,7 +42,7 @@ module Mui
           return { row: row + 1, col: next_col }
         end
 
-        { row: row, col: col }
+        { row:, col: }
       end
 
       def word_backward(buffer, row, col)
@@ -64,7 +64,7 @@ module Mui
         # Move to start of word
         col -= 1 while col.positive? && line[col - 1] =~ WORD_CHARS
 
-        { row: row, col: col }
+        { row:, col: }
       end
 
       def word_end(buffer, row, col)
@@ -82,23 +82,23 @@ module Mui
         # Move to end of word
         col += 1 while col < line.size - 1 && line[col + 1] =~ WORD_CHARS
 
-        { row: row, col: col }
+        { row:, col: }
       end
 
       # Line start/end movements
       def line_start(_buffer, row, _col)
-        { row: row, col: 0 }
+        { row:, col: 0 }
       end
 
       def first_non_blank(buffer, row, _col)
         line = buffer.line(row)
         new_col = line.index(/\S/) || 0
-        { row: row, col: new_col }
+        { row:, col: new_col }
       end
 
       def line_end(buffer, row, _col)
         line = buffer.line(row)
-        { row: row, col: [line.size - 1, 0].max }
+        { row:, col: [line.size - 1, 0].max }
       end
 
       # File start/end movements
@@ -115,14 +115,14 @@ module Mui
       def find_char_forward(buffer, row, col, char)
         line = buffer.line(row)
         index = line.index(char, col + 1)
-        index ? { row: row, col: index } : nil
+        index ? { row:, col: index } : nil
       end
 
       def find_char_backward(buffer, row, col, char)
         line = buffer.line(row)
         search_range = line[0...col]
         index = search_range.rindex(char)
-        index ? { row: row, col: index } : nil
+        index ? { row:, col: index } : nil
       end
 
       def till_char_forward(buffer, row, col, char)

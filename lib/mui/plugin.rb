@@ -29,7 +29,7 @@ module Mui
     end
 
     def autocmd(event, pattern: nil, &)
-      Mui.autocmd(event, pattern: pattern, &)
+      Mui.autocmd(event, pattern:, &)
     end
   end
 end

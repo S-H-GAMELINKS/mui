@@ -23,7 +23,7 @@ class ScriptRunner
       @editor.handle_key(key)
       snapshot_after = capture_state
       @log << {
-        key: key,
+        key:,
         key_str: key_to_string(key),
         before: snapshot_before,
         after: snapshot_after
@@ -149,11 +149,11 @@ class ScriptRunner
 
   def assert_register(name, expected_content, linewise: nil)
     register = @editor.register
-    actual = register.get(name: name)
+    actual = register.get(name:)
     raise "Expected register '#{name}' to be '#{expected_content}', got '#{actual}'" unless actual == expected_content
 
     unless linewise.nil?
-      actual_linewise = register.linewise?(name: name)
+      actual_linewise = register.linewise?(name:)
       raise "Expected register '#{name}' linewise=#{linewise}, got #{actual_linewise}" unless actual_linewise == linewise
     end
 
@@ -162,7 +162,7 @@ class ScriptRunner
 
   def assert_register_empty(name)
     register = @editor.register
-    raise "Expected register '#{name}' to be empty, got '#{register.get(name: name)}'" unless register.empty?(name: name)
+    raise "Expected register '#{name}' to be empty, got '#{register.get(name:)}'" unless register.empty?(name:)
 
     self
   end

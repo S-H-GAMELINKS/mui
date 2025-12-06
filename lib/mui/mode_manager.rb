@@ -70,14 +70,14 @@ module Mui
     end
 
     def create_insert_handler(group_started: false)
-      handler = KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started: group_started)
+      handler = KeyHandler::InsertMode.new(@window, @buffer, undo_manager: @undo_manager, group_started:)
       handler.mode_manager = self
       handler
     end
 
     def handle_insert_transition(result)
       group_started = result.respond_to?(:group_started?) && result.group_started?
-      @key_handlers[Mode::INSERT] = create_insert_handler(group_started: group_started)
+      @key_handlers[Mode::INSERT] = create_insert_handler(group_started:)
       @mode = Mode::INSERT
     end
 
@@ -93,7 +93,7 @@ module Mui
 
     def start_visual_mode(mode, line_mode)
       @mode = mode
-      @visual_handler = create_visual_handler(line_mode: line_mode)
+      @visual_handler = create_visual_handler(line_mode:)
     end
 
     def clear_visual_mode
@@ -112,7 +112,7 @@ module Mui
     end
 
     def create_visual_handler(line_mode:)
-      @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode: line_mode)
+      @selection = Selection.new(@window.cursor_row, @window.cursor_col, line_mode:)
 
       handler = if line_mode
                   KeyHandler::VisualLineMode.new(@window, @buffer, @selection, @register, undo_manager: @undo_manager)

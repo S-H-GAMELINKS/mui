@@ -22,10 +22,10 @@ module Mui
 
     def define(element, fg:, bg: nil, bold: false, underline: false)
       @colors[element] = {
-        fg: fg,
-        bg: bg,
-        bold: bold,
-        underline: underline
+        fg:,
+        bg:,
+        bold:,
+        underline:
       }
     end
 
