@@ -17,6 +17,7 @@ module Mui
       @scroll_col = 0
       @color_scheme = color_scheme
       @line_renderer = create_line_renderer
+      @status_line_renderer = StatusLineRenderer.new(buffer, self, color_scheme)
     end
 
     def visible_height
@@ -51,29 +52,13 @@ module Mui
         render_line(screen, row, i, options)
       end
 
-      render_status_line(screen)
+      @status_line_renderer.render(screen, @y + visible_height)
     end
 
     def render_line(screen, row, screen_row, options)
       line = prepare_visible_line(row)
       adjusted_options = adjust_options_for_scroll(options)
       @line_renderer.render(screen, line, row, @x, @y + screen_row, adjusted_options)
-    end
-
-    def render_status_line(screen)
-      status = " #{@buffer.name}"
-      status += " [+]" if @buffer.modified
-      position = "#{@cursor_row + 1}:#{@cursor_col + 1} "
-      padding = @width - status.length - position.length
-      padding = 0 if padding.negative?
-      full_status = status + (" " * padding) + position
-      full_status = full_status[0, @width]
-
-      if @color_scheme
-        screen.put_with_style(@y + visible_height, @x, full_status, @color_scheme[:status_line])
-      else
-        screen.put(@y + visible_height, @x, full_status)
-      end
     end
 
     def screen_cursor_x
