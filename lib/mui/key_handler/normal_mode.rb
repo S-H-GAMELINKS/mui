@@ -13,6 +13,7 @@ module Mui
         @search_state = search_state
         @pending_motion = nil
         @pending_register = nil
+        initialize_operators
       end
 
       def handle(key)
@@ -52,6 +53,23 @@ module Mui
       end
 
       private
+
+      def initialize_operators
+        @operators = {
+          delete: Operators::DeleteOperator.new(
+            buffer: @buffer, window:, register: @register, undo_manager: @undo_manager
+          ),
+          change: Operators::ChangeOperator.new(
+            buffer: @buffer, window:, register: @register, undo_manager: @undo_manager
+          ),
+          yank: Operators::YankOperator.new(
+            buffer: @buffer, window:, register: @register
+          ),
+          paste: Operators::PasteOperator.new(
+            buffer: @buffer, window:, register: @register
+          )
+        }
+      end
 
       def handle_normal_key(key)
         case key
@@ -149,23 +167,23 @@ module Mui
         when :register_select
           handle_register_select(char)
         when :d
-          handle_delete_pending(char)
+          dispatch_delete_operator(char)
         when :dg
-          handle_delete_to_file_start(char)
+          dispatch_delete_to_file_start(char)
         when :df, :dF, :dt, :dT
-          handle_delete_find_char(char)
+          dispatch_delete_find_char(char)
         when :c
-          handle_change_pending(char)
+          dispatch_change_operator(char)
         when :cg
-          handle_change_to_file_start(char)
+          dispatch_change_to_file_start(char)
         when :cf, :cF, :ct, :cT
-          handle_change_find_char(char)
+          dispatch_change_find_char(char)
         when :y
-          handle_yank_pending(char)
+          dispatch_yank_operator(char)
         when :yg
-          handle_yank_to_file_start(char)
+          dispatch_yank_to_file_start(char)
         when :yf, :yF, :yt, :yT
-          handle_yank_find_char(char)
+          dispatch_yank_find_char(char)
         else
           motion_result = execute_pending_motion(char)
           apply_motion(motion_result) if motion_result
@@ -242,620 +260,80 @@ module Mui
         result
       end
 
-      # Delete operator handlers
-      def handle_delete_pending(char)
-        case char
-        when "d"
-          handle_delete_line
-        when "w"
-          handle_delete_motion(:word_forward)
-        when "e"
-          handle_delete_motion(:word_end)
-        when "b"
-          handle_delete_motion(:word_backward)
-        when "0"
-          handle_delete_to_line_start
-        when "$"
-          handle_delete_to_line_end
-        when "g"
-          @pending_motion = :dg
-          result
-        when "G"
-          handle_delete_to_file_end
-        when "f"
-          @pending_motion = :df
-          result
-        when "F"
-          @pending_motion = :dF
-          result
-        when "t"
-          @pending_motion = :dt
-          result
-        when "T"
-          @pending_motion = :dT
-          result
-        else
-          clear_pending
-        end
+      # Delete operator dispatchers
+      def dispatch_delete_operator(char)
+        status = @operators[:delete].handle_pending(char, pending_register: @pending_register)
+        handle_operator_result(status)
       end
 
-      def handle_delete_line
-        text = @buffer.line(cursor_row)
-        @register.delete(text, linewise: true, name: @pending_register)
-        @buffer.delete_line(cursor_row)
-        self.cursor_row = [cursor_row, @buffer.line_count - 1].min
-        window.clamp_cursor_to_line(@buffer)
-        clear_pending
+      def dispatch_delete_to_file_start(char)
+        status = @operators[:delete].handle_to_file_start(char)
+        handle_operator_result(status)
       end
 
-      def handle_delete_motion(motion_type)
-        start_pos = { row: cursor_row, col: cursor_col }
-        end_pos = calculate_motion_end(motion_type)
-        return clear_pending unless end_pos
-
-        inclusive = motion_type == :word_end
-        text = extract_text(start_pos, end_pos, inclusive:)
-        @register.delete(text, linewise: false, name: @pending_register)
-        execute_delete(start_pos, end_pos, inclusive:)
-        clear_pending
+      def dispatch_delete_find_char(char)
+        status = @operators[:delete].handle_find_char(char, @pending_motion)
+        handle_operator_result(status)
       end
 
-      def handle_delete_to_line_start
-        return clear_pending if cursor_col.zero?
-
-        text = @buffer.line(cursor_row)[0...cursor_col]
-        @register.delete(text, linewise: false, name: @pending_register)
-        @buffer.delete_range(cursor_row, 0, cursor_row, cursor_col - 1)
-        self.cursor_col = 0
-        clear_pending
+      # Change operator dispatchers
+      def dispatch_change_operator(char)
+        status = @operators[:change].handle_pending(char, pending_register: @pending_register)
+        handle_operator_result(status)
       end
 
-      def handle_delete_to_line_end
-        line = @buffer.line(cursor_row)
-        return clear_pending if line.empty?
-
-        text = line[cursor_col..]
-        @register.delete(text, linewise: false, name: @pending_register)
-        end_col = line.length - 1
-        @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
-        window.clamp_cursor_to_line(@buffer)
-        clear_pending
+      def dispatch_change_to_file_start(char)
+        status = @operators[:change].handle_to_file_start(char)
+        handle_operator_result(status)
       end
 
-      def handle_delete_to_file_end
-        last_row = @buffer.line_count - 1
-        if cursor_row == last_row
-          handle_delete_line
-        else
-          lines = (cursor_row..last_row).map { |r| @buffer.line(r) }
-          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
-          @undo_manager&.begin_group
-          (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
-          @undo_manager&.end_group
-          self.cursor_row = [cursor_row, @buffer.line_count - 1].min
-          window.clamp_cursor_to_line(@buffer)
-          clear_pending
-        end
+      def dispatch_change_find_char(char)
+        status = @operators[:change].handle_find_char(char, @pending_motion)
+        handle_operator_result(status)
       end
 
-      def handle_delete_to_file_start(char)
-        return clear_pending unless char == "g"
-
-        if cursor_row.zero?
-          handle_delete_to_line_start
-        else
-          lines = (0..cursor_row).map { |r| @buffer.line(r) }
-          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
-          @undo_manager&.begin_group
-          cursor_row.times { @buffer.delete_line(0) }
-          @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
-          @undo_manager&.end_group
-          self.cursor_row = 0
-          self.cursor_col = 0
-          clear_pending
-        end
+      # Yank operator dispatchers
+      def dispatch_yank_operator(char)
+        status = @operators[:yank].handle_pending(char, pending_register: @pending_register)
+        handle_operator_result(status)
       end
 
-      def handle_delete_find_char(char)
-        motion_result = case @pending_motion
-                        when :df
-                          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
-                        when :dF
-                          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
-                        when :dt
-                          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
-                        when :dT
-                          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
-                        end
-        return clear_pending unless motion_result
-
-        execute_delete_find_char(motion_result)
-        clear_pending
+      def dispatch_yank_to_file_start(char)
+        status = @operators[:yank].handle_to_file_start(char)
+        handle_operator_result(status)
       end
 
-      def execute_delete_find_char(motion_result)
-        line = @buffer.line(cursor_row)
-        text = case @pending_motion
-               when :df, :dt
-                 line[cursor_col..motion_result[:col]]
-               when :dF, :dT
-                 line[motion_result[:col]...cursor_col]
-               end
-        @register.delete(text, linewise: false, name: @pending_register) if text
-
-        case @pending_motion
-        when :df, :dt
-          @buffer.delete_range(cursor_row, cursor_col, cursor_row, motion_result[:col])
-        when :dF, :dT
-          @buffer.delete_range(cursor_row, motion_result[:col], cursor_row, cursor_col - 1)
-          self.cursor_col = motion_result[:col]
-        end
-        window.clamp_cursor_to_line(@buffer)
+      def dispatch_yank_find_char(char)
+        status = @operators[:yank].handle_find_char(char, @pending_motion)
+        handle_operator_result(status)
       end
 
-      # Change operator handlers
-      def handle_change_pending(char)
-        case char
-        when "c"
-          handle_change_line
-        when "w"
-          handle_change_motion(:word_forward)
-        when "e"
-          handle_change_motion(:word_end)
-        when "b"
-          handle_change_motion(:word_backward)
-        when "0"
-          handle_change_to_line_start
-        when "$"
-          handle_change_to_line_end
-        when "g"
-          @pending_motion = :cg
-          result
-        when "G"
-          handle_change_to_file_end
-        when "f"
-          @pending_motion = :cf
-          result
-        when "F"
-          @pending_motion = :cF
-          result
-        when "t"
-          @pending_motion = :ct
-          result
-        when "T"
-          @pending_motion = :cT
-          result
-        else
-          clear_pending
-        end
-      end
-
-      def handle_change_line
-        text = @buffer.line(cursor_row)
-        @register.delete(text, linewise: true, name: @pending_register)
-        @buffer.lines[cursor_row] = +""
-        self.cursor_col = 0
-        @pending_motion = nil
-        @pending_register = nil
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_change_motion(motion_type)
-        start_pos = { row: cursor_row, col: cursor_col }
-        # cw behaves like ce in Vim (changes to end of word, not to start of next word)
-        effective_motion = motion_type == :word_forward ? :word_end : motion_type
-        end_pos = calculate_motion_end(effective_motion)
-        return clear_pending unless end_pos
-
-        inclusive = effective_motion == :word_end
-        text = extract_text(start_pos, end_pos, inclusive:)
-        @register.delete(text, linewise: false, name: @pending_register)
-        execute_delete(start_pos, end_pos, inclusive:, clamp: false)
-        @pending_motion = nil
-        @pending_register = nil
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_change_to_line_start
-        if cursor_col.zero?
-          @pending_motion = nil
-          @pending_register = nil
-          return result(mode: Mode::INSERT)
-        end
-
-        text = @buffer.line(cursor_row)[0...cursor_col]
-        @register.delete(text, linewise: false, name: @pending_register)
-        @buffer.delete_range(cursor_row, 0, cursor_row, cursor_col - 1)
-        self.cursor_col = 0
-        @pending_motion = nil
-        @pending_register = nil
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_change_to_line_end
-        line = @buffer.line(cursor_row)
-        if line.empty?
-          @pending_motion = nil
-          @pending_register = nil
-          return result(mode: Mode::INSERT)
-        end
-
-        text = line[cursor_col..]
-        @register.delete(text, linewise: false, name: @pending_register)
-        end_col = line.length - 1
-        @buffer.delete_range(cursor_row, cursor_col, cursor_row, end_col)
-        # Don't clamp cursor - keep it at original position for insert mode
-        @pending_motion = nil
-        @pending_register = nil
-        result(mode: Mode::INSERT)
-      end
-
-      def handle_change_to_file_end
-        last_row = @buffer.line_count - 1
-        if cursor_row == last_row
-          handle_change_line
-        else
-          lines = (cursor_row..last_row).map { |r| @buffer.line(r) }
-          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
-          (last_row - cursor_row + 1).times { @buffer.delete_line(cursor_row) }
-          @buffer.insert_line(cursor_row) if @buffer.line_count == cursor_row
-          self.cursor_row = [cursor_row, @buffer.line_count - 1].min
-          self.cursor_col = 0
-          @pending_motion = nil
-          @pending_register = nil
-          result(mode: Mode::INSERT)
-        end
-      end
-
-      def handle_change_to_file_start(char)
-        return clear_pending unless char == "g"
-
-        if cursor_row.zero?
-          handle_change_to_line_start
-        else
-          lines = (0..cursor_row).map { |r| @buffer.line(r) }
-          @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
-          cursor_row.times { @buffer.delete_line(0) }
-          @buffer.delete_range(0, 0, 0, cursor_col - 1) if cursor_col.positive?
-          self.cursor_row = 0
-          self.cursor_col = 0
-          @pending_motion = nil
-          @pending_register = nil
-          result(mode: Mode::INSERT)
-        end
-      end
-
-      def handle_change_find_char(char)
-        motion_result = case @pending_motion
-                        when :cf
-                          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
-                        when :cF
-                          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
-                        when :ct
-                          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
-                        when :cT
-                          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
-                        end
-        return clear_pending unless motion_result
-
-        execute_change_find_char(motion_result)
-        @pending_motion = nil
-        @pending_register = nil
-        result(mode: Mode::INSERT)
-      end
-
-      def execute_change_find_char(motion_result)
-        line = @buffer.line(cursor_row)
-        text = case @pending_motion
-               when :cf, :ct
-                 line[cursor_col..motion_result[:col]]
-               when :cF, :cT
-                 line[motion_result[:col]...cursor_col]
-               end
-        @register.delete(text, linewise: false, name: @pending_register) if text
-
-        case @pending_motion
-        when :cf, :ct
-          @buffer.delete_range(cursor_row, cursor_col, cursor_row, motion_result[:col])
-        when :cF, :cT
-          @buffer.delete_range(cursor_row, motion_result[:col], cursor_row, cursor_col - 1)
-          self.cursor_col = motion_result[:col]
-        end
-        # Don't clamp cursor - keep it at original position for insert mode
-      end
-
-      # Yank operator handlers
-      def handle_yank_pending(char)
-        case char
-        when "y"
-          handle_yank_line
-        when "w"
-          handle_yank_motion(:word_forward)
-        when "e"
-          handle_yank_motion(:word_end)
-        when "b"
-          handle_yank_motion(:word_backward)
-        when "0"
-          handle_yank_to_line_start
-        when "$"
-          handle_yank_to_line_end
-        when "g"
-          @pending_motion = :yg
-          result
-        when "G"
-          handle_yank_to_file_end
-        when "f"
-          @pending_motion = :yf
-          result
-        when "F"
-          @pending_motion = :yF
-          result
-        when "t"
-          @pending_motion = :yt
-          result
-        when "T"
-          @pending_motion = :yT
-          result
-        else
-          clear_pending
-        end
-      end
-
-      def handle_yank_line
-        text = @buffer.line(cursor_row)
-        @register.yank(text, linewise: true, name: @pending_register)
-        clear_pending
-      end
-
-      def handle_yank_motion(motion_type)
-        start_pos = { row: cursor_row, col: cursor_col }
-        effective_motion = motion_type == :word_forward ? :word_end : motion_type
-        end_pos = calculate_motion_end(effective_motion)
-        return clear_pending unless end_pos
-
-        inclusive = effective_motion == :word_end
-        text = extract_text(start_pos, end_pos, inclusive:)
-        @register.yank(text, linewise: false, name: @pending_register)
-        clear_pending
-      end
-
-      def handle_yank_to_line_start
-        return clear_pending if cursor_col.zero?
-
-        text = @buffer.line(cursor_row)[0...cursor_col]
-        @register.yank(text, linewise: false, name: @pending_register)
-        clear_pending
-      end
-
-      def handle_yank_to_line_end
-        line = @buffer.line(cursor_row)
-        return clear_pending if line.empty?
-
-        text = line[cursor_col..]
-        @register.yank(text, linewise: false, name: @pending_register)
-        clear_pending
-      end
-
-      def handle_yank_to_file_end
-        lines = (cursor_row...@buffer.line_count).map { |r| @buffer.line(r) }
-        text = lines.join("\n")
-        @register.yank(text, linewise: true, name: @pending_register)
-        clear_pending
-      end
-
-      def handle_yank_to_file_start(char)
-        return clear_pending unless char == "g"
-
-        lines = (0..cursor_row).map { |r| @buffer.line(r) }
-        text = lines.join("\n")
-        @register.yank(text, linewise: true, name: @pending_register)
-        clear_pending
-      end
-
-      def handle_yank_find_char(char)
-        motion_result = case @pending_motion
-                        when :yf
-                          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
-                        when :yF
-                          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
-                        when :yt
-                          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
-                        when :yT
-                          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
-                        end
-        return clear_pending unless motion_result
-
-        execute_yank_find_char(motion_result)
-        clear_pending
-      end
-
-      def execute_yank_find_char(motion_result)
-        line = @buffer.line(cursor_row)
-        text = case @pending_motion
-               when :yf, :yt
-                 line[cursor_col..motion_result[:col]]
-               when :yF, :yT
-                 line[motion_result[:col]...cursor_col]
-               end
-        @register.yank(text, linewise: false, name: @pending_register)
-      end
-
-      # Paste handlers
+      # Paste handlers (delegate to operator)
       def handle_paste_after
-        name = @pending_register
+        @operators[:paste].paste_after(pending_register: @pending_register)
         @pending_register = nil
-        return result if @register.empty?(name:)
-
-        if @register.linewise?(name:)
-          paste_line_after(name:)
-        else
-          paste_char_after(name:)
-        end
         result
       end
 
       def handle_paste_before
-        name = @pending_register
+        @operators[:paste].paste_before(pending_register: @pending_register)
         @pending_register = nil
-        return result if @register.empty?(name:)
-
-        if @register.linewise?(name:)
-          paste_line_before(name:)
-        else
-          paste_char_before(name:)
-        end
         result
       end
 
-      def paste_line_after(name: nil)
-        text = @register.get(name:)
-        lines = text.split("\n", -1)
-        lines.reverse_each do |line|
-          @buffer.insert_line(cursor_row + 1, line)
-        end
-        self.cursor_row = cursor_row + 1
-        self.cursor_col = 0
-      end
-
-      def paste_line_before(name: nil)
-        text = @register.get(name:)
-        lines = text.split("\n", -1)
-        lines.reverse_each do |line|
-          @buffer.insert_line(cursor_row, line)
-        end
-        self.cursor_col = 0
-      end
-
-      def paste_char_after(name: nil)
-        text = @register.get(name:)
-        line = @buffer.line(cursor_row)
-        insert_col = line.empty? ? 0 : cursor_col + 1
-
-        if text.include?("\n")
-          paste_multiline_char(text, line, insert_col)
+      def handle_operator_result(status)
+        case status
+        when :insert_mode
+          @pending_motion = nil
+          @pending_register = nil
+          result(mode: Mode::INSERT)
+        when /^pending_/
+          @pending_motion = status.to_s.sub("pending_", "").to_sym
+          result
         else
-          @buffer.lines[cursor_row] = line[0...insert_col].to_s + text + line[insert_col..].to_s
-          self.cursor_col = insert_col + text.length - 1
-          window.clamp_cursor_to_line(@buffer)
+          # :done, :cancel, or any other status
+          clear_pending
         end
-      end
-
-      def paste_char_before(name: nil)
-        text = @register.get(name:)
-        line = @buffer.line(cursor_row)
-
-        if text.include?("\n")
-          paste_multiline_char(text, line, cursor_col)
-        else
-          @buffer.lines[cursor_row] = line[0...cursor_col].to_s + text + line[cursor_col..].to_s
-          self.cursor_col = cursor_col + text.length - 1
-          window.clamp_cursor_to_line(@buffer)
-        end
-      end
-
-      def paste_multiline_char(text, line, insert_col)
-        lines = text.split("\n", -1)
-        before = line[0...insert_col].to_s
-        after = line[insert_col..].to_s
-
-        # First line: before + first part of pasted text
-        @buffer.lines[cursor_row] = before + lines.first
-
-        # Middle lines: insert as new lines
-        lines[1...-1].each_with_index do |pasted_line, idx|
-          @buffer.insert_line(cursor_row + 1 + idx, pasted_line)
-        end
-
-        # Last line: last part of pasted text + after
-        if lines.length > 1
-          last_line_row = cursor_row + lines.length - 1
-          @buffer.insert_line(last_line_row, lines.last + after)
-        end
-
-        # Position cursor at the end of pasted text (before 'after' part)
-        self.cursor_row = cursor_row + lines.length - 1
-        self.cursor_col = lines.last.length - 1
-        self.cursor_col = 0 if cursor_col.negative?
-        window.clamp_cursor_to_line(@buffer)
-      end
-
-      def extract_text(start_pos, end_pos, inclusive: false)
-        if start_pos[:row] == end_pos[:row]
-          extract_text_same_line(start_pos, end_pos, inclusive:)
-        else
-          extract_text_across_lines(start_pos, end_pos, inclusive:)
-        end
-      end
-
-      def extract_text_same_line(start_pos, end_pos, inclusive: false)
-        from_col = [start_pos[:col], end_pos[:col]].min
-        to_col = [start_pos[:col], end_pos[:col]].max
-        to_col -= 1 unless inclusive
-        return "" if to_col < from_col
-
-        @buffer.line(start_pos[:row])[from_col..to_col] || ""
-      end
-
-      def extract_text_across_lines(start_pos, end_pos, inclusive: false)
-        from_row, to_row = [start_pos[:row], end_pos[:row]].minmax
-        from_col = from_row == start_pos[:row] ? start_pos[:col] : end_pos[:col]
-        to_col = to_row == end_pos[:row] ? end_pos[:col] : start_pos[:col]
-        to_col -= 1 unless inclusive
-
-        lines = []
-        (from_row..to_row).each do |row|
-          line = @buffer.line(row)
-          lines << if row == from_row
-                     line[from_col..]
-                   elsif row == to_row
-                     line[0..to_col]
-                   else
-                     line
-                   end
-        end
-        lines.join("\n")
-      end
-
-      def calculate_motion_end(motion_type)
-        case motion_type
-        when :word_forward
-          Motion.word_forward(@buffer, cursor_row, cursor_col)
-        when :word_end
-          Motion.word_end(@buffer, cursor_row, cursor_col)
-        when :word_backward
-          Motion.word_backward(@buffer, cursor_row, cursor_col)
-        end
-      end
-
-      def execute_delete(start_pos, end_pos, inclusive: false, clamp: true)
-        if start_pos[:row] == end_pos[:row]
-          execute_delete_same_line(start_pos, end_pos, inclusive:, clamp:)
-        else
-          execute_delete_across_lines(start_pos, end_pos, inclusive:, clamp:)
-        end
-      end
-
-      def execute_delete_same_line(start_pos, end_pos, inclusive: false, clamp: true)
-        from_col = [start_pos[:col], end_pos[:col]].min
-        to_col = [start_pos[:col], end_pos[:col]].max
-        to_col -= 1 unless inclusive
-        return if to_col < from_col
-
-        @buffer.delete_range(start_pos[:row], from_col, start_pos[:row], to_col)
-        self.cursor_col = from_col
-        window.clamp_cursor_to_line(@buffer) if clamp
-      end
-
-      def execute_delete_across_lines(start_pos, end_pos, inclusive: false, clamp: true)
-        from_row, to_row = [start_pos[:row], end_pos[:row]].minmax
-        from_col = from_row == start_pos[:row] ? start_pos[:col] : end_pos[:col]
-        to_col = to_row == end_pos[:row] ? end_pos[:col] : start_pos[:col]
-        to_col -= 1 unless inclusive
-
-        @buffer.delete_range(from_row, from_col, to_row, to_col)
-        self.cursor_row = from_row
-        self.cursor_col = from_col
-        window.clamp_cursor_to_line(@buffer) if clamp
       end
 
       def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)

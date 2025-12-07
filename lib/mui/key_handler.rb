@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require_relative "key_handler/motions/motion_handler"
+require_relative "key_handler/operators/base_operator"
+require_relative "key_handler/operators/delete_operator"
+require_relative "key_handler/operators/change_operator"
+require_relative "key_handler/operators/yank_operator"
+require_relative "key_handler/operators/paste_operator"
 require_relative "key_handler/base"
 require_relative "key_handler/normal_mode"
 require_relative "key_handler/insert_mode"
