@@ -4,6 +4,8 @@ module Mui
   module KeyHandler
     # Handles key inputs in Normal mode
     class NormalMode < Base
+      include Motions::MotionHandler
+
       def initialize(mode_manager, buffer, register = nil, undo_manager: nil, search_state: nil)
         super(mode_manager, buffer)
         @register = register || Register.new
@@ -211,41 +213,6 @@ module Mui
 
       def handle_move_right
         window.move_right
-        result
-      end
-
-      def handle_word_forward
-        apply_motion(Motion.word_forward(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_word_backward
-        apply_motion(Motion.word_backward(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_word_end
-        apply_motion(Motion.word_end(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_line_start
-        apply_motion(Motion.line_start(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_first_non_blank
-        apply_motion(Motion.first_non_blank(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_line_end
-        apply_motion(Motion.line_end(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_file_end
-        apply_motion(Motion.file_end(@buffer, cursor_row, cursor_col))
         result
       end
 
@@ -889,14 +856,6 @@ module Mui
         self.cursor_row = from_row
         self.cursor_col = from_col
         window.clamp_cursor_to_line(@buffer) if clamp
-      end
-
-      def apply_motion(motion_result)
-        return unless motion_result
-
-        self.cursor_row = motion_result[:row]
-        self.cursor_col = motion_result[:col]
-        window.clamp_cursor_to_line(@buffer)
       end
 
       def result(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)

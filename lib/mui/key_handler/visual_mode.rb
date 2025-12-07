@@ -4,6 +4,8 @@ module Mui
   module KeyHandler
     # Handler for character-wise visual mode (v)
     class VisualMode < Base
+      include Motions::MotionHandler
+
       attr_reader :selection
 
       def initialize(mode_manager, buffer, selection, register = nil, undo_manager: nil)
@@ -260,48 +262,9 @@ module Mui
         result
       end
 
-      def handle_word_forward
-        apply_motion(Motion.word_forward(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_word_backward
-        apply_motion(Motion.word_backward(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_word_end
-        apply_motion(Motion.word_end(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_line_start
-        apply_motion(Motion.line_start(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_first_non_blank
-        apply_motion(Motion.first_non_blank(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_line_end
-        apply_motion(Motion.line_end(@buffer, cursor_row, cursor_col))
-        result
-      end
-
-      def handle_file_end
-        apply_motion(Motion.file_end(@buffer, cursor_row, cursor_col))
-        result
-      end
-
       def apply_motion(motion_result)
-        return unless motion_result
-
-        self.cursor_row = motion_result[:row]
-        self.cursor_col = motion_result[:col]
-        window.clamp_cursor_to_line(@buffer)
-        update_selection
+        super
+        update_selection if motion_result
       end
 
       def update_selection
