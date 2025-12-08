@@ -102,6 +102,14 @@ class TestCommandLine < Minitest::Test
       @command_line = Mui::CommandLine.new
     end
 
+    def test_open_command
+      @command_line.input("e")
+
+      result = @command_line.execute
+
+      assert_equal :open, result[:action]
+    end
+
     def test_write_command
       @command_line.input("w")
 
@@ -135,6 +143,15 @@ class TestCommandLine < Minitest::Test
       result = @command_line.execute
 
       assert_equal({ action: :force_quit }, result)
+    end
+
+    def test_open_as_with_filename
+      "e test.txt".each_char { |c| @command_line.input(c) }
+
+      result = @command_line.execute
+
+      assert_equal :open_as, result[:action]
+      assert_equal "test.txt", result[:path]
     end
 
     def test_write_as_with_filename

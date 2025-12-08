@@ -159,4 +159,75 @@ class TestE2EFileEditing < Minitest::Test
       assert_equal "First line of content\n", File.read(f.path)
     end
   end
+
+  def test_edit_command_reload_file
+    # Scenario: Modify file externally -> :e to reload
+    Tempfile.create(["test", ".txt"]) do |f|
+      f.write("Original content")
+      f.flush
+
+      runner = ScriptRunner.new(f.path)
+
+      runner
+        .assert_line(0, "Original content")
+
+      # Modify file externally
+      File.write(f.path, "Modified externally\n")
+
+      runner
+        .type(":e<Enter>")
+        .assert_message_contains("File reopened")
+        .assert_line(0, "Modified externally")
+    end
+  end
+
+  def test_edit_command_open_another_file
+    # Scenario: Open file -> :e another_file to switch
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("First file")
+        f1.flush
+        f2.write("Second file")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .assert_line(0, "First file")
+          .type(":e #{f2.path}<Enter>")
+          .assert_message_contains("File opened")
+          .assert_line(0, "Second file")
+      end
+    end
+  end
+
+  def test_edit_command_open_new_file
+    # Scenario: :e nonexistent_file creates new buffer (Vim-compatible)
+    Dir.mktmpdir do |dir|
+      new_file_path = File.join(dir, "new_file.txt")
+
+      runner = ScriptRunner.new
+
+      runner
+        .type(":e #{new_file_path}<Enter>")
+        .assert_message_contains("File opened")
+        .type("i")
+        .type("New content")
+        .type("<Esc>")
+        .type(":w<Enter>")
+        .assert_message_contains("written")
+
+      assert File.exist?(new_file_path)
+      assert_equal "New content\n", File.read(new_file_path)
+    end
+  end
+
+  def test_edit_command_no_filename_on_new_buffer
+    # Scenario: :e on new buffer without filename shows error
+    runner = ScriptRunner.new
+
+    runner
+      .type(":e<Enter>")
+      .assert_message_contains("No file name")
+  end
 end

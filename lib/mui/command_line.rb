@@ -34,6 +34,10 @@ module Mui
 
     def parse(cmd)
       case cmd.strip
+      when "e"
+        { action: :open }
+      when /^e\s+(.+)/
+        { action: :open_as, path: ::Regexp.last_match(1) }
       when "w"
         { action: :write }
       when "q"

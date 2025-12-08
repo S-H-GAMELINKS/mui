@@ -56,6 +56,10 @@ module Mui
 
       def execute_action(command_result)
         case command_result[:action]
+        when :open
+          handle_open
+        when :open_as
+          handle_open_as(command_result[:path])
         when :write
           handle_write
         when :quit
@@ -94,6 +98,10 @@ module Mui
         result
       end
 
+      def handle_open
+        open_buffer
+      end
+
       def handle_write
         save_buffer
       end
@@ -119,8 +127,22 @@ module Mui
         result(quit: true)
       end
 
+      def handle_open_as(path)
+        open_buffer(path)
+      end
+
       def handle_write_as(path)
         save_buffer(path)
+      end
+
+      def open_buffer(path = nil)
+        target_path = path || @buffer.name
+        return result(message: "No file name") if target_path.nil? || target_path == "[No Name]"
+
+        @buffer.load(target_path)
+        result(message: path ? "File opened" : "File reopened")
+      rescue SystemCallError => e
+        result(message: "Error: #{e.message}")
       end
 
       def save_buffer(path = nil)

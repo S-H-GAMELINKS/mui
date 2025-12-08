@@ -114,6 +114,8 @@
   - `:q` to quit (with unsaved changes protection)
   - `:q!` to force quit
   - `:wq` to save and quit
+  - `:e` to reload current file
+  - `:e <filename>` to open file (Vim-compatible: non-existent files open as new buffer)
 - Curses-based terminal UI with:
   - Buffer management
   - Window with scrolling support

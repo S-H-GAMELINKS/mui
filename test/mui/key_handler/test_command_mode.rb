@@ -249,6 +249,93 @@ class TestKeyHandlerCommandMode < Minitest::Test
     end
   end
 
+  class TestOpenAsCommand < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello"
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+    end
+
+    def test_open_to_specified_path
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "output.txt")
+
+        File.write(path, "hello\n")
+
+        @command_line.input("e")
+        @command_line.input(" ")
+        @command_line.input(path)
+        result = @handler.handle(13)
+
+        assert_match(/File opened/, result.message)
+        assert_equal "hello", @buffer.lines[0]
+      end
+    end
+  end
+
+  class TestOpenAsNewFile < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+    end
+
+    def test_open_nonexistent_file_creates_new_buffer
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "new_file.txt")
+
+        @command_line.input("e")
+        @command_line.input(" ")
+        @command_line.input(path)
+        result = @handler.handle(13)
+
+        assert_match(/File opened/, result.message)
+        assert_equal path, @buffer.name
+      end
+    end
+  end
+
+  class TestOpenCommand < Minitest::Test
+    def test_open_to_current_path
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "output.txt")
+
+        @buffer = Mui::Buffer.new(path)
+        @buffer.lines[0] = "hello"
+        @window = Mui::Window.new(@buffer)
+        @command_line = Mui::CommandLine.new
+        @mode_manager = MockModeManager.new(@window)
+        @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+
+        File.write(path, "hello\n")
+
+        @command_line.input("e")
+        result = @handler.handle(13)
+
+        assert_match(/File reopened/, result.message)
+        assert_equal "hello", @buffer.lines[0]
+      end
+    end
+
+    def test_open_on_new_buffer_shows_error
+      @buffer = Mui::Buffer.new
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+
+      @command_line.input("e")
+      result = @handler.handle(13)
+
+      assert_equal "No file name", result.message
+    end
+  end
+
   class TestWriteAsCommand < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new
