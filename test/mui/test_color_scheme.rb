@@ -55,6 +55,8 @@ class TestColorScheme < Minitest::Test
       message_info
       tab_bar
       tab_bar_active
+      completion_popup
+      completion_popup_selected
       syntax_keyword
       syntax_string
       syntax_comment

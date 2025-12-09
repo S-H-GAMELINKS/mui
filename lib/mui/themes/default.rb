@@ -16,6 +16,8 @@ module Mui
       scheme.define :command_line, fg: :white, bg: :darkgray
       scheme.define :tab_bar, fg: :white, bg: :blue
       scheme.define :tab_bar_active, fg: :white, bg: :magenta, bold: true
+      scheme.define :completion_popup, fg: :white, bg: :blue
+      scheme.define :completion_popup_selected, fg: :white, bg: :magenta, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :magenta, bold: true
       scheme.define :syntax_string, fg: :green
@@ -47,6 +49,8 @@ module Mui
       scheme.define :command_line, fg: :solarized_base0, bg: :solarized_base03
       scheme.define :tab_bar, fg: :solarized_base1, bg: :solarized_base02
       scheme.define :tab_bar_active, fg: :solarized_base03, bg: :solarized_blue, bold: true
+      scheme.define :completion_popup, fg: :solarized_base1, bg: :solarized_base02
+      scheme.define :completion_popup_selected, fg: :solarized_base03, bg: :solarized_blue, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :solarized_green, bold: true
       scheme.define :syntax_string, fg: :solarized_cyan
@@ -78,6 +82,8 @@ module Mui
       scheme.define :command_line, fg: :solarized_base00, bg: :solarized_base3
       scheme.define :tab_bar, fg: :solarized_base01, bg: :solarized_base2
       scheme.define :tab_bar_active, fg: :solarized_base3, bg: :solarized_blue, bold: true
+      scheme.define :completion_popup, fg: :solarized_base01, bg: :solarized_base2
+      scheme.define :completion_popup_selected, fg: :solarized_base3, bg: :solarized_blue, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :solarized_green, bold: true
       scheme.define :syntax_string, fg: :solarized_cyan
@@ -109,6 +115,8 @@ module Mui
       scheme.define :command_line, fg: :monokai_fg, bg: :monokai_bg
       scheme.define :tab_bar, fg: :monokai_fg, bg: :monokai_purple
       scheme.define :tab_bar_active, fg: :monokai_bg, bg: :monokai_pink, bold: true
+      scheme.define :completion_popup, fg: :monokai_fg, bg: :monokai_purple
+      scheme.define :completion_popup_selected, fg: :monokai_bg, bg: :monokai_pink, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :monokai_pink, bold: true
       scheme.define :syntax_string, fg: :monokai_yellow
@@ -140,6 +148,8 @@ module Mui
       scheme.define :command_line, fg: :nord_snow0, bg: :nord_polar0
       scheme.define :tab_bar, fg: :nord_snow0, bg: :nord_polar2
       scheme.define :tab_bar_active, fg: :nord_polar0, bg: :nord_frost1, bold: true
+      scheme.define :completion_popup, fg: :nord_snow0, bg: :nord_polar2
+      scheme.define :completion_popup_selected, fg: :nord_polar0, bg: :nord_frost1, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :nord_frost2, bold: true
       scheme.define :syntax_string, fg: :nord_aurora_green
@@ -171,6 +181,8 @@ module Mui
       scheme.define :command_line, fg: :gruvbox_fg, bg: :gruvbox_bg
       scheme.define :tab_bar, fg: :gruvbox_fg, bg: :gruvbox_gray
       scheme.define :tab_bar_active, fg: :gruvbox_bg, bg: :gruvbox_orange, bold: true
+      scheme.define :completion_popup, fg: :gruvbox_fg, bg: :gruvbox_gray
+      scheme.define :completion_popup_selected, fg: :gruvbox_bg, bg: :gruvbox_orange, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :gruvbox_red, bold: true
       scheme.define :syntax_string, fg: :gruvbox_green
@@ -201,6 +213,8 @@ module Mui
       scheme.define :command_line, fg: :dracula_fg, bg: :dracula_bg
       scheme.define :tab_bar, fg: :dracula_fg, bg: :dracula_selection
       scheme.define :tab_bar_active, fg: :dracula_bg, bg: :dracula_purple, bold: true
+      scheme.define :completion_popup, fg: :dracula_fg, bg: :dracula_selection
+      scheme.define :completion_popup_selected, fg: :dracula_bg, bg: :dracula_purple, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :dracula_pink, bold: true
       scheme.define :syntax_string, fg: :dracula_yellow
@@ -232,6 +246,8 @@ module Mui
       scheme.define :command_line, fg: :tokyo_fg, bg: :tokyo_bg
       scheme.define :tab_bar, fg: :tokyo_fg, bg: :tokyo_comment
       scheme.define :tab_bar_active, fg: :tokyo_bg, bg: :tokyo_blue, bold: true
+      scheme.define :completion_popup, fg: :tokyo_fg, bg: :tokyo_comment
+      scheme.define :completion_popup_selected, fg: :tokyo_bg, bg: :tokyo_blue, bold: true
       # Syntax highlighting
       scheme.define :syntax_keyword, fg: :tokyo_purple, bold: true
       scheme.define :syntax_string, fg: :tokyo_green

@@ -25,6 +25,7 @@ module Mui
       @tab_bar_renderer = TabBarRenderer.new(@tab_manager, color_scheme: @color_scheme)
 
       @command_line = CommandLine.new
+      @completion_renderer = CompletionRenderer.new(@screen, @color_scheme)
       @message = nil
       @running = true
 
@@ -140,6 +141,19 @@ module Mui
       status_line = status_text.ljust(@screen.width)
       style = @color_scheme[:command_line]
       @screen.put_with_style(@screen.height - 1, 0, status_line, style)
+
+      # Render completion popup in command mode
+      render_completion_popup if @mode_manager.mode == Mode::COMMAND
+    end
+
+    def render_completion_popup
+      completion_state = @mode_manager.current_handler.completion_state
+      return unless completion_state&.active?
+
+      # Popup appears above the command line, starting after the ":"
+      base_row = @screen.height - 1
+      base_col = 1 # After the ":"
+      @completion_renderer.render(completion_state, base_row, base_col)
     end
 
     def apply_result(result)

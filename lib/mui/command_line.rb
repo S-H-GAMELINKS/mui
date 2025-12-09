@@ -2,6 +2,9 @@
 
 module Mui
   class CommandLine
+    # Commands that accept file path arguments
+    FILE_COMMANDS = %w[e w sp split vs vsplit tabnew tabe tabedit].freeze
+
     attr_reader :buffer
 
     def initialize
@@ -28,6 +31,37 @@ module Mui
 
     def to_s
       ":#{@buffer}"
+    end
+
+    # Determine completion context based on current buffer
+    # @return [Hash, nil] { type: :command/:file, prefix:, command: } or nil
+    def completion_context
+      # Check if buffer contains a space (command + argument)
+      if @buffer.include?(" ")
+        # Command with argument
+        parts = @buffer.split(/\s+/, 2)
+        command = parts[0]
+        arg = parts[1] || ""
+
+        return { type: :file, command:, prefix: arg } if FILE_COMMANDS.include?(command)
+
+        # Return nil for commands that don't support file completion
+        return nil
+      end
+
+      # No space -> command completion
+      { type: :command, prefix: @buffer.strip }
+    end
+
+    # Apply completion result to buffer
+    # @param text [String] the completed text
+    # @param context [Hash] the completion context from completion_context
+    def apply_completion(text, context)
+      @buffer = if context[:type] == :command
+                  text
+                else
+                  "#{context[:command]} #{text}"
+                end
     end
 
     private

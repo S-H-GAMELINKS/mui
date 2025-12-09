@@ -4,9 +4,14 @@ module Mui
   module KeyHandler
     # Handles key inputs in Command mode
     class CommandMode < Base
+      attr_reader :completion_state
+
       def initialize(mode_manager, buffer, command_line)
         super(mode_manager, buffer)
         @command_line = command_line
+        @completion_state = CompletionState.new
+        @command_completer = CommandCompleter.new
+        @file_completer = FileCompleter.new
       end
 
       def handle(key)
@@ -17,6 +22,10 @@ module Mui
           handle_backspace
         when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
           handle_enter
+        when KeyCode::TAB
+          handle_tab
+        when Curses::KEY_BTAB
+          handle_shift_tab
         else
           handle_character_input(key)
         end
@@ -25,17 +34,67 @@ module Mui
       private
 
       def handle_escape
+        @completion_state.reset
         @command_line.clear
         result(mode: Mode::NORMAL)
       end
 
       def handle_backspace
         if @command_line.buffer.empty?
+          @completion_state.reset
           result(mode: Mode::NORMAL)
         else
           @command_line.backspace
+          update_completion
           result
         end
+      end
+
+      def handle_tab
+        return result unless @completion_state.active?
+
+        @completion_state.select_next
+        apply_current_completion
+        result
+      end
+
+      def handle_shift_tab
+        return result unless @completion_state.active?
+
+        @completion_state.select_previous
+        apply_current_completion
+        result
+      end
+
+      def update_completion
+        context = @command_line.completion_context
+        unless context
+          @completion_state.reset
+          return
+        end
+
+        candidates = case context[:type]
+                     when :command
+                       @command_completer.complete(context[:prefix])
+                     when :file
+                       @file_completer.complete(context[:prefix])
+                     end
+
+        if candidates.nil? || candidates.empty?
+          @completion_state.reset
+        else
+          @completion_state.start(candidates, @command_line.buffer, context[:type])
+        end
+      end
+
+      def apply_current_completion
+        candidate = @completion_state.current_candidate
+        return unless candidate
+
+        context = @command_line.completion_context
+        return unless context
+
+        @command_line.apply_completion(candidate, context)
       end
 
       def handle_enter
@@ -50,7 +109,10 @@ module Mui
 
       def handle_character_input(key)
         char = extract_printable_char(key)
-        @command_line.input(char) if char
+        if char
+          @command_line.input(char)
+          update_completion
+        end
         result
       end
 

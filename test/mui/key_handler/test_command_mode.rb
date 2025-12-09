@@ -439,4 +439,156 @@ class TestKeyHandlerCommandMode < Minitest::Test
       end
     end
   end
+
+  class TestTabCompletion < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+    end
+
+    def test_has_completion_state
+      assert_respond_to @handler, :completion_state
+      assert_instance_of Mui::CompletionState, @handler.completion_state
+    end
+
+    def test_typing_starts_completion_automatically
+      # Type "tab" character by character
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+
+      assert @handler.completion_state.active?
+      assert_equal :command, @handler.completion_state.completion_type
+    end
+
+    def test_tab_applies_first_candidate
+      # Type to activate completion
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+      @handler.handle("n")
+
+      # Now TAB applies the selected candidate
+      @handler.handle(Mui::KeyCode::TAB)
+
+      # Should complete to first matching command (sorted alphabetically)
+      assert_includes %w[tabn tabnew tabnext], @command_line.buffer
+    end
+
+    def test_tab_cycles_to_next_candidate
+      # Type to activate completion
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+
+      first_index = @handler.completion_state.selected_index
+
+      @handler.handle(Mui::KeyCode::TAB)
+
+      # After first TAB, it applies and cycles
+      refute_equal first_index, @handler.completion_state.selected_index
+    end
+
+    def test_escape_resets_completion_state
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+
+      @handler.handle(Mui::KeyCode::ESCAPE)
+
+      refute @handler.completion_state.active?
+    end
+
+    def test_backspace_updates_completion
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+      @handler.handle("n")
+
+      # Backspace updates completion for new prefix
+      @handler.handle(Mui::KeyCode::BACKSPACE)
+
+      assert @handler.completion_state.active?
+      assert_equal "tab", @command_line.buffer
+    end
+  end
+
+  class TestShiftTabCompletion < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+    end
+
+    def test_shift_tab_cycles_backwards
+      # Type to activate completion
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+
+      # Cycle forward twice with TAB
+      @handler.handle(Mui::KeyCode::TAB)
+      @handler.handle(Mui::KeyCode::TAB)
+      second_index = @handler.completion_state.selected_index
+
+      # Cycle backwards with Shift+TAB
+      @handler.handle(Curses::KEY_BTAB)
+      after_shift_tab_index = @handler.completion_state.selected_index
+
+      refute_equal second_index, after_shift_tab_index
+    end
+  end
+
+  class TestFileCompletion < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+      @original_dir = Dir.pwd
+      @test_dir = Dir.mktmpdir("mui_completion_test")
+      Dir.chdir(@test_dir)
+      FileUtils.touch("test.txt")
+      FileUtils.touch("test.rb")
+    end
+
+    def teardown
+      Dir.chdir(@original_dir)
+      FileUtils.rm_rf(@test_dir)
+    end
+
+    def test_file_completion_for_e_command
+      # Type "e " to trigger file completion mode
+      @handler.handle("e")
+      @handler.handle(" ")
+      @handler.handle("t")
+      @handler.handle("e")
+      @handler.handle("s")
+      @handler.handle("t")
+
+      assert @handler.completion_state.active?
+      assert_equal :file, @handler.completion_state.completion_type
+    end
+
+    def test_file_completion_applies_candidate
+      # Type "e test" to trigger file completion
+      @handler.handle("e")
+      @handler.handle(" ")
+      @handler.handle("t")
+      @handler.handle("e")
+      @handler.handle("s")
+      @handler.handle("t")
+
+      # TAB applies the selected candidate
+      @handler.handle(Mui::KeyCode::TAB)
+
+      assert_match(/^e test\./, @command_line.buffer)
+    end
+  end
 end

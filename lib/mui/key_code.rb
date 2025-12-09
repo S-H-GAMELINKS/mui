@@ -7,6 +7,7 @@ module Mui
     BACKSPACE = 127
     ENTER_CR = 13
     ENTER_LF = 10
+    TAB = 9
     PRINTABLE_MIN = 32
     # Extended to support Unicode characters (including CJK)
     # 0x10FFFF is the maximum valid Unicode code point

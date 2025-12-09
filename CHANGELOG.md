@@ -1,6 +1,14 @@
 ## [Unreleased]
 
 ### Added
+- Command-line completion (real-time popup):
+  - Auto-completion popup appears as you type in command mode
+  - Command name completion for all Ex commands (`:w`, `:q`, `:tabnew`, etc.)
+  - File path completion for file commands (`:e`, `:w`, `:sp`, `:vs`, `:tabnew`)
+  - Tab to cycle forward through candidates and apply selection
+  - Shift+Tab to cycle backward through candidates
+  - Popup displays up to 10 candidates with scroll support
+  - Completion styles configurable in all 8 themes (`completion_popup`, `completion_popup_selected`)
 - Syntax highlighting for Ruby and C:
   - Token-based lexer architecture with extensible base class
   - Ruby lexer with support for: keywords, strings, comments, numbers, symbols, constants, instance variables (`@foo`, `@@bar`), global variables (`$stdout`), method calls (`.to_i`, `.each`)
