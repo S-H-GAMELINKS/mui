@@ -3,11 +3,12 @@
 module Mui
   # Manages editor mode state and transitions
   class ModeManager
-    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor, :window_manager
+    attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor
 
     def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil)
+      @tab_manager = window.is_a?(TabManager) ? window : nil
       @window_manager = window.is_a?(WindowManager) ? window : nil
-      @window = window.is_a?(WindowManager) ? nil : window
+      @window = !@tab_manager && !@window_manager ? window : nil
       @buffer = buffer
       @command_line = command_line
       @register = Register.new
@@ -20,6 +21,10 @@ module Mui
       @visual_handler = nil
 
       initialize_key_handlers
+    end
+
+    def window_manager
+      @tab_manager&.window_manager || @window_manager
     end
 
     def current_handler
@@ -54,7 +59,7 @@ module Mui
     end
 
     def active_window
-      @window_manager&.active_window || @window
+      @tab_manager&.active_window || @window_manager&.active_window || @window
     end
 
     alias window active_window

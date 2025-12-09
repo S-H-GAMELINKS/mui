@@ -1,6 +1,21 @@
 ## [Unreleased]
 
 ### Added
+- Tab page functionality (Vim-compatible):
+  - Tab > Window hierarchy: each tab contains independent window layout
+  - `:tabnew` / `:tabe` / `:tabedit` to create new tab
+  - `:tabclose` / `:tabc` to close current tab
+  - `:tabnext` / `:tabn` to go to next tab
+  - `:tabprev` / `:tabp` to go to previous tab
+  - `:tabfirst` / `:tabf` to go to first tab
+  - `:tablast` / `:tabl` to go to last tab
+  - `:Ntabn` / `:tabnext N` to go to specific tab (1-indexed)
+  - `:tabmove N` / `:tabm N` to move current tab to position N
+  - `gt` to go to next tab (wraps around)
+  - `gT` to go to previous tab (wraps around)
+  - Tab bar at top of screen with separator line
+  - Tab bar colors configurable via color scheme (`tab_bar`, `tab_bar_active`)
+  - `:q` closes window → tab → editor (Vim-like behavior)
 - Window split functionality:
   - `:sp` / `:split` to split window horizontally (top/bottom)
   - `:vs` / `:vsplit` to split window vertically (left/right)

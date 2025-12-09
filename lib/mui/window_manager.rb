@@ -119,11 +119,11 @@ module Mui
       windows.size <= 1
     end
 
-    def update_layout
+    def update_layout(y_offset: 0)
       return unless @layout_root
 
       @layout_calculator.calculate(
-        @layout_root, 0, 0, @screen.width, @screen.height - 1
+        @layout_root, 0, y_offset, @screen.width, @screen.height - 1 - y_offset
       )
     end
 

@@ -224,7 +224,7 @@ end
 module Mui
   class Editor
     attr_accessor :running
-    attr_reader :window_manager, :command_line, :message, :screen, :input, :mode_manager
+    attr_reader :tab_manager, :command_line, :message, :screen, :input, :mode_manager
     public :handle_key
 
     # Setter for test compatibility

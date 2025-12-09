@@ -78,6 +78,22 @@ module Mui
           handle_close_window
         when :only_window
           handle_only_window
+        when :tab_new
+          handle_tab_new(command_result[:path])
+        when :tab_close
+          handle_tab_close
+        when :tab_next
+          handle_tab_next
+        when :tab_prev
+          handle_tab_prev
+        when :tab_first
+          handle_tab_first
+        when :tab_last
+          handle_tab_last
+        when :tab_go
+          handle_tab_go(command_result[:index])
+        when :tab_move
+          handle_tab_move(command_result[:position])
         when :unknown
           # Check plugin commands before reporting unknown
           plugin_result = try_plugin_command(command_result[:command])
@@ -133,10 +149,21 @@ module Mui
 
       def close_or_quit(message: nil)
         with_window_manager do |wm|
-          return result(message:, quit: true) if wm.single_window?
+          # If multiple windows in current tab, close window
+          unless wm.single_window?
+            wm.close_current_window
+            return result(message:)
+          end
 
-          wm.close_current_window
-          return result(message:)
+          # Single window in current tab - check if we have multiple tabs
+          tab_manager = @mode_manager&.editor&.tab_manager
+          if tab_manager && !tab_manager.single_tab?
+            tab_manager.close_current
+            return result(message:)
+          end
+
+          # Single window, single tab - quit editor
+          return result(message:, quit: true)
         end
         result(message:, quit: true)
       end
@@ -219,6 +246,78 @@ module Mui
         return result(message: "Window commands not available") unless wm
 
         yield wm
+      end
+
+      def with_tab_manager
+        tm = @mode_manager&.editor&.tab_manager
+        return result(message: "Tab commands not available") unless tm
+
+        yield tm
+      end
+
+      def handle_tab_new(path = nil)
+        with_tab_manager do |tm|
+          new_tab = tm.add
+          buffer = path ? create_buffer_from_path(path) : Buffer.new
+          new_tab.window_manager.add_window(buffer)
+          result
+        end
+      end
+
+      def handle_tab_close
+        with_tab_manager do |tm|
+          if tm.single_tab?
+            result(message: "Cannot close last tab")
+          else
+            tm.close_current
+            result
+          end
+        end
+      end
+
+      def handle_tab_next
+        with_tab_manager do |tm|
+          tm.next_tab
+          result
+        end
+      end
+
+      def handle_tab_prev
+        with_tab_manager do |tm|
+          tm.prev_tab
+          result
+        end
+      end
+
+      def handle_tab_first
+        with_tab_manager do |tm|
+          tm.first_tab
+          result
+        end
+      end
+
+      def handle_tab_last
+        with_tab_manager do |tm|
+          tm.last_tab
+          result
+        end
+      end
+
+      def handle_tab_go(index)
+        with_tab_manager do |tm|
+          if tm.go_to(index)
+            result
+          else
+            result(message: "Invalid tab index")
+          end
+        end
+      end
+
+      def handle_tab_move(position)
+        with_tab_manager do |tm|
+          tm.move_tab(position)
+          result
+        end
       end
 
       def create_buffer_from_path(path)

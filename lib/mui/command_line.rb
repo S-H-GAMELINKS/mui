@@ -60,6 +60,24 @@ module Mui
         { action: :close_window }
       when "only"
         { action: :only_window }
+      when "tabnew", "tabe", "tabedit"
+        { action: :tab_new }
+      when /^tabnew\s+(.+)/, /^tabe\s+(.+)/, /^tabedit\s+(.+)/
+        { action: :tab_new, path: ::Regexp.last_match(1) }
+      when "tabclose", "tabc"
+        { action: :tab_close }
+      when "tabnext", "tabn"
+        { action: :tab_next }
+      when "tabprev", "tabp", "tabprevious"
+        { action: :tab_prev }
+      when "tabfirst", "tabf", "tabrewind", "tabr"
+        { action: :tab_first }
+      when "tablast", "tabl"
+        { action: :tab_last }
+      when /^tabmove\s+(\d+)/, /^tabm\s+(\d+)/
+        { action: :tab_move, position: ::Regexp.last_match(1).to_i }
+      when /^(\d+)tabn(?:ext)?/, /^tabn(?:ext)?\s+(\d+)/
+        { action: :tab_go, index: ::Regexp.last_match(1).to_i - 1 }
       else
         { action: :unknown, command: cmd }
       end

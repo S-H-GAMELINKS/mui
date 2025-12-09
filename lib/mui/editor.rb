@@ -3,7 +3,7 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :window_manager, :undo_manager, :autocmd, :command_registry
+    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -18,8 +18,11 @@ module Mui
       @buffer = Buffer.new
       @buffer.load(file_path) if file_path
 
-      @window_manager = WindowManager.new(@screen, color_scheme: @color_scheme)
-      @window_manager.add_window(@buffer)
+      @tab_manager = TabManager.new(@screen, color_scheme: @color_scheme)
+      initial_tab = @tab_manager.add
+      initial_tab.window_manager.add_window(@buffer)
+
+      @tab_bar_renderer = TabBarRenderer.new(@tab_manager, color_scheme: @color_scheme)
 
       @command_line = CommandLine.new
       @message = nil
@@ -38,7 +41,7 @@ module Mui
       load_plugin_autocmds
 
       @mode_manager = ModeManager.new(
-        window: @window_manager,
+        window: @tab_manager,
         buffer: @buffer,
         command_line: @command_line,
         undo_manager: @undo_manager,
@@ -49,8 +52,12 @@ module Mui
       trigger_autocmd(:BufEnter)
     end
 
+    def window_manager
+      @tab_manager.window_manager
+    end
+
     def window
-      @window_manager.active_window
+      @tab_manager.active_window
     end
 
     def buffer
@@ -88,18 +95,30 @@ module Mui
     private
 
     def update_window_size
-      @window_manager.update_sizes
+      window_manager.update_layout(y_offset: tab_bar_height)
     end
 
     def render
       @screen.clear
+
+      @tab_bar_renderer.render(@screen, 0)
+
       window.ensure_cursor_visible
-      @window_manager.render_all(@screen, selection: @mode_manager.selection, search_state: @mode_manager.search_state)
+      window_manager.render_all(
+        @screen,
+        selection: @mode_manager.selection,
+        search_state: @mode_manager.search_state
+      )
 
       render_status_area
 
+      # screen_cursor_y already includes y_offset via window.y
       @screen.move_cursor(window.screen_cursor_y, window.screen_cursor_x)
       @screen.refresh
+    end
+
+    def tab_bar_height
+      @tab_bar_renderer.height
     end
 
     def render_status_area

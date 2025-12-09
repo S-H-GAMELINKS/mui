@@ -14,6 +14,8 @@ module Mui
       scheme.define :message_info, fg: :cyan, bg: :darkgray
       scheme.define :separator, fg: :white, bg: :blue
       scheme.define :command_line, fg: :white, bg: :darkgray
+      scheme.define :tab_bar, fg: :white, bg: :blue
+      scheme.define :tab_bar_active, fg: :white, bg: :magenta, bold: true
       scheme
     end
 
@@ -29,6 +31,8 @@ module Mui
       scheme.define :message_info, fg: :solarized_cyan, bg: :solarized_base03
       scheme.define :separator, fg: :solarized_base1, bg: :solarized_base02
       scheme.define :command_line, fg: :solarized_base0, bg: :solarized_base03
+      scheme.define :tab_bar, fg: :solarized_base1, bg: :solarized_base02
+      scheme.define :tab_bar_active, fg: :solarized_base03, bg: :solarized_blue, bold: true
       scheme
     end
 
@@ -44,6 +48,8 @@ module Mui
       scheme.define :message_info, fg: :solarized_cyan, bg: :solarized_base3
       scheme.define :separator, fg: :solarized_base01, bg: :solarized_base2
       scheme.define :command_line, fg: :solarized_base00, bg: :solarized_base3
+      scheme.define :tab_bar, fg: :solarized_base01, bg: :solarized_base2
+      scheme.define :tab_bar_active, fg: :solarized_base3, bg: :solarized_blue, bold: true
       scheme
     end
 
@@ -59,6 +65,8 @@ module Mui
       scheme.define :message_info, fg: :monokai_green, bg: :monokai_bg
       scheme.define :separator, fg: :monokai_fg, bg: :monokai_purple
       scheme.define :command_line, fg: :monokai_fg, bg: :monokai_bg
+      scheme.define :tab_bar, fg: :monokai_fg, bg: :monokai_purple
+      scheme.define :tab_bar_active, fg: :monokai_bg, bg: :monokai_pink, bold: true
       scheme
     end
 
@@ -74,6 +82,8 @@ module Mui
       scheme.define :message_info, fg: :nord_frost1, bg: :nord_polar0
       scheme.define :separator, fg: :nord_snow0, bg: :nord_polar2
       scheme.define :command_line, fg: :nord_snow0, bg: :nord_polar0
+      scheme.define :tab_bar, fg: :nord_snow0, bg: :nord_polar2
+      scheme.define :tab_bar_active, fg: :nord_polar0, bg: :nord_frost1, bold: true
       scheme
     end
 
@@ -89,6 +99,8 @@ module Mui
       scheme.define :message_info, fg: :gruvbox_aqua, bg: :gruvbox_bg
       scheme.define :separator, fg: :gruvbox_fg, bg: :gruvbox_gray
       scheme.define :command_line, fg: :gruvbox_fg, bg: :gruvbox_bg
+      scheme.define :tab_bar, fg: :gruvbox_fg, bg: :gruvbox_gray
+      scheme.define :tab_bar_active, fg: :gruvbox_bg, bg: :gruvbox_orange, bold: true
       scheme
     end
 
@@ -104,6 +116,8 @@ module Mui
       scheme.define :message_info, fg: :dracula_cyan, bg: :dracula_bg
       scheme.define :separator, fg: :dracula_fg, bg: :dracula_selection
       scheme.define :command_line, fg: :dracula_fg, bg: :dracula_bg
+      scheme.define :tab_bar, fg: :dracula_fg, bg: :dracula_selection
+      scheme.define :tab_bar_active, fg: :dracula_bg, bg: :dracula_purple, bold: true
       scheme
     end
 
@@ -119,6 +133,8 @@ module Mui
       scheme.define :message_info, fg: :tokyo_cyan, bg: :tokyo_bg
       scheme.define :separator, fg: :tokyo_fg, bg: :tokyo_comment
       scheme.define :command_line, fg: :tokyo_fg, bg: :tokyo_bg
+      scheme.define :tab_bar, fg: :tokyo_fg, bg: :tokyo_comment
+      scheme.define :tab_bar_active, fg: :tokyo_bg, bg: :tokyo_blue, bold: true
       scheme
     end
   end

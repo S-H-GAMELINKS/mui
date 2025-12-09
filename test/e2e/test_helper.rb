@@ -174,6 +174,20 @@ class ScriptRunner
     self
   end
 
+  def assert_tab_count(expected)
+    actual = @editor.tab_manager.tab_count
+    raise "Expected #{expected} tabs, got #{actual}" unless actual == expected
+
+    self
+  end
+
+  def assert_current_tab(expected_index)
+    actual = @editor.tab_manager.current_index
+    raise "Expected current tab index #{expected_index}, got #{actual}" unless actual == expected_index
+
+    self
+  end
+
   # Get execution log as string
   def format_log
     @log.map.with_index do |entry, i|

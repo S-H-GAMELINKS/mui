@@ -972,4 +972,93 @@ class TestKeyHandlerNormalMode < Minitest::Test
       refute @register.linewise?(name: "1")
     end
   end
+
+  class TestTabNavigation < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @editor = create_test_editor
+      @tab_manager = @editor.tab_manager
+    end
+
+    def test_gt_moves_to_next_tab
+      # Create a second tab
+      @tab_manager.add
+
+      assert_equal 2, @tab_manager.tab_count
+      assert_equal 1, @tab_manager.current_index
+
+      # Go back to first tab
+      @tab_manager.first_tab
+      assert_equal 0, @tab_manager.current_index
+
+      # Use gt to go to next tab
+      @editor.handle_key("g")
+      @editor.handle_key("t")
+
+      assert_equal 1, @tab_manager.current_index
+    end
+
+    def test_gT_moves_to_previous_tab
+      # Create a second tab (cursor is at tab 1)
+      @tab_manager.add
+
+      assert_equal 2, @tab_manager.tab_count
+      assert_equal 1, @tab_manager.current_index
+
+      # Use gT to go to previous tab
+      @editor.handle_key("g")
+      @editor.handle_key("T")
+
+      assert_equal 0, @tab_manager.current_index
+    end
+
+    def test_gt_wraps_around
+      # Create two tabs
+      @tab_manager.add
+
+      assert_equal 2, @tab_manager.tab_count
+      assert_equal 1, @tab_manager.current_index
+
+      # gt should wrap to first tab
+      @editor.handle_key("g")
+      @editor.handle_key("t")
+
+      assert_equal 0, @tab_manager.current_index
+    end
+
+    def test_gT_wraps_around
+      # Start on first tab
+      assert_equal 1, @tab_manager.tab_count
+      assert_equal 0, @tab_manager.current_index
+
+      # Create second tab and go back to first
+      @tab_manager.add
+      @tab_manager.first_tab
+      assert_equal 0, @tab_manager.current_index
+
+      # gT should wrap to last tab
+      @editor.handle_key("g")
+      @editor.handle_key("T")
+
+      assert_equal 1, @tab_manager.current_index
+    end
+
+    def test_gg_still_works_for_file_start
+      # Setup a buffer with multiple lines
+      buffer = @tab_manager.window_manager.active_window.buffer
+      buffer.lines[0] = "line 1"
+      buffer.insert_line(1, "line 2")
+      buffer.insert_line(2, "line 3")
+
+      window = @tab_manager.active_window
+      window.cursor_row = 2
+
+      # gg should go to first line
+      @editor.handle_key("g")
+      @editor.handle_key("g")
+
+      assert_equal 0, window.cursor_row
+    end
+  end
 end

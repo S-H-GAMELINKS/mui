@@ -18,6 +18,9 @@ module Mui
       end
 
       def handle(key)
+        # Sync operators with current buffer/window (may have changed via tab switch)
+        sync_operators
+
         # Check plugin keymaps first (only when no pending motion)
         unless @pending_motion
           plugin_result = check_plugin_keymap(key, :normal)
@@ -58,18 +61,22 @@ module Mui
       def initialize_operators
         @operators = {
           delete: Operators::DeleteOperator.new(
-            buffer: @buffer, window:, register: @register, undo_manager: @undo_manager
+            buffer:, window:, register: @register, undo_manager: @undo_manager
           ),
           change: Operators::ChangeOperator.new(
-            buffer: @buffer, window:, register: @register, undo_manager: @undo_manager
+            buffer:, window:, register: @register, undo_manager: @undo_manager
           ),
           yank: Operators::YankOperator.new(
-            buffer: @buffer, window:, register: @register
+            buffer:, window:, register: @register
           ),
           paste: Operators::PasteOperator.new(
-            buffer: @buffer, window:, register: @register
+            buffer:, window:, register: @register
           )
         }
+      end
+
+      def sync_operators
+        @operators.each_value { |op| op.update(buffer:, window:) }
       end
 
       def handle_normal_key(key)
@@ -173,6 +180,8 @@ module Mui
         case @pending_motion
         when :register_select
           handle_register_select(char)
+        when :g
+          dispatch_g_command(char)
         when :d
           dispatch_delete_operator(char)
         when :dg
@@ -249,7 +258,7 @@ module Mui
 
       def handle_open_below
         @undo_manager&.begin_group
-        @buffer.insert_line(cursor_row + 1)
+        buffer.insert_line(cursor_row + 1)
         self.cursor_row = cursor_row + 1
         self.cursor_col = 0
         result(mode: Mode::INSERT, group_started: true)
@@ -257,13 +266,13 @@ module Mui
 
       def handle_open_above
         @undo_manager&.begin_group
-        @buffer.insert_line(cursor_row)
+        buffer.insert_line(cursor_row)
         self.cursor_col = 0
         result(mode: Mode::INSERT, group_started: true)
       end
 
       def handle_delete_char
-        @buffer.delete_char(cursor_row, cursor_col)
+        buffer.delete_char(cursor_row, cursor_col)
         result
       end
 
@@ -356,8 +365,8 @@ module Mui
 
       # Undo/Redo handlers
       def handle_undo
-        if @undo_manager&.undo(@buffer)
-          window.clamp_cursor_to_line(@buffer)
+        if @undo_manager&.undo(buffer)
+          window.clamp_cursor_to_line(buffer)
           result
         else
           result(message: "Already at oldest change")
@@ -365,8 +374,8 @@ module Mui
       end
 
       def handle_redo
-        if @undo_manager&.redo(@buffer)
-          window.clamp_cursor_to_line(@buffer)
+        if @undo_manager&.redo(buffer)
+          window.clamp_cursor_to_line(buffer)
           result
         else
           result(message: "Already at newest change")
@@ -383,6 +392,47 @@ module Mui
 
         @window_command ||= WindowCommand.new(window_manager)
         @window_command.handle(key)
+        clear_pending
+      end
+
+      # g command dispatcher (gg, gt, gT)
+      def dispatch_g_command(char)
+        case char
+        when "g"
+          # gg - go to file start
+          motion_result = Motion.file_start(buffer, cursor_row, cursor_col)
+          apply_motion(motion_result) if motion_result
+          clear_pending
+        when "t"
+          # gt - next tab
+          handle_tab_next
+        when "T"
+          # gT - previous tab
+          handle_tab_prev
+        else
+          clear_pending
+        end
+      end
+
+      def handle_tab_next
+        tab_manager = @mode_manager&.editor&.tab_manager
+        unless tab_manager
+          @pending_motion = nil
+          return result(message: "Tab commands not available")
+        end
+
+        tab_manager.next_tab
+        clear_pending
+      end
+
+      def handle_tab_prev
+        tab_manager = @mode_manager&.editor&.tab_manager
+        unless tab_manager
+          @pending_motion = nil
+          return result(message: "Tab commands not available")
+        end
+
+        tab_manager.prev_tab
         clear_pending
       end
 

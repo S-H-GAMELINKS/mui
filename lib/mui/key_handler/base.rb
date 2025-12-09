@@ -49,7 +49,7 @@ module Mui
       end
 
       def current_line
-        @buffer.line(cursor_row)
+        buffer.line(cursor_row)
       end
 
       def current_line_length
@@ -78,15 +78,15 @@ module Mui
       def execute_pending_motion(char)
         case @pending_motion
         when :g
-          char == "g" ? Motion.file_start(@buffer, cursor_row, cursor_col) : nil
+          char == "g" ? Motion.file_start(buffer, cursor_row, cursor_col) : nil
         when :f
-          Motion.find_char_forward(@buffer, cursor_row, cursor_col, char)
+          Motion.find_char_forward(buffer, cursor_row, cursor_col, char)
         when :F
-          Motion.find_char_backward(@buffer, cursor_row, cursor_col, char)
+          Motion.find_char_backward(buffer, cursor_row, cursor_col, char)
         when :t
-          Motion.till_char_forward(@buffer, cursor_row, cursor_col, char)
+          Motion.till_char_forward(buffer, cursor_row, cursor_col, char)
         when :T
-          Motion.till_char_backward(@buffer, cursor_row, cursor_col, char)
+          Motion.till_char_backward(buffer, cursor_row, cursor_col, char)
         end
       end
 

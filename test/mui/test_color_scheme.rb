@@ -53,6 +53,8 @@ class TestColorScheme < Minitest::Test
       line_number
       message_error
       message_info
+      tab_bar
+      tab_bar_active
     ]
     assert_equal expected_elements, Mui::ColorScheme::ELEMENTS
   end

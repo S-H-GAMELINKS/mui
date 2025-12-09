@@ -11,6 +11,8 @@ module Mui
       line_number
       message_error
       message_info
+      tab_bar
+      tab_bar_active
     ].freeze
 
     attr_reader :name, :colors
