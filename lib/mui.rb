@@ -55,6 +55,8 @@ require_relative "mui/command_registry"
 require_relative "mui/autocmd"
 require_relative "mui/plugin"
 require_relative "mui/plugin_manager"
+require_relative "mui/job"
+require_relative "mui/job_manager"
 require_relative "mui/editor"
 
 # mui(無為) top level module

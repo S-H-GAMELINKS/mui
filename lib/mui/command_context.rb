@@ -34,5 +34,25 @@ module Mui
     def run_command(name, *)
       @editor.command_registry.execute(name, self, *)
     end
+
+    def run_async(on_complete: nil, &)
+      @editor.job_manager.run_async(on_complete:, &)
+    end
+
+    def run_shell_command(cmd, on_complete: nil)
+      @editor.job_manager.run_command(cmd, on_complete:)
+    end
+
+    def jobs_running?
+      @editor.job_manager.busy?
+    end
+
+    def cancel_job(id)
+      @editor.job_manager.cancel(id)
+    end
+
+    def open_scratch_buffer(name, content)
+      @editor.open_scratch_buffer(name, content)
+    end
   end
 end

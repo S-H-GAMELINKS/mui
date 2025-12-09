@@ -3,7 +3,7 @@
 module Mui
   # Main editor class that coordinates all components
   class Editor
-    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry
+    attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry, :job_manager
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -34,6 +34,7 @@ module Mui
 
       @autocmd = Autocmd.new
       @command_registry = CommandRegistry.new
+      @job_manager = JobManager.new(autocmd: @autocmd)
 
       # Install and load plugins via bundler/inline
       Mui.plugin_manager.install_and_load
@@ -79,12 +80,28 @@ module Mui
 
     def run
       while @running
+        process_job_results
         update_window_size
         render
-        handle_key(@input.read)
+        key = @input.read_nonblock
+        if key
+          handle_key(key)
+        else
+          sleep 0.01 # CPU usage optimization
+        end
       end
     ensure
       @adapter.close
+    end
+
+    # Open a scratch buffer (read-only) with the given content
+    def open_scratch_buffer(name, content)
+      scratch_buffer = Buffer.new(name)
+      scratch_buffer.content = content
+      scratch_buffer.readonly = true
+
+      # Split horizontally and show the scratch buffer
+      window_manager.split_horizontal(scratch_buffer)
     end
 
     def handle_key(key)
@@ -180,6 +197,10 @@ module Mui
     def trigger_autocmd(event)
       context = CommandContext.new(editor: self, buffer: @buffer, window:)
       @autocmd.trigger(event, context)
+    end
+
+    def process_job_results
+      @job_manager.poll
     end
   end
 end

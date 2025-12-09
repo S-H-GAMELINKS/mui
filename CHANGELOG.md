@@ -1,6 +1,27 @@
 ## [Unreleased]
 
 ### Added
+- Asynchronous job execution system (JobManager):
+  - `JobManager` class for managing background tasks with Thread + Queue
+  - `Job` class with status tracking (pending, running, completed, failed, cancelled)
+  - Thread-safe implementation with Mutex protection
+  - `context.run_async { ... }` to run Ruby blocks asynchronously
+  - `context.run_shell_command("cmd")` to run external shell commands via Open3
+  - `context.jobs_running?` to check if any jobs are active
+  - `context.cancel_job(id)` to cancel a running job
+  - Callback support via `on_complete:` parameter
+  - Autocmd events: JobStarted, JobCompleted, JobFailed, JobCancelled
+  - Non-blocking event loop with polling for job results
+- Scratch buffer support:
+  - `editor.open_scratch_buffer(name, content)` to display read-only results
+  - `context.open_scratch_buffer(name, content)` for plugins
+  - Opens in horizontal split window
+  - Ideal for displaying test results, linter output, etc.
+- Readonly buffer protection:
+  - `buffer.readonly` flag to mark buffers as read-only
+  - Edit commands (`i`, `a`, `o`, `O`, `x`, `d`, `c`, `p`, `P`) blocked with error message
+  - `:w` and `:wq` commands blocked on readonly buffers
+  - Navigation and yank operations still allowed
 - Command-line completion (real-time popup):
   - Auto-completion popup appears as you type in command mode
   - Command name completion for all Ex commands (`:w`, `:q`, `:tabnew`, etc.)
@@ -60,7 +81,7 @@
   - Plugin dependencies with topological sort for load order
   - CommandContext for plugin access to editor internals
 - Autocmd event system:
-  - 10 events: BufEnter, BufLeave, BufWrite, BufWritePre, BufWritePost, ModeChanged, CursorMoved, TextChanged, InsertEnter, InsertLeave
+  - 14 events: BufEnter, BufLeave, BufWrite, BufWritePre, BufWritePost, ModeChanged, CursorMoved, TextChanged, InsertEnter, InsertLeave, JobStarted, JobCompleted, JobFailed, JobCancelled
   - Pattern matching for file paths (e.g., `"*.rb"`)
   - `Mui.autocmd :BufEnter, pattern: "*.rb" do |ctx| ... end`
 - Custom commands:

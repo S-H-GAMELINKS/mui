@@ -3,7 +3,7 @@
 module Mui
   class Buffer
     attr_reader :lines
-    attr_accessor :name, :modified, :undo_manager
+    attr_accessor :name, :modified, :undo_manager, :readonly
 
     # Alias for autocmd pattern matching
     alias file_path name
@@ -13,6 +13,25 @@ module Mui
       @lines = [empty_line]
       @modified = false
       @undo_manager = nil
+      @readonly = false
+    end
+
+    def readonly?
+      @readonly
+    end
+
+    # Set content directly (for scratch buffers)
+    def content=(text)
+      @lines = text.split("\n", -1)
+      @lines = [empty_line] if @lines.empty?
+      @modified = false
+    end
+
+    # Reload file from disk
+    def reload
+      return unless @name && File.exist?(@name)
+
+      load(@name)
     end
 
     def load(path)

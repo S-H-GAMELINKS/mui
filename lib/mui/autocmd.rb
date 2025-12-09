@@ -14,6 +14,10 @@ module Mui
       TextChanged
       InsertEnter
       InsertLeave
+      JobStarted
+      JobCompleted
+      JobFailed
+      JobCancelled
     ].freeze
 
     def initialize
@@ -28,14 +32,16 @@ module Mui
       @handlers[event] << { pattern:, handler: block }
     end
 
-    def trigger(event, context)
+    def trigger(event, context = nil, **kwargs)
       event = event.to_sym
       return unless @handlers[event]
 
       @handlers[event].each do |entry|
-        next if entry[:pattern] && !match_pattern?(context, entry[:pattern])
+        # Skip pattern matching for non-buffer events (like Job events)
+        next if context && entry[:pattern] && !match_pattern?(context, entry[:pattern])
 
-        entry[:handler].call(context)
+        # Pass context or kwargs depending on what's available
+        entry[:handler].call(context || kwargs)
       end
     end
 
