@@ -119,27 +119,45 @@ module Mui
           @pending_motion = :T
           result
         when "i"
+          return readonly_error if buffer.readonly?
+
           result(mode: Mode::INSERT)
         when "a"
+          return readonly_error if buffer.readonly?
+
           handle_append
         when "o"
+          return readonly_error if buffer.readonly?
+
           handle_open_below
         when "O"
+          return readonly_error if buffer.readonly?
+
           handle_open_above
         when "x"
+          return readonly_error if buffer.readonly?
+
           handle_delete_char
         when "d"
+          return readonly_error if buffer.readonly?
+
           @pending_motion = :d
           result
         when "c"
+          return readonly_error if buffer.readonly?
+
           @pending_motion = :c
           result
         when "y"
           @pending_motion = :y
           result
         when "p"
+          return readonly_error if buffer.readonly?
+
           handle_paste_after
         when "P"
+          return readonly_error if buffer.readonly?
+
           handle_paste_before
         when ":"
           result(mode: Mode::COMMAND)
@@ -361,6 +379,10 @@ module Mui
           line_mode:,
           group_started:
         )
+      end
+
+      def readonly_error
+        result(message: "E21: Cannot make changes, buffer is readonly")
       end
 
       # Undo/Redo handlers

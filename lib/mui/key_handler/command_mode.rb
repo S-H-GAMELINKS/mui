@@ -189,6 +189,8 @@ module Mui
       end
 
       def handle_write
+        return result(mode: Mode::NORMAL, message: "E21: Cannot write readonly buffer") if buffer.readonly?
+
         save_buffer
       end
 
@@ -199,6 +201,8 @@ module Mui
       end
 
       def handle_write_quit
+        return result(mode: Mode::NORMAL, message: "E21: Cannot write readonly buffer") if buffer.readonly?
+
         save_result = save_buffer
         return save_result if save_result.message && !save_result.message.include?("written")
 
