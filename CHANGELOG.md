@@ -259,6 +259,9 @@
   - Fixes issue where buffer-specific keymaps didn't work in split windows
 - Plugin keymap handler now properly returns handler result
   - Allows buffer-specific keymaps to conditionally pass through to built-in handlers
+- Plugin keymap now correctly handles Enter key (Curses::KEY_ENTER)
+  - Previously special key codes like Curses::KEY_ENTER (343) were not converted to keymap string
+  - Now Enter key variants (CR, LF, KEY_ENTER) are all mapped to `"\r"` for plugin keymaps
 - Auto-indent on newline in Insert mode
   - Pressing Enter preserves indentation from the current line
   - Leading whitespace (spaces and tabs) is automatically inserted on the new line

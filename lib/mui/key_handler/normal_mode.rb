@@ -37,11 +37,7 @@ module Mui
       def check_plugin_keymap(key, mode_symbol)
         return nil unless @mode_manager&.editor
 
-        key_str = begin
-          key.is_a?(String) ? key : key.chr
-        rescue StandardError
-          nil
-        end
+        key_str = convert_key_to_string(key)
         return nil unless key_str
 
         plugin_handler = Mui.config.keymaps[mode_symbol]&.[](key_str)
@@ -63,6 +59,23 @@ module Mui
       end
 
       private
+
+      # Convert key to string for keymap lookup
+      # Handles special keys like Enter that have Curses constants
+      def convert_key_to_string(key)
+        return key if key.is_a?(String)
+
+        # Handle special Curses keys
+        case key
+        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
+          "\r"
+        else
+          key.chr
+        end
+      rescue RangeError
+        # Key code out of char range (e.g., special function keys)
+        nil
+      end
 
       def initialize_operators
         @operators = {
