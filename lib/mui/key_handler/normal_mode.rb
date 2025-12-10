@@ -180,6 +180,10 @@ module Mui
           handle_search_next
         when "N"
           handle_search_previous
+        when "*"
+          handle_search_word(:forward)
+        when "#"
+          handle_search_word(:backward)
         when KeyCode::CTRL_W
           @pending_motion = :window_command
           result
@@ -505,6 +509,51 @@ module Mui
         else
           result(message: "Pattern not found: #{@search_state.pattern}")
         end
+      end
+
+      def handle_search_word(direction)
+        word = word_under_cursor
+        return result if word.nil? || word.empty?
+
+        # Use word boundary for whole word matching (Vim behavior)
+        escaped_pattern = "\\b#{Regexp.escape(word)}\\b"
+
+        @search_state.set_pattern(escaped_pattern, direction)
+        @search_state.find_all_matches(buffer)
+
+        # Find next/previous match from current position
+        match = if direction == :forward
+                  @search_state.find_next(cursor_row, cursor_col)
+                else
+                  @search_state.find_previous(cursor_row, cursor_col)
+                end
+
+        if match
+          apply_motion(match)
+          result
+        else
+          result(message: "Pattern not found: #{word}")
+        end
+      end
+
+      def word_under_cursor
+        line = buffer.line(cursor_row)
+        return nil if line.nil? || line.empty?
+
+        col = cursor_col
+        return nil if col >= line.length
+
+        # Check if cursor is on a word character
+        return nil unless line[col]&.match?(/\w/)
+
+        # Find word boundaries
+        start_col = col
+        start_col -= 1 while start_col.positive? && line[start_col - 1]&.match?(/\w/)
+
+        end_col = col
+        end_col += 1 while end_col < line.length && line[end_col]&.match?(/\w/)
+
+        line[start_col...end_col]
       end
     end
   end

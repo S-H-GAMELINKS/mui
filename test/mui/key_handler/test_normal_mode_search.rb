@@ -106,6 +106,77 @@ class TestNormalModeSearch < Minitest::Test
     assert_includes result.message, "Pattern not found"
   end
 
+  def test_star_searches_word_under_cursor_forward
+    @window.cursor_row = 0
+    @window.cursor_col = 0 # Cursor on "hello"
+
+    @handler.handle("*")
+
+    # Should find next "hello" at 0,12
+    assert_equal 0, @window.cursor_row
+    assert_equal 12, @window.cursor_col
+    assert @search_state.has_pattern?
+  end
+
+  def test_hash_searches_word_under_cursor_backward
+    @window.cursor_row = 2
+    @window.cursor_col = 0 # Cursor on "hello"
+
+    @handler.handle("#")
+
+    # Should find previous "hello" at 0,12
+    assert_equal 0, @window.cursor_row
+    assert_equal 12, @window.cursor_col
+  end
+
+  def test_star_uses_word_boundaries
+    @buffer.lines[0] = "hello helloworld hello"
+    @window.cursor_row = 0
+    @window.cursor_col = 0 # Cursor on "hello"
+
+    @handler.handle("*")
+
+    # Should skip "helloworld" and find "hello" at col 17, not col 6
+    assert_equal 0, @window.cursor_row
+    assert_equal 17, @window.cursor_col
+  end
+
+  def test_star_does_nothing_on_non_word_char
+    @buffer.lines[0] = "hello   world"
+    @window.cursor_row = 0
+    @window.cursor_col = 5 # Cursor on space
+
+    @handler.handle("*")
+
+    # Should not move or set pattern
+    assert_equal 5, @window.cursor_col
+  end
+
+  def test_star_finds_word_in_middle_of_cursor
+    @buffer.lines[0] = "  hello  world"
+    @window.cursor_row = 0
+    @window.cursor_col = 4 # Cursor in middle of "hello"
+
+    @handler.handle("*")
+
+    # Should still find the word "hello" and search for it
+    assert @search_state.has_pattern?
+  end
+
+  def test_star_sets_search_state_for_n_N
+    @window.cursor_row = 0
+    @window.cursor_col = 0
+
+    @handler.handle("*")
+
+    # After *, we should be able to use n to find next
+    @handler.handle("n")
+
+    # Should find third "hello" at row 2
+    assert_equal 2, @window.cursor_row
+    assert_equal 0, @window.cursor_col
+  end
+
   private
 
   def setup_search(pattern, direction)

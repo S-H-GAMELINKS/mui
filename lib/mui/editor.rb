@@ -134,6 +134,9 @@ module Mui
       if @mode_manager.mode == Mode::COMMAND
         # In command mode, cursor is on the command line (after ":" + buffer position)
         @screen.move_cursor(@screen.height - 1, 1 + @command_line.cursor_pos)
+      elsif [Mode::SEARCH_FORWARD, Mode::SEARCH_BACKWARD].include?(@mode_manager.mode)
+        # In search mode, cursor is on the search input line (after "/" or "?" + pattern)
+        @screen.move_cursor(@screen.height - 1, 1 + @mode_manager.search_input.buffer.length)
       else
         # In other modes, cursor is in the editor window
         @screen.move_cursor(window.screen_cursor_y, window.screen_cursor_x)
@@ -165,8 +168,22 @@ module Mui
       style = @color_scheme[:command_line]
       @screen.put_with_style(@screen.height - 1, 0, status_line, style)
 
-      # Render completion popup in command mode
-      render_completion_popup if @mode_manager.mode == Mode::COMMAND
+      # Render completion popup in command mode or search mode
+      if @mode_manager.mode == Mode::COMMAND
+        render_completion_popup
+      elsif [Mode::SEARCH_FORWARD, Mode::SEARCH_BACKWARD].include?(@mode_manager.mode)
+        render_search_completion_popup
+      end
+    end
+
+    def render_search_completion_popup
+      completion_state = @mode_manager.current_handler.completion_state
+      return unless completion_state&.active?
+
+      # Popup appears above the search line, starting after "/" or "?"
+      base_row = @screen.height - 1
+      base_col = 1 # After the prompt
+      @completion_renderer.render(completion_state, base_row, base_col)
     end
 
     def render_completion_popup

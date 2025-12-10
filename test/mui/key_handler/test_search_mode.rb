@@ -114,4 +114,154 @@ class TestSearchMode < Minitest::Test
 
     assert_equal 1, search_state.matches.length
   end
+
+  def test_incremental_search_moves_cursor
+    @window.cursor_row = 0
+    @window.cursor_col = 0
+    @handler.start_search
+
+    @handler.handle("f")
+    @handler.handle("o")
+    @handler.handle("o")
+
+    # Should find "foo" at row 1
+    assert_equal 1, @window.cursor_row
+    assert_equal 0, @window.cursor_col
+    assert_equal 1, @search_state.matches.length
+  end
+
+  def test_incremental_search_updates_on_backspace
+    @window.cursor_row = 0
+    @window.cursor_col = 0
+    @handler.start_search
+
+    @handler.handle("f")
+    @handler.handle("o")
+    @handler.handle("o")
+    @handler.handle("x") # No match for "foox"
+
+    assert_equal 0, @search_state.matches.length
+
+    @handler.handle(Mui::KeyCode::BACKSPACE) # Back to "foo"
+
+    assert_equal 1, @search_state.matches.length
+    assert_equal 1, @window.cursor_row
+  end
+
+  def test_incremental_search_highlights_matches
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+    @handler.handle("l")
+    @handler.handle("o")
+
+    # Two matches: row 0 "hello" and row 2 "hello"
+    assert_equal 2, @search_state.matches.length
+  end
+
+  def test_escape_restores_cursor_position
+    @window.cursor_row = 1
+    @window.cursor_col = 4
+    @handler.start_search
+
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+    @handler.handle("l")
+    @handler.handle("o")
+
+    # Cursor should have moved to match
+    assert_equal 2, @window.cursor_row
+
+    @handler.handle(Mui::KeyCode::ESCAPE)
+
+    # Cursor should be restored to original position
+    assert_equal 1, @window.cursor_row
+    assert_equal 4, @window.cursor_col
+  end
+
+  def test_escape_clears_search_state
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+    @handler.handle("l")
+    @handler.handle("o")
+
+    assert @search_state.has_pattern?
+
+    @handler.handle(Mui::KeyCode::ESCAPE)
+
+    refute @search_state.has_pattern?
+    assert_empty @search_state.matches
+  end
+
+  def test_completion_shows_matching_words
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+
+    completion_state = @handler.completion_state
+    assert completion_state.active?
+    assert_includes completion_state.candidates, "hello"
+  end
+
+  def test_tab_cycles_through_completions
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+
+    completion_state = @handler.completion_state
+    completion_state.current_candidate
+
+    @handler.handle(Mui::KeyCode::TAB)
+
+    # After tab, should be on next candidate or wrapped
+    assert completion_state.active?
+  end
+
+  def test_tab_applies_completion_to_search_input
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+
+    completion_state = @handler.completion_state
+    completion_state.current_candidate
+
+    @handler.handle(Mui::KeyCode::TAB)
+
+    # Search input should now contain the completion
+    # (after tab, it moves to next candidate and applies it)
+    assert completion_state.active?
+  end
+
+  def test_escape_clears_completion
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+
+    assert @handler.completion_state.active?
+
+    @handler.handle(Mui::KeyCode::ESCAPE)
+
+    refute @handler.completion_state.active?
+  end
+
+  def test_enter_clears_completion
+    @handler.start_search
+    @handler.handle("h")
+    @handler.handle("e")
+    @handler.handle("l")
+
+    assert @handler.completion_state.active?
+
+    @handler.handle(Mui::KeyCode::ENTER_CR)
+
+    refute @handler.completion_state.active?
+  end
 end

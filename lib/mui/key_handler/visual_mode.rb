@@ -85,6 +85,10 @@ module Mui
         when '"'
           @pending_motion = :register_select
           result
+        when "*"
+          handle_search_selection(:forward)
+        when "#"
+          handle_search_selection(:backward)
         else
           result
         end
@@ -134,6 +138,41 @@ module Mui
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
         result(mode: Mode::NORMAL, clear_selection: true)
+      end
+
+      def handle_search_selection(direction)
+        range = @selection.normalized_range
+        text = if @selection.line_mode
+                 # For line mode, use the full line content (trimmed)
+                 buffer.line(range[:start_row]).strip
+               else
+                 extract_selection_text(range)
+               end
+
+        return result(mode: Mode::NORMAL, clear_selection: true) if text.empty?
+
+        # Escape special regex characters for literal search
+        escaped_pattern = Regexp.escape(text)
+
+        # Set search state and find matches
+        search_state = @mode_manager.search_state
+        search_state.set_pattern(escaped_pattern, direction)
+        search_state.find_all_matches(buffer)
+
+        # Find next/previous match from current position
+        match = if direction == :forward
+                  search_state.find_next(cursor_row, cursor_col)
+                else
+                  search_state.find_previous(cursor_row, cursor_col)
+                end
+
+        if match
+          window.cursor_row = match[:row]
+          window.cursor_col = match[:col]
+          result(mode: Mode::NORMAL, clear_selection: true)
+        else
+          result(mode: Mode::NORMAL, clear_selection: true, message: "Pattern not found: #{text}")
+        end
       end
 
       def yank_lines(range)

@@ -799,4 +799,88 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert_equal "hello", @buffer.line(0)
     end
   end
+
+  class TestSearchSelection < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.insert_line(1, "foo bar")
+      @buffer.insert_line(2, "hello again")
+      @window = Mui::Window.new(@buffer)
+      @search_state = Mui::SearchState.new
+      @mode_manager = MockModeManager.new(@window, search_state: @search_state)
+    end
+
+    def test_star_searches_selection_forward
+      @window.cursor_col = 0
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(0, 4) # Select "hello"
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection)
+
+      result = @handler.handle("*")
+
+      assert_equal Mui::Mode::NORMAL, result.mode
+      assert result.clear_selection?
+      # Should find next "hello" at row 2
+      assert_equal 2, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_hash_searches_selection_backward
+      @window.cursor_row = 2
+      @window.cursor_col = 0
+      @selection = Mui::Selection.new(2, 0)
+      @selection.update_end(2, 4) # Select "hello"
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection)
+
+      result = @handler.handle("#")
+
+      assert_equal Mui::Mode::NORMAL, result.mode
+      # Should find previous "hello" at row 0
+      assert_equal 0, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_star_escapes_regex_special_chars
+      @buffer.lines[0] = "foo.bar"
+      @buffer.insert_line(1, "foo.bar again")
+      @window.cursor_col = 0
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(0, 6) # Select "foo.bar"
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection)
+
+      @handler.handle("*")
+
+      # Should match literal "foo.bar", not "foo" + any char + "bar"
+      assert_equal 1, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_star_sets_search_state
+      @window.cursor_col = 0
+      @selection = Mui::Selection.new(0, 0)
+      @selection.update_end(0, 4) # Select "hello"
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection)
+
+      @handler.handle("*")
+
+      assert @search_state.has_pattern?
+      assert_equal 2, @search_state.matches.length # Two "hello" matches
+    end
+
+    def test_star_with_no_match_returns_message
+      @window.cursor_col = 0
+      @selection = Mui::Selection.new(0, 0)
+      @buffer.lines[0] = "unique_text"
+      @buffer.lines[1] = "something else"
+      @buffer.lines[2] = "another line"
+      @selection.update_end(0, 10) # Select "unique_text"
+      @handler = Mui::KeyHandler::VisualMode.new(@mode_manager, @buffer, @selection)
+
+      result = @handler.handle("*")
+
+      # Only one match (the selected text itself), so find_next wraps to same position
+      assert_equal Mui::Mode::NORMAL, result.mode
+    end
+  end
 end

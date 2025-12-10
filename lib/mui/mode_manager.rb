@@ -171,12 +171,14 @@ module Mui
     def handle_search_forward_transition
       @search_input.clear
       @search_input.set_prompt("/")
+      @key_handlers[Mode::SEARCH_FORWARD].start_search
       @mode = Mode::SEARCH_FORWARD
     end
 
     def handle_search_backward_transition
       @search_input.clear
       @search_input.set_prompt("?")
+      @key_handlers[Mode::SEARCH_BACKWARD].start_search
       @mode = Mode::SEARCH_BACKWARD
     end
   end

@@ -1,6 +1,23 @@
 ## [Unreleased]
 
 ### Added
+- Incremental search (incsearch):
+  - Search results highlight in real-time as you type
+  - Cursor moves to first match while typing
+  - Escape cancels search and restores original cursor position
+  - Backspace updates search results incrementally
+  - Works with both forward (`/`) and backward (`?`) search
+  - Word completion popup shows matching words from buffer as you type
+  - Tab/Shift+Tab to cycle through completion candidates
+  - Completions are extracted from buffer content (identifiers and words)
+- Word search commands (`*` and `#`):
+  - Normal mode: `*` searches forward for word under cursor
+  - Normal mode: `#` searches backward for word under cursor
+  - Uses word boundaries (`\b`) for whole-word matching (Vim behavior)
+  - Visual mode: `*`/`#` searches for selected text
+  - Works in both Visual mode (`v`) and Visual Line mode (`V`)
+  - Special regex characters are escaped for literal matching
+  - Search state is updated so `n`/`N` continues to find matches
 - Visual mode indent commands (Vim-compatible):
   - `>` to add indent to selected lines (shiftwidth spaces or tab)
   - `<` to remove indent from selected lines
