@@ -230,7 +230,13 @@
   - Add style resolution cache to avoid repeated hash merges
   - Reduce hash lookups in token cache by inlining cache validation
 
-
+### Fixed
+- Register is now shared globally across tabs and split windows
+  - Yank in one tab/window can be pasted in another
+  - Previously each ModeManager had its own Register instance
+- Visual mode operations now correctly use the active window's buffer
+  - Fixed yank/delete/change/indent operations using stale buffer reference after tab or window switch
+  - Operations now properly target the current active window's buffer
 
 ## [0.1.0] - 2025-11-30
 

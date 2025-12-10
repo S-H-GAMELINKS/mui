@@ -70,6 +70,10 @@ module Mui
       @plugin_manager ||= PluginManager.new
     end
 
+    def register
+      @register ||= Register.new
+    end
+
     def set(key, value)
       config.set(key, value)
     end
@@ -103,6 +107,7 @@ module Mui
     def reset_config!
       @config = nil
       @plugin_manager = nil
+      @register = nil
     end
   end
 end

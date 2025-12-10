@@ -10,6 +10,8 @@ class ScriptRunner
   attr_reader :editor, :log
 
   def initialize(file_path = nil)
+    # Reset global register to ensure test isolation
+    Mui.reset_config!
     @editor = Mui::Editor.new(file_path, adapter: test_adapter, load_config: false)
     @log = []
   end

@@ -137,7 +137,7 @@ module Mui
       end
 
       def yank_lines(range)
-        lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
+        lines = (range[:start_row]..range[:end_row]).map { |r| buffer.line(r) }
         @register.yank(lines.join("\n"), linewise: true, name: @pending_register)
       end
 
@@ -148,11 +148,11 @@ module Mui
 
       def extract_selection_text(range)
         if range[:start_row] == range[:end_row]
-          @buffer.line(range[:start_row])[range[:start_col]..range[:end_col]] || ""
+          buffer.line(range[:start_row])[range[:start_col]..range[:end_col]] || ""
         else
           lines = []
           (range[:start_row]..range[:end_row]).each do |row|
-            line = @buffer.line(row)
+            line = buffer.line(row)
             lines << if row == range[:start_row]
                        line[range[:start_col]..]
                      elsif row == range[:end_row]
@@ -166,13 +166,13 @@ module Mui
       end
 
       def change_lines(range)
-        lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
+        lines = (range[:start_row]..range[:end_row]).map { |r| buffer.line(r) }
         @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
         @undo_manager&.begin_group
         (range[:end_row] - range[:start_row] + 1).times do
-          @buffer.delete_line(range[:start_row])
+          buffer.delete_line(range[:start_row])
         end
-        @buffer.insert_line(range[:start_row])
+        buffer.insert_line(range[:start_row])
         # NOTE: group will be closed when leaving Insert mode
         self.cursor_row = range[:start_row]
         self.cursor_col = 0
@@ -181,32 +181,32 @@ module Mui
       def change_range(range)
         text = extract_selection_text(range)
         @register.delete(text, linewise: false, name: @pending_register)
-        @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
+        buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
-        window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(buffer)
       end
 
       def delete_lines(range)
-        lines = (range[:start_row]..range[:end_row]).map { |r| @buffer.line(r) }
+        lines = (range[:start_row]..range[:end_row]).map { |r| buffer.line(r) }
         @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
         @undo_manager&.begin_group unless @undo_manager&.in_group?
         (range[:end_row] - range[:start_row] + 1).times do
-          @buffer.delete_line(range[:start_row])
+          buffer.delete_line(range[:start_row])
         end
         @undo_manager&.end_group
-        self.cursor_row = [range[:start_row], @buffer.line_count - 1].min
+        self.cursor_row = [range[:start_row], buffer.line_count - 1].min
         self.cursor_col = 0
-        window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(buffer)
       end
 
       def delete_range(range)
         text = extract_selection_text(range)
         @register.delete(text, linewise: false, name: @pending_register)
-        @buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
+        buffer.delete_range(range[:start_row], range[:start_col], range[:end_row], range[:end_col])
         self.cursor_row = range[:start_row]
         self.cursor_col = range[:start_col]
-        window.clamp_cursor_to_line(@buffer)
+        window.clamp_cursor_to_line(buffer)
       end
 
       def handle_indent(direction)
@@ -219,7 +219,7 @@ module Mui
 
         if Mui.config.get(:reselect_after_indent)
           # Keep selection for continuous indent adjustment
-          @selection.update_end(range[:end_row], @buffer.line(range[:end_row]).length)
+          @selection.update_end(range[:end_row], buffer.line(range[:end_row]).length)
           result
         else
           result(mode: Mode::NORMAL, clear_selection: true)
@@ -251,15 +251,15 @@ module Mui
       end
 
       def add_indent(row, indent_string)
-        return if @buffer.line(row).empty? # Skip empty lines
+        return if buffer.line(row).empty? # Skip empty lines
 
         indent_string.reverse.each_char do |char|
-          @buffer.insert_char(row, 0, char)
+          buffer.insert_char(row, 0, char)
         end
       end
 
       def remove_indent(row, width)
-        line = @buffer.line(row)
+        line = buffer.line(row)
         return if line.empty? # Skip empty lines
 
         removed = 0
@@ -271,9 +271,9 @@ module Mui
           char_width = char == "\t" ? Mui.config.get(:tabstop) : 1
           break if removed + char_width > width && char == "\t"
 
-          @buffer.delete_char(row, 0)
+          buffer.delete_char(row, 0)
           removed += char_width
-          line = @buffer.line(row)
+          line = buffer.line(row)
         end
       end
 

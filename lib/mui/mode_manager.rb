@@ -6,13 +6,13 @@ module Mui
     attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor,
                 :last_visual_selection
 
-    def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil)
+    def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil, register: nil)
       @tab_manager = window.is_a?(TabManager) ? window : nil
       @window_manager = window.is_a?(WindowManager) ? window : nil
       @window = !@tab_manager && !@window_manager ? window : nil
       @buffer = buffer
       @command_line = command_line
-      @register = Register.new
+      @register = register || Mui.register
       @undo_manager = undo_manager
       @editor = editor
       @search_state = SearchState.new
