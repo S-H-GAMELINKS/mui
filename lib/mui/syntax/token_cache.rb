@@ -22,14 +22,16 @@ module Mui
       def tokens_for(row, line, _buffer_lines)
         line_hash = line.hash
 
-        # Check cache validity
-        return @cache[row][:tokens] if valid_cache?(row, line_hash)
+        # Check cache validity (single hash lookup)
+        cached = @cache[row]
+        return cached[:tokens] if cached && cached[:line_hash] == line_hash
 
         # Get state from previous line's cache (if available)
         # If not available, assume nil (no multiline state)
         # This trades accuracy for performance - multiline constructs
         # may not highlight correctly until user scrolls through the file
-        state_before = @cache[row - 1]&.dig(:state_after)
+        prev_cached = @cache[row - 1]
+        state_before = prev_cached&.dig(:state_after)
 
         # Tokenize this line
         tokens, state_after = @lexer.tokenize(line, state_before)
@@ -61,9 +63,11 @@ module Mui
           next if line.nil?
 
           line_hash = line.hash
-          next if valid_cache?(row, line_hash)
+          cached = @cache[row]
+          next if cached && cached[:line_hash] == line_hash
 
-          state_before = @cache[row - 1]&.dig(:state_after)
+          prev_cached = @cache[row - 1]
+          state_before = prev_cached&.dig(:state_after)
           tokens, state_after = @lexer.tokenize(line, state_before)
 
           @cache[row] = {
@@ -89,15 +93,6 @@ module Mui
       # Check if a row has cached data
       def cached?(row)
         @cache.key?(row)
-      end
-
-      private
-
-      def valid_cache?(row, line_hash)
-        return false unless @cache.key?(row)
-
-        cached = @cache[row]
-        cached[:line_hash] == line_hash
       end
     end
   end

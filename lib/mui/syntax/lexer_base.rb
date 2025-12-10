@@ -83,18 +83,18 @@ module Mui
       private
 
       # Get compiled patterns (cached)
+      # Uses \G anchor for efficient matching at specific position
       def compiled_patterns
         @compiled_patterns ||= token_patterns.map do |type, pattern|
-          [type, /\A#{pattern}/]
+          [type, /\G#{pattern}/]
         end
       end
 
       def match_token(line, pos)
-        remainder = line[pos..]
-        return nil if remainder.nil? || remainder.empty?
+        return nil if pos >= line.length
 
         compiled_patterns.each do |type, pattern|
-          match = pattern.match(remainder)
+          match = pattern.match(line, pos)
           next unless match
 
           text = match[0]

@@ -5,6 +5,7 @@ module Mui
     def initialize(color_scheme)
       @color_scheme = color_scheme
       @highlighters = []
+      @resolved_styles = {} # Cache for resolved styles
     end
 
     def add_highlighter(highlighter)
@@ -72,16 +73,21 @@ module Mui
     end
 
     def build_events(highlights, line_length)
+      return [] if highlights.empty?
+
       events = []
       highlights.each do |h|
         start_col = [h.start_col, 0].max
         end_col = [h.end_col, line_length - 1].min
         next if start_col > end_col
 
-        events << { pos: start_col, type: :start, highlight: h }
-        events << { pos: end_col + 1, type: :end, highlight: h }
+        events << [start_col, 1, h] # 1 = start (sorted after end at same position)
+        events << [end_col + 1, 0, h] # 0 = end
       end
-      events.sort_by! { |e| [e[:pos], e[:type] == :end ? 0 : 1] }
+      # Sort by position, then by type (end before start at same position)
+      events.sort!
+      # Convert back to hash format
+      events.map! { |pos, type, h| { pos:, type: type == 1 ? :start : :end, highlight: h } }
       events
     end
 
@@ -97,14 +103,20 @@ module Mui
     end
 
     def resolve_style(style)
+      # Use cached resolved style if available
+      return @resolved_styles[style] if @resolved_styles.key?(style)
+
       style_hash = @color_scheme[style]
-      return style_hash if style_hash[:bg]
+      resolved = if style_hash[:bg]
+                   style_hash
+                 else
+                   # Inherit background from :normal if not specified
+                   normal_style = @color_scheme[:normal]
+                   normal_style ? style_hash.merge(bg: normal_style[:bg]) : style_hash
+                 end
 
-      # Inherit background from :normal if not specified
-      normal_style = @color_scheme[:normal]
-      return style_hash unless normal_style
-
-      style_hash.merge(bg: normal_style[:bg])
+      @resolved_styles[style] = resolved
+      resolved
     end
   end
 end

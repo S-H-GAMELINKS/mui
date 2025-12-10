@@ -5,56 +5,47 @@ module Mui
     module Lexers
       # Lexer for C source code
       class CLexer < LexerBase
-        # Type keywords (data types)
-        TYPES = %w[
-          char double float int long short signed unsigned void
-          _Bool _Complex _Imaginary
+        # Pre-compiled patterns with \G anchor for position-specific matching
+        # These are compiled once at class load time
+        COMPILED_PATTERNS = [
+          # Single line comment
+          [:comment, %r{\G//.*}],
+          # Single-line block comment /* ... */ on one line
+          [:comment, %r{\G/\*.*?\*/}],
+          # Double quoted string (with escape handling)
+          [:string, /\G"(?:[^"\\]|\\.)*"/],
+          # Character literal
+          [:char, /\G'(?:[^'\\]|\\.)*'/],
+          # Preprocessor directives
+          [:preprocessor, /\G^\s*#\s*(?:include|define|undef|ifdef|ifndef|if|else|elif|endif|error|pragma|line)\b.*/],
+          # Float numbers (must be before integer)
+          [:number, /\G\b\d+\.\d+(?:e[+-]?\d+)?[fFlL]?\b/i],
+          # Hexadecimal
+          [:number, /\G\b0x[0-9a-fA-F]+[uUlL]*\b/],
+          # Octal
+          [:number, /\G\b0[0-7]+[uUlL]*\b/],
+          # Integer
+          [:number, /\G\b\d+[uUlL]*\b/],
+          # Type keywords (int, char, void, etc.)
+          [:type, /\G\b(?:char|double|float|int|long|short|signed|unsigned|void|_Bool|_Complex|_Imaginary)\b/],
+          # Other keywords (if, for, return, const, static, etc.)
+          [:keyword, /\G\b(?:auto|break|case|const|continue|default|do|else|enum|extern|for|goto|if|register|return|sizeof|static|struct|switch|typedef|union|volatile|while|inline|restrict|_Alignas|_Alignof|_Atomic|_Generic|_Noreturn|_Static_assert|_Thread_local)\b/],
+          # Identifiers
+          [:identifier, /\G\b[a-zA-Z_][a-zA-Z0-9_]*\b/],
+          # Operators
+          [:operator, %r{\G(?:[+\-*/%&|^~<>=!]+|->|<<|>>|\+\+|--)}]
         ].freeze
 
-        # Storage class and other keywords
-        KEYWORDS = %w[
-          auto break case const continue default do
-          else enum extern for goto if register
-          return sizeof static struct switch typedef
-          union volatile while
-          inline restrict
-          _Alignas _Alignof _Atomic _Generic _Noreturn _Static_assert _Thread_local
-        ].freeze
-
-        TYPE_PATTERN = /\b(?:#{TYPES.join("|")})\b/
-        KEYWORD_PATTERN = /\b(?:#{KEYWORDS.join("|")})\b/
+        # Multiline comment patterns (pre-compiled)
+        BLOCK_COMMENT_END = %r{\*/}
+        BLOCK_COMMENT_START = %r{/\*}
+        BLOCK_COMMENT_START_ANCHOR = %r{\A/\*}
 
         protected
 
-        def token_patterns
-          @token_patterns ||= [
-            # Single line comment
-            [:comment, %r{//.*}],
-            # Single-line block comment /* ... */ on one line
-            [:comment, %r{/\*.*?\*/}],
-            # Double quoted string (with escape handling)
-            [:string, /"(?:[^"\\]|\\.)*"/],
-            # Character literal
-            [:char, /'(?:[^'\\]|\\.)*'/],
-            # Preprocessor directives
-            [:preprocessor, /^\s*#\s*(?:include|define|undef|ifdef|ifndef|if|else|elif|endif|error|pragma|line)\b.*/],
-            # Float numbers (must be before integer)
-            [:number, /\b\d+\.\d+(?:e[+-]?\d+)?[fFlL]?\b/i],
-            # Hexadecimal
-            [:number, /\b0x[0-9a-fA-F]+[uUlL]*\b/],
-            # Octal
-            [:number, /\b0[0-7]+[uUlL]*\b/],
-            # Integer
-            [:number, /\b\d+[uUlL]*\b/],
-            # Type keywords (int, char, void, etc.)
-            [:type, TYPE_PATTERN],
-            # Other keywords (if, for, return, const, static, etc.)
-            [:keyword, KEYWORD_PATTERN],
-            # Identifiers
-            [:identifier, /\b[a-zA-Z_][a-zA-Z0-9_]*\b/],
-            # Operators
-            [:operator, %r{[+\-*/%&|^~<>=!]+|->|<<|>>|\+\+|--}]
-          ]
+        # Use pre-compiled class-level patterns
+        def compiled_patterns
+          COMPILED_PATTERNS
         end
 
         # Handle /* ... */ block comments that span multiple lines
@@ -62,7 +53,7 @@ module Mui
           return [nil, nil, pos] unless state == :block_comment
 
           # Look for */
-          end_match = line[pos..].match(%r{\*/})
+          end_match = line[pos..].match(BLOCK_COMMENT_END)
           if end_match
             end_pos = pos + end_match.begin(0) + 1
             text = line[pos..end_pos]
@@ -93,7 +84,7 @@ module Mui
           rest = line[pos..]
 
           # Check for /* that doesn't have a matching */ on this line
-          start_match = rest.match(%r{/\*})
+          start_match = rest.match(BLOCK_COMMENT_START)
           return [nil, nil, pos] unless start_match
 
           start_pos = pos + start_match.begin(0)
@@ -120,7 +111,7 @@ module Mui
 
         def match_token(line, pos)
           # First check for start of multiline comment
-          if line[pos..].match?(%r{\A/\*})
+          if line[pos..].match?(BLOCK_COMMENT_START_ANCHOR)
             rest = line[(pos + 2)..]
             unless rest&.include?("*/")
               # This will be handled by check_multiline_start

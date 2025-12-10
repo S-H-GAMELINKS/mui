@@ -223,6 +223,14 @@
   - Integration tests in `test/integration/`
   - E2E tests in `test/e2e/`
 - Refactored test files to use nested classes per method for better readability
+- Improved syntax highlighting performance:
+  - Use `\G` anchor for position-specific regex matching to avoid substring allocation
+  - Pre-compile all regex patterns as class-level constants for one-time compilation at class load
+  - Optimize event sorting in line renderer using array tuples instead of hash arrays
+  - Add style resolution cache to avoid repeated hash merges
+  - Reduce hash lookups in token cache by inlining cache validation
+
+
 
 ## [0.1.0] - 2025-11-30
 
