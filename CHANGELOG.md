@@ -1,6 +1,13 @@
 ## [Unreleased]
 
 ### Added
+- Custom highlighter support for buffers:
+  - `Buffer#custom_highlighters(color_scheme)` method for buffer-specific highlighting
+  - Window automatically applies custom highlighters from buffer
+  - Enables plugins to provide syntax highlighting for special buffers (e.g., diff output)
+- Diff highlighting color definitions:
+  - Added `diff_add`, `diff_delete`, `diff_hunk`, `diff_header` to ColorScheme elements
+  - All themes now include diff highlighting colors
 - Incremental search (incsearch):
   - Search results highlight in real-time as you type
   - Cursor moves to first match while typing
@@ -248,6 +255,10 @@
   - Reduce hash lookups in token cache by inlining cache validation
 
 ### Fixed
+- Plugin keymap handler now correctly uses active window's buffer instead of initial buffer
+  - Fixes issue where buffer-specific keymaps didn't work in split windows
+- Plugin keymap handler now properly returns handler result
+  - Allows buffer-specific keymaps to conditionally pass through to built-in handlers
 - Auto-indent on newline in Insert mode
   - Pressing Enter preserves indentation from the current line
   - Leading whitespace (spaces and tabs) is automatically inserted on the new line

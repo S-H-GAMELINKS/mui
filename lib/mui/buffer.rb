@@ -20,6 +20,12 @@ module Mui
       @readonly
     end
 
+    # Override in subclasses to provide buffer-specific highlighters
+    # @return [Array<Highlighters::Base>] array of highlighter instances
+    def custom_highlighters(_color_scheme)
+      []
+    end
+
     # Set content directly (for scratch buffers)
     def content=(text)
       @lines = text.split("\n", -1)

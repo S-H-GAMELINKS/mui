@@ -28,6 +28,7 @@ module Mui
       @scroll_row = 0
       @scroll_col = 0
       @syntax_highlighter.buffer = new_buffer
+      @line_renderer = create_line_renderer
       @status_line_renderer = StatusLineRenderer.new(new_buffer, self, @color_scheme)
     end
 
@@ -114,6 +115,12 @@ module Mui
       renderer.add_highlighter(@syntax_highlighter)
       renderer.add_highlighter(Highlighters::SelectionHighlighter.new(@color_scheme))
       renderer.add_highlighter(Highlighters::SearchHighlighter.new(@color_scheme))
+
+      # Add buffer-specific custom highlighters
+      @buffer.custom_highlighters(@color_scheme).each do |highlighter|
+        renderer.add_highlighter(highlighter)
+      end
+
       renderer
     end
 

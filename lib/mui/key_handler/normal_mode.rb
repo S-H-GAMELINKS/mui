@@ -49,11 +49,17 @@ module Mui
 
         context = CommandContext.new(
           editor: @mode_manager.editor,
-          buffer: @buffer,
+          buffer:,
           window:
         )
-        plugin_handler.call(context)
-        result
+        handler_result = plugin_handler.call(context)
+
+        # If handler returns nil/false, let built-in handle it
+        # This allows buffer-specific keymaps to pass through for other buffers
+        return nil unless handler_result
+
+        # Return a valid result to indicate the key was handled
+        handler_result.is_a?(HandlerResult::NormalModeResult) ? handler_result : result
       end
 
       private

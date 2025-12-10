@@ -70,6 +70,10 @@ class TestColorScheme < Minitest::Test
       syntax_global_variable
       syntax_method_call
       syntax_type
+      diff_add
+      diff_delete
+      diff_hunk
+      diff_header
     ]
     assert_equal expected_elements, Mui::ColorScheme::ELEMENTS
   end

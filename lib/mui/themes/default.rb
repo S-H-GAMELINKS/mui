@@ -32,6 +32,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :red
       scheme.define :syntax_method_call, fg: :blue
       scheme.define :syntax_type, fg: :green
+      # Diff highlighting
+      scheme.define :diff_add, fg: :green
+      scheme.define :diff_delete, fg: :red
+      scheme.define :diff_hunk, fg: :cyan
+      scheme.define :diff_header, fg: :yellow, bold: true
       scheme
     end
 
@@ -65,6 +70,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :solarized_red
       scheme.define :syntax_method_call, fg: :solarized_blue
       scheme.define :syntax_type, fg: :solarized_yellow
+      # Diff highlighting
+      scheme.define :diff_add, fg: :solarized_green
+      scheme.define :diff_delete, fg: :solarized_red
+      scheme.define :diff_hunk, fg: :solarized_cyan
+      scheme.define :diff_header, fg: :solarized_yellow, bold: true
       scheme
     end
 
@@ -98,6 +108,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :solarized_red
       scheme.define :syntax_method_call, fg: :solarized_blue
       scheme.define :syntax_type, fg: :solarized_yellow
+      # Diff highlighting
+      scheme.define :diff_add, fg: :solarized_green
+      scheme.define :diff_delete, fg: :solarized_red
+      scheme.define :diff_hunk, fg: :solarized_cyan
+      scheme.define :diff_header, fg: :solarized_yellow, bold: true
       scheme
     end
 
@@ -131,6 +146,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :monokai_pink
       scheme.define :syntax_method_call, fg: :monokai_green
       scheme.define :syntax_type, fg: :monokai_cyan
+      # Diff highlighting
+      scheme.define :diff_add, fg: :monokai_green
+      scheme.define :diff_delete, fg: :monokai_pink
+      scheme.define :diff_hunk, fg: :monokai_cyan
+      scheme.define :diff_header, fg: :monokai_yellow, bold: true
       scheme
     end
 
@@ -164,6 +184,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :nord_aurora_red
       scheme.define :syntax_method_call, fg: :nord_frost1
       scheme.define :syntax_type, fg: :nord_frost3
+      # Diff highlighting
+      scheme.define :diff_add, fg: :nord_aurora_green
+      scheme.define :diff_delete, fg: :nord_aurora_red
+      scheme.define :diff_hunk, fg: :nord_frost1
+      scheme.define :diff_header, fg: :nord_aurora_yellow, bold: true
       scheme
     end
 
@@ -196,6 +221,11 @@ module Mui
       scheme.define :syntax_instance_variable, fg: :gruvbox_blue
       scheme.define :syntax_global_variable, fg: :gruvbox_red
       scheme.define :syntax_method_call, fg: :gruvbox_aqua
+      # Diff highlighting
+      scheme.define :diff_add, fg: :gruvbox_green
+      scheme.define :diff_delete, fg: :gruvbox_red
+      scheme.define :diff_hunk, fg: :gruvbox_aqua
+      scheme.define :diff_header, fg: :gruvbox_yellow, bold: true
       scheme
     end
 
@@ -229,6 +259,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :dracula_red
       scheme.define :syntax_method_call, fg: :dracula_green
       scheme.define :syntax_type, fg: :dracula_cyan
+      # Diff highlighting
+      scheme.define :diff_add, fg: :dracula_green
+      scheme.define :diff_delete, fg: :dracula_red
+      scheme.define :diff_hunk, fg: :dracula_cyan
+      scheme.define :diff_header, fg: :dracula_yellow, bold: true
       scheme
     end
 
@@ -262,6 +297,11 @@ module Mui
       scheme.define :syntax_global_variable, fg: :tokyo_red
       scheme.define :syntax_method_call, fg: :tokyo_blue
       scheme.define :syntax_type, fg: :tokyo_cyan
+      # Diff highlighting
+      scheme.define :diff_add, fg: :tokyo_green
+      scheme.define :diff_delete, fg: :tokyo_red
+      scheme.define :diff_hunk, fg: :tokyo_cyan
+      scheme.define :diff_header, fg: :tokyo_yellow, bold: true
       scheme
     end
   end
