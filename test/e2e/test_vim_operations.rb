@@ -587,4 +587,62 @@ class TestE2EVimOperations < Minitest::Test
       .assert_line(3, "Line 3")
       .assert_cursor(1, 0) # Cursor stays on pasted line
   end
+
+  def test_goto_line_command
+    # Scenario: Jump to specific line with :number command
+    runner = ScriptRunner.new
+
+    # Create 10 lines
+    runner.type("i")
+    10.times do |i|
+      runner.type("Line #{i + 1}")
+      runner.type("<Enter>") if i < 9
+    end
+    runner.type("<Esc>")
+
+    runner
+      .assert_line_count(10)
+      .assert_cursor(9, 6) # Last position
+
+    # Jump to line 5
+    runner
+      .type(":5<Enter>")
+      .assert_cursor(4, 0) # Line 5 (0-indexed = 4), column 0
+      .assert_mode(Mui::Mode::NORMAL)
+
+    # Jump to line 1
+    runner
+      .type(":1<Enter>")
+      .assert_cursor(0, 0) # Line 1 (0-indexed = 0), column 0
+
+    # Jump to line 10
+    runner
+      .type(":10<Enter>")
+      .assert_cursor(9, 0) # Line 10 (0-indexed = 9), column 0
+  end
+
+  def test_goto_line_clamps_to_valid_range
+    # Scenario: Jump beyond file bounds gets clamped
+    runner = ScriptRunner.new
+
+    # Create 5 lines
+    runner.type("i")
+    5.times do |i|
+      runner.type("Line #{i + 1}")
+      runner.type("<Enter>") if i < 4
+    end
+    runner.type("<Esc>")
+
+    runner.assert_line_count(5)
+
+    # Jump to line 100 (should clamp to last line 5)
+    runner
+      .type(":100<Enter>")
+      .assert_cursor(4, 0) # Clamped to line 5 (0-indexed = 4)
+
+    # Jump to line 0 (should clamp to line 1)
+    runner
+      .type(":0<Enter>")
+      .assert_cursor(0, 0) # Clamped to line 1 (0-indexed = 0)
+  end
 end

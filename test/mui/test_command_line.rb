@@ -188,6 +188,38 @@ class TestCommandLine < Minitest::Test
 
       assert_equal({ action: :write }, result)
     end
+
+    def test_goto_line_single_digit
+      "5".each_char { |c| @command_line.input(c) }
+
+      result = @command_line.execute
+
+      assert_equal({ action: :goto_line, line_number: 5 }, result)
+    end
+
+    def test_goto_line_multiple_digits
+      "123".each_char { |c| @command_line.input(c) }
+
+      result = @command_line.execute
+
+      assert_equal({ action: :goto_line, line_number: 123 }, result)
+    end
+
+    def test_goto_line_zero
+      "0".each_char { |c| @command_line.input(c) }
+
+      result = @command_line.execute
+
+      assert_equal({ action: :goto_line, line_number: 0 }, result)
+    end
+
+    def test_goto_line_one
+      "1".each_char { |c| @command_line.input(c) }
+
+      result = @command_line.execute
+
+      assert_equal({ action: :goto_line, line_number: 1 }, result)
+    end
   end
 
   class TestCompletionContext < Minitest::Test

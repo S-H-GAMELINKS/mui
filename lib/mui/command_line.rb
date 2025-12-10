@@ -112,6 +112,8 @@ module Mui
         { action: :tab_move, position: ::Regexp.last_match(1).to_i }
       when /^(\d+)tabn(?:ext)?/, /^tabn(?:ext)?\s+(\d+)/
         { action: :tab_go, index: ::Regexp.last_match(1).to_i - 1 }
+      when /^(\d+)$/
+        { action: :goto_line, line_number: ::Regexp.last_match(1).to_i }
       else
         { action: :unknown, command: cmd }
       end

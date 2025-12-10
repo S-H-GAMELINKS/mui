@@ -544,6 +544,67 @@ class TestKeyHandlerCommandMode < Minitest::Test
     end
   end
 
+  class TestGotoLineCommand < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      10.times { |i| @buffer.lines[i] = "Line #{i + 1}" }
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @mode_manager = MockModeManager.new(@window)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+    end
+
+    def test_goto_line_five_sets_cursor_to_row_four
+      @command_line.input("5")
+      @handler.handle(13)
+
+      assert_equal 4, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_goto_line_one_sets_cursor_to_row_zero
+      @window.cursor_row = 5
+      @command_line.input("1")
+      @handler.handle(13)
+
+      assert_equal 0, @window.cursor_row
+      assert_equal 0, @window.cursor_col
+    end
+
+    def test_goto_line_ten_sets_cursor_to_row_nine
+      @command_line.input("1")
+      @command_line.input("0")
+      @handler.handle(13)
+
+      assert_equal 9, @window.cursor_row
+    end
+
+    def test_goto_line_over_max_clamps_to_last_line
+      @command_line.input("1")
+      @command_line.input("0")
+      @command_line.input("0")
+      @handler.handle(13)
+
+      # 10 lines means max row is 9
+      assert_equal 9, @window.cursor_row
+    end
+
+    def test_goto_line_0_clamps_to_first_line
+      @window.cursor_row = 5
+      @command_line.input("0")
+      @handler.handle(13)
+
+      assert_equal 0, @window.cursor_row
+    end
+
+    def test_goto_line_returns_normal_mode
+      @command_line.input("5")
+      result = @handler.handle(13)
+
+      assert_equal Mui::Mode::NORMAL, result.mode
+    end
+  end
+
   class TestFileCompletion < Minitest::Test
     def setup
       @buffer = Mui::Buffer.new

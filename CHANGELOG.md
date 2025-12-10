@@ -196,6 +196,10 @@
   - `:wq` to save and quit
   - `:e` to reload current file
   - `:e <filename>` to open file (Vim-compatible: non-existent files open as new buffer)
+  - `:{number}` to jump to specific line (e.g., `:10` jumps to line 10)
+    - Line numbers are 1-indexed (`:1` = first line)
+    - Out-of-range values are clamped (`:0` → first line, `:999` on 100-line file → last line)
+    - Cursor moves to beginning of line (column 0)
 - Curses-based terminal UI with:
   - Buffer management
   - Window with scrolling support

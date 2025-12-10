@@ -156,6 +156,8 @@ module Mui
           handle_tab_go(command_result[:index])
         when :tab_move
           handle_tab_move(command_result[:position])
+        when :goto_line
+          handle_goto_line(command_result[:line_number])
         when :unknown
           # Check plugin commands before reporting unknown
           plugin_result = try_plugin_command(command_result[:command])
@@ -384,6 +386,17 @@ module Mui
           tm.move_tab(position)
           result
         end
+      end
+
+      def handle_goto_line(line_number)
+        # Convert 1-indexed to 0-indexed, clamp to valid range
+        target_row = (line_number - 1).clamp(0, buffer.line_count - 1)
+
+        window.cursor_row = target_row
+        window.cursor_col = 0
+        window.ensure_cursor_visible
+
+        result
       end
 
       def create_buffer_from_path(path)
