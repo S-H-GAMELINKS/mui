@@ -231,6 +231,10 @@
   - Reduce hash lookups in token cache by inlining cache validation
 
 ### Fixed
+- Auto-indent on newline in Insert mode
+  - Pressing Enter preserves indentation from the current line
+  - Leading whitespace (spaces and tabs) is automatically inserted on the new line
+  - Whitespace-only lines are cleared when pressing Escape (Vim behavior)
 - Register is now shared globally across tabs and split windows
   - Yank in one tab/window can be pasted in another
   - Previously each ModeManager had its own Register instance

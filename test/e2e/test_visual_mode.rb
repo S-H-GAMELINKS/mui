@@ -442,8 +442,14 @@ class TestE2EVisualMode < Minitest::Test
   def test_visual_mode_indent_left
     runner = ScriptRunner.new
 
+    # Enter lines without relying on auto-indent
+    # Line 0: "  Line1" (2 spaces)
+    # Line 1: "  Line2" (2 spaces)
+    # Line 2: "Line3" (no indent)
     runner
-      .type("i  Line1<Enter>  Line2<Enter>Line3<Esc>")
+      .type("i  Line1<Esc>")
+      .type("o  Line2<Esc>")
+      .type("oLine3<Esc>")
       .type("gg")
       .type("V")
       .assert_mode(Mui::Mode::VISUAL_LINE)

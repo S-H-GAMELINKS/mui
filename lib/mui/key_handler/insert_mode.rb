@@ -36,8 +36,21 @@ module Mui
 
       def handle_escape
         @undo_manager&.end_group
-        self.cursor_col = cursor_col - 1 if cursor_col.positive?
+        # Remove trailing whitespace from current line if it's whitespace-only (Vim behavior)
+        stripped = strip_trailing_whitespace_if_empty_line
+        # Move cursor back one position unless we just stripped whitespace (cursor already at 0)
+        self.cursor_col = cursor_col - 1 if cursor_col.positive? && !stripped
         result(mode: Mode::NORMAL)
+      end
+
+      def strip_trailing_whitespace_if_empty_line
+        line = buffer.line(cursor_row)
+        return false unless line.match?(/\A[ \t]+\z/)
+
+        # Line contains only whitespace, clear it
+        line.length.times { buffer.delete_char(cursor_row, 0) }
+        self.cursor_col = 0
+        true
       end
 
       def handle_move_left
@@ -78,10 +91,28 @@ module Mui
       end
 
       def handle_enter
+        # Get indent from current line before splitting
+        current_line = buffer.line(cursor_row)
+        indent = extract_indent(current_line)
+
         buffer.split_line(cursor_row, cursor_col)
         self.cursor_row = cursor_row + 1
-        self.cursor_col = 0
+
+        # Insert indent at the beginning of the new line
+        if indent && !indent.empty?
+          indent.each_char.with_index do |char, i|
+            buffer.insert_char(cursor_row, i, char)
+          end
+          self.cursor_col = indent.length
+        else
+          self.cursor_col = 0
+        end
         result
+      end
+
+      def extract_indent(line)
+        match = line.match(/\A([ \t]*)/)
+        match ? match[1] : ""
       end
 
       def handle_character_input(key)

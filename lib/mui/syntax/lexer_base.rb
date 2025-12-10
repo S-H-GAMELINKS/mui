@@ -10,7 +10,7 @@ module Mui
       # @param state [Symbol, nil] the multiline state from the previous line
       # @return [Array<(Array<Token>, Symbol|nil)>] tokens and the ending state
       # TODO: Refactor to reduce complexity (Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity)
-      def tokenize(line, state = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def tokenize(line, state = nil)
         tokens = []
         pos = 0
         current_state = state

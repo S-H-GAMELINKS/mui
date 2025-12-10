@@ -40,7 +40,7 @@ module Mui
       # @param options [Hash] additional options (may include :buffer)
       # @return [Array<Highlight>] highlights for this line
       # TODO: Refactor to reduce complexity (Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity)
-      def highlights_for(row, line, options = {}) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def highlights_for(row, line, options = {})
         return [] unless @lexer
         return [] unless Mui.config.get(:syntax)
 
