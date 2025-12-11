@@ -1,6 +1,11 @@
 ## [Unreleased]
 
 ### Added
+- LSP configuration stub (`Mui.lsp` / `Mui::LspConfigStub`):
+  - Allows `.muirc` to call `Mui.lsp { ... }` before mui-lsp gem is loaded
+  - Stub stores configuration (preset servers via `use`, custom servers via `server`)
+  - When mui-lsp gem loads, configurations are automatically migrated to real `ConfigDsl`
+  - `Mui.lsp_server_configs` returns stored server configurations
 - Floating window (popup) support:
   - `FloatingWindow` class for displaying temporary content like hover info
   - `editor.show_floating(content, max_width:, max_height:)` to show popup at cursor
