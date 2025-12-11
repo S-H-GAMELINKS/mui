@@ -146,6 +146,17 @@ module Mui
         ::Curses.stdscr.nodelay = false
         result
       end
+
+      def suspend
+        ::Curses.def_prog_mode
+        ::Curses.close_screen
+      end
+
+      def resume
+        ::Curses.reset_prog_mode
+        ::Curses.refresh
+        ::Curses.curs_set(1)
+      end
     end
   end
 end

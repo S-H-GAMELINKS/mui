@@ -54,5 +54,37 @@ module Mui
     def open_scratch_buffer(name, content)
       @editor.open_scratch_buffer(name, content)
     end
+
+    # Run an interactive command that needs terminal access (e.g., fzf)
+    # Suspends Curses UI, runs command, resumes UI
+    def run_interactive_command(cmd)
+      require "tempfile"
+
+      @editor.suspend_ui do
+        output_file = Tempfile.new("mui_interactive")
+        begin
+          # Use shell redirection to capture output while keeping stdin/stderr connected to terminal
+          # rubocop:disable Style/SpecialGlobalVars
+          success = system("#{cmd} > #{output_file.path}")
+          status = $?
+          # rubocop:enable Style/SpecialGlobalVars
+          exit_status = status&.exitstatus || 1
+          {
+            stdout: File.read(output_file.path),
+            stderr: "",
+            exit_status:,
+            success: success == true && exit_status.zero?
+          }
+        ensure
+          output_file.close
+          output_file.unlink
+        end
+      end
+    end
+
+    # Check if a command exists in PATH
+    def command_exists?(cmd)
+      system("which #{cmd} > /dev/null 2>&1")
+    end
   end
 end

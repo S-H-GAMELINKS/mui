@@ -51,4 +51,21 @@ class TestCommandContext < Minitest::Test
   def test_editor_accessor
     assert_equal @editor, @context.editor
   end
+
+  def test_command_exists_returns_true_for_existing_command
+    # 'ls' should exist on most Unix systems
+    assert @context.command_exists?("ls")
+  end
+
+  def test_command_exists_returns_false_for_nonexistent_command
+    refute @context.command_exists?("nonexistent_command_12345_xyz")
+  end
+
+  def test_responds_to_run_interactive_command
+    assert_respond_to @context, :run_interactive_command
+  end
+
+  def test_responds_to_command_exists
+    assert_respond_to @context, :command_exists?
+  end
 end

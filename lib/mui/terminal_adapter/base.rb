@@ -75,6 +75,18 @@ module Mui
       def getch_nonblock
         raise MethodNotOverriddenError, __method__
       end
+
+      # Suspend terminal for external interactive command execution
+      # Implementations should save terminal state and exit raw mode
+      def suspend
+        raise MethodNotOverriddenError, __method__
+      end
+
+      # Resume terminal after external interactive command execution
+      # Implementations should restore terminal state and re-enter raw mode
+      def resume
+        raise MethodNotOverriddenError, __method__
+      end
     end
   end
 end

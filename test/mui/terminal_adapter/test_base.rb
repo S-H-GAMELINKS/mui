@@ -136,4 +136,20 @@ class TestTerminalAdapterBase < Minitest::Test
       end
     end
   end
+
+  class TestSuspend < TestTerminalAdapterBase
+    def test_raises_method_not_overridden_error
+      assert_raises(Mui::MethodNotOverriddenError) do
+        @adapter.suspend
+      end
+    end
+  end
+
+  class TestResume < TestTerminalAdapterBase
+    def test_raises_method_not_overridden_error
+      assert_raises(Mui::MethodNotOverriddenError) do
+        @adapter.resume
+      end
+    end
+  end
 end

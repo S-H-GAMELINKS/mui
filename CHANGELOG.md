@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 ### Added
+- Interactive command execution support for plugins:
+  - `TerminalAdapter#suspend` / `#resume` methods for temporarily exiting curses mode
+  - `Editor#suspend_ui` block helper for safe UI suspension
+  - `CommandContext#run_interactive_command(cmd)` to run external interactive commands (e.g., fzf)
+  - `CommandContext#command_exists?(cmd)` to check if external command is available
+  - Enables plugins to integrate with interactive CLI tools like fzf, less, etc.
 - Custom highlighter support for buffers:
   - `Buffer#custom_highlighters(color_scheme)` method for buffer-specific highlighting
   - Window automatically applies custom highlighters from buffer
