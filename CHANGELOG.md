@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.2.0] - 2025-12-12
+
 ### Added
 - Insert mode completion support for LSP:
   - `InsertCompletionState` class for managing LSP completion items
