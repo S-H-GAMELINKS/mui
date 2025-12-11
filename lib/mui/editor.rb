@@ -104,6 +104,14 @@ module Mui
       window_manager.split_horizontal(scratch_buffer)
     end
 
+    # Suspend UI for running external interactive commands (e.g., fzf)
+    def suspend_ui
+      @adapter.suspend
+      yield
+    ensure
+      @adapter.resume
+    end
+
     def handle_key(key)
       @message = nil
       result = @mode_manager.current_handler.handle(key)

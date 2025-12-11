@@ -126,6 +126,14 @@ class TestTerminalAdapterCurses < Minitest::Test
     def test_responds_to_getch_nonblock
       assert_respond_to @adapter, :getch_nonblock
     end
+
+    def test_responds_to_suspend
+      assert_respond_to @adapter, :suspend
+    end
+
+    def test_responds_to_resume
+      assert_respond_to @adapter, :resume
+    end
   end
 
   class TestReadUtf8Char < Minitest::Test

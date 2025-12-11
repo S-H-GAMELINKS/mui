@@ -69,6 +69,18 @@ module Mui
         @input_queue.shift
       end
 
+      def suspend
+        @suspended = true
+      end
+
+      def resume
+        @suspended = false
+      end
+
+      def suspended?
+        @suspended || false
+      end
+
       # Test helpers
 
       def output_at(y, x)
