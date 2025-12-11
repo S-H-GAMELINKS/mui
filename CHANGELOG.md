@@ -343,6 +343,9 @@
   - Character input now inserts at cursor position
 - Empty command (`:` then Enter) no longer crashes
   - Previously caused error when trying to look up empty string as plugin command
+- Buffer word completion now works correctly after opening files with `:e` or `:tabe`
+  - `InsertMode` now uses active window's buffer for `BufferWordCache` instead of initial buffer
+  - Previously, completion would use stale buffer reference after switching files
 
 ## [0.1.0] - 2025-11-30
 

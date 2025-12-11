@@ -9,8 +9,8 @@ module Mui
         @undo_manager = undo_manager
         # Start undo group unless already started (e.g., by change operator)
         @undo_manager&.begin_group unless group_started
-        # Build word cache for fast completion
-        @word_cache = BufferWordCache.new(buffer)
+        # Build word cache for fast completion (use active window's buffer)
+        @word_cache = BufferWordCache.new(self.buffer)
       end
 
       def handle(key)
