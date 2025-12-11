@@ -15,10 +15,6 @@ module Mui
 
       # Get tokens for a specific line, using cache when available
       # Only tokenizes the requested line - does NOT pre-compute previous lines
-      # @param row [Integer] the line number (0-indexed)
-      # @param line [String] the line content
-      # @param buffer_lines [Array<String>] all lines in the buffer (for state propagation)
-      # @return [Array<Token>] the tokens for this line
       def tokens_for(row, line, _buffer_lines)
         line_hash = line.hash
 
@@ -47,9 +43,6 @@ module Mui
       end
 
       # Prefetch tokens for lines around the visible area
-      # @param visible_start [Integer] first visible row
-      # @param visible_end [Integer] last visible row
-      # @param buffer_lines [Array<String>] all lines in the buffer
       def prefetch(visible_start, visible_end, buffer_lines)
         return if buffer_lines.empty?
 
@@ -80,7 +73,6 @@ module Mui
 
       # Invalidate cache from a specific row onwards
       # This is called when a line is modified
-      # @param from_row [Integer] the first row to invalidate
       def invalidate(from_row)
         @cache.delete_if { |row, _| row >= from_row }
       end

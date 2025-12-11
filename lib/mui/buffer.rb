@@ -22,27 +22,21 @@ module Mui
     end
 
     # Override in subclasses to provide buffer-specific highlighters
-    # @return [Array<Highlighters::Base>] array of highlighter instances
     def custom_highlighters(_color_scheme)
       @custom_highlighter_map.values
     end
 
     # Add a custom highlighter with a unique key
-    # @param key [Symbol] Unique key for the highlighter
-    # @param highlighter [Highlighters::Base] Highlighter instance
     def add_custom_highlighter(key, highlighter)
       @custom_highlighter_map[key] = highlighter
     end
 
     # Remove a custom highlighter by key
-    # @param key [Symbol] Key of the highlighter to remove
     def remove_custom_highlighter(key)
       @custom_highlighter_map.delete(key)
     end
 
     # Check if a custom highlighter exists
-    # @param key [Symbol] Key to check
-    # @return [Boolean]
     def custom_highlighter?(key)
       @custom_highlighter_map.key?(key)
     end

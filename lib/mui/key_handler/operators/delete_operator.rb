@@ -6,9 +6,6 @@ module Mui
       # Handles delete operator (d) in Normal mode
       class DeleteOperator < BaseOperator
         # Handle pending delete motion
-        # @param char [String] the character input
-        # @param pending_register [String, nil] the register name
-        # @return [Symbol] result status (:done, :pending_*, or :cancel)
         def handle_pending(char, pending_register: nil)
           @pending_register = pending_register
           case char

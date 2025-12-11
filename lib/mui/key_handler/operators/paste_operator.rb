@@ -6,8 +6,6 @@ module Mui
       # Handles paste operator (p/P) in Normal mode
       class PasteOperator < BaseOperator
         # Paste after cursor (p)
-        # @param pending_register [String, nil] the register name
-        # @return [Symbol] result status (:done)
         def paste_after(pending_register: nil)
           return :done if @register.empty?(name: pending_register)
 
@@ -20,8 +18,6 @@ module Mui
         end
 
         # Paste before cursor (P)
-        # @param pending_register [String, nil] the register name
-        # @return [Symbol] result status (:done)
         def paste_before(pending_register: nil)
           return :done if @register.empty?(name: pending_register)
 

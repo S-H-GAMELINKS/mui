@@ -18,11 +18,6 @@ module Mui
     end
 
     # Show the floating window with content at the specified position
-    # @param content [String, Array<String>] Content to display (string or array of lines)
-    # @param row [Integer] Screen row position
-    # @param col [Integer] Screen column position
-    # @param max_width [Integer, nil] Maximum width (nil for auto)
-    # @param max_height [Integer, nil] Maximum height (nil for auto)
     def show(content, row:, col:, max_width: nil, max_height: nil)
       @content = normalize_content(content)
       @row = row
@@ -52,7 +47,6 @@ module Mui
     end
 
     # Render the floating window to the screen
-    # @param screen [Screen] Screen to render to
     def render(screen)
       return unless @visible
       return if @content.empty?

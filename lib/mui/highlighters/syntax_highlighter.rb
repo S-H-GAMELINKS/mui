@@ -35,10 +35,6 @@ module Mui
       end
 
       # Generate highlights for a line
-      # @param row [Integer] the line number
-      # @param line [String] the line content
-      # @param options [Hash] additional options (may include :buffer)
-      # @return [Array<Highlight>] highlights for this line
       # TODO: Refactor to reduce complexity (Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity)
       def highlights_for(row, line, options = {})
         return [] unless @lexer
@@ -76,8 +72,6 @@ module Mui
       end
 
       # Prefetch tokens for lines around the visible area
-      # @param visible_start [Integer] first visible row
-      # @param visible_end [Integer] last visible row
       def prefetch(visible_start, visible_end)
         return unless @lexer && @token_cache && @buffer
         return unless Mui.config.get(:syntax)

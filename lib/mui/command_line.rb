@@ -49,7 +49,6 @@ module Mui
     end
 
     # Determine completion context based on current buffer
-    # @return [Hash, nil] { type: :command/:file, prefix:, command: } or nil
     def completion_context
       # Check if buffer contains a space (command + argument)
       if @buffer.include?(" ")
@@ -69,8 +68,6 @@ module Mui
     end
 
     # Apply completion result to buffer
-    # @param text [String] the completed text
-    # @param context [Hash] the completion context from completion_context
     def apply_completion(text, context)
       @buffer = if context[:type] == :command
                   text

@@ -6,9 +6,6 @@ module Mui
     # Subclasses should override token_patterns and optionally handle_multiline_state
     class LexerBase
       # Tokenize a single line of text
-      # @param line [String] the line to tokenize
-      # @param state [Symbol, nil] the multiline state from the previous line
-      # @return [Array<(Array<Token>, Symbol|nil)>] tokens and the ending state
       # TODO: Refactor to reduce complexity (Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity)
       def tokenize(line, state = nil)
         tokens = []
@@ -63,19 +60,16 @@ module Mui
       protected
 
       # Override in subclass to define token patterns
-      # @return [Array<Array>] array of [type, pattern] pairs
       def token_patterns
         []
       end
 
       # Override in subclass to handle multiline constructs
-      # @return [Array<(Token|nil, Symbol|nil, Integer)>] token (if any), new state, new position
       def handle_multiline_state(_line, pos, _state)
         [nil, nil, pos]
       end
 
       # Override in subclass to check for multiline construct starts
-      # @return [Array<(Symbol|nil, Token|nil, Integer)>] new state, token (if any), new position
       def check_multiline_start(_line, pos)
         [nil, nil, pos]
       end

@@ -12,9 +12,6 @@ module Mui
     end
 
     # Extract words from buffer that match the given prefix
-    # @param buffer [Buffer] the buffer to search in
-    # @param prefix [String] the search prefix to match
-    # @return [Array<String>] matching words sorted by relevance
     def complete(buffer, prefix)
       return [] if prefix.nil? || prefix.empty?
 

@@ -7,9 +7,6 @@ module Mui
       # Unlike delete/change, yank does not modify the buffer
       class YankOperator < BaseOperator
         # Handle pending yank motion
-        # @param char [String] the character input
-        # @param pending_register [String, nil] the register name
-        # @return [Symbol] result status (:done, :pending_*, or :cancel)
         def handle_pending(char, pending_register: nil)
           @pending_register = pending_register
           case char

@@ -24,8 +24,6 @@ module Mui
       end
 
       # Handle a key input
-      # @param key [String, Integer] the key input
-      # @return [Hash] result with :mode (next mode) and optional :message
       def handle(_key)
         raise MethodNotOverriddenError, "Subclasses must orverride #handle"
       end

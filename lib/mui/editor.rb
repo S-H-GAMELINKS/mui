@@ -147,9 +147,6 @@ module Mui
     end
 
     # Show a floating window with content at the cursor position
-    # @param content [String, Array<String>] Content to display
-    # @param max_width [Integer, nil] Maximum width
-    # @param max_height [Integer, nil] Maximum height
     def show_floating(content, max_width: nil, max_height: nil)
       # Position below cursor
       row = window.screen_cursor_y + 1

@@ -29,8 +29,6 @@ module Mui
 
       class << self
         # Detect language from file path
-        # @param file_path [String, nil] the file path
-        # @return [Symbol, nil] the detected language (:ruby, :c, etc.) or nil
         def detect(file_path)
           return nil if file_path.nil? || file_path.empty?
 
@@ -45,8 +43,6 @@ module Mui
         end
 
         # Get a lexer instance for a language
-        # @param language [Symbol] the language symbol
-        # @return [LexerBase, nil] a lexer instance or nil
         def lexer_for(language)
           case language
           when :ruby
@@ -57,21 +53,17 @@ module Mui
         end
 
         # Get a lexer instance for a file path
-        # @param file_path [String, nil] the file path
-        # @return [LexerBase, nil] a lexer instance or nil
         def lexer_for_file(file_path)
           language = detect(file_path)
           lexer_for(language)
         end
 
         # List all supported languages
-        # @return [Array<Symbol>] supported language symbols
         def supported_languages
           (EXTENSION_MAP.values + BASENAME_MAP.values).uniq
         end
 
         # List all supported extensions
-        # @return [Array<String>] supported file extensions
         def supported_extensions
           EXTENSION_MAP.keys
         end
