@@ -106,10 +106,53 @@ module Mui
       config.load_file(".lmuirc")
     end
 
+    # Stub for LSP configuration DSL
+    # This allows .muirc to call Mui.lsp { ... } before mui-lsp gem is loaded
+    # When mui-lsp is loaded, it replaces this with the real ConfigDsl
+    def lsp(&block)
+      @lsp_config ||= LspConfigStub.new
+      @lsp_config.instance_eval(&block) if block
+      @lsp_config
+    end
+
+    def lsp_server_configs
+      @lsp_config&.server_configs || []
+    end
+  end
+
+  # Stub class for LSP configuration before mui-lsp gem is loaded
+  # Stores configuration to be applied when the actual gem loads
+  class LspConfigStub
+    attr_reader :server_configs
+
+    def initialize
+      @server_configs = []
+    end
+
+    # Stub methods that mirror Mui::Lsp::ConfigDsl
+    def use(name, **options)
+      @server_configs << { type: :preset, name: name.to_sym, options: }
+    end
+
+    def server(name:, command:, language_ids:, file_patterns:, auto_start: true, sync_on_change: true)
+      @server_configs << {
+        type: :custom,
+        name:,
+        command:,
+        language_ids:,
+        file_patterns:,
+        auto_start:,
+        sync_on_change:
+      }
+    end
+  end
+
+  class << self
     def reset_config!
       @config = nil
       @plugin_manager = nil
       @register = nil
+      @lsp_config = nil
     end
   end
 end
