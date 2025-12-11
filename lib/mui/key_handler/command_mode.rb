@@ -57,16 +57,18 @@ module Mui
       def handle_tab
         return result unless @completion_state.active?
 
-        @completion_state.select_next
+        @completion_state.select_next if @completion_state.confirmed?
         apply_current_completion
+        @completion_state.confirm
         result
       end
 
       def handle_shift_tab
         return result unless @completion_state.active?
 
-        @completion_state.select_previous
+        @completion_state.select_previous if @completion_state.confirmed?
         apply_current_completion
+        @completion_state.confirm
         result
       end
 

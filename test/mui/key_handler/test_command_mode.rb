@@ -478,7 +478,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       assert_includes %w[tabn tabnew tabnext], @command_line.buffer
     end
 
-    def test_tab_cycles_to_next_candidate
+    def test_first_tab_confirms_without_cycling
       # Type to activate completion
       @handler.handle("t")
       @handler.handle("a")
@@ -488,7 +488,24 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       @handler.handle(Mui::KeyCode::TAB)
 
-      # After first TAB, it applies and cycles
+      # After first TAB, it confirms current selection without cycling
+      assert_equal first_index, @handler.completion_state.selected_index
+      assert @handler.completion_state.confirmed?
+    end
+
+    def test_second_tab_cycles_to_next_candidate
+      # Type to activate completion
+      @handler.handle("t")
+      @handler.handle("a")
+      @handler.handle("b")
+
+      first_index = @handler.completion_state.selected_index
+
+      # First TAB confirms without cycling
+      @handler.handle(Mui::KeyCode::TAB)
+      # Second TAB cycles to next candidate
+      @handler.handle(Mui::KeyCode::TAB)
+
       refute_equal first_index, @handler.completion_state.selected_index
     end
 
@@ -531,16 +548,17 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @handler.handle("a")
       @handler.handle("b")
 
-      # Cycle forward twice with TAB
+      # Cycle forward three times with TAB (first confirms, second and third cycle)
       @handler.handle(Mui::KeyCode::TAB)
       @handler.handle(Mui::KeyCode::TAB)
-      second_index = @handler.completion_state.selected_index
+      @handler.handle(Mui::KeyCode::TAB)
+      third_index = @handler.completion_state.selected_index
 
       # Cycle backwards with Shift+TAB
       @handler.handle(Curses::KEY_BTAB)
       after_shift_tab_index = @handler.completion_state.selected_index
 
-      refute_equal second_index, after_shift_tab_index
+      refute_equal third_index, after_shift_tab_index
     end
   end
 

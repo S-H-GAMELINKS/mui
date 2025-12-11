@@ -14,6 +14,7 @@ module Mui
       @selected_index = 0
       @original_input = nil
       @completion_type = nil # :command or :file
+      @confirmed = false
     end
 
     def active?
@@ -25,6 +26,15 @@ module Mui
       @selected_index = 0
       @original_input = original_input
       @completion_type = type
+      @confirmed = false
+    end
+
+    def confirm
+      @confirmed = true
+    end
+
+    def confirmed?
+      @confirmed
     end
 
     def select_next

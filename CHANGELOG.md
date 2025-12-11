@@ -281,6 +281,13 @@
   - Reduce hash lookups in token cache by inlining cache validation
 
 ### Fixed
+- Command-line completion Tab behavior:
+  - First Tab now confirms current selection without cycling to next candidate
+  - Second Tab and subsequent presses cycle through candidates
+  - Previously, first Tab would skip the initially displayed candidate
+- Command-line completion cursor position:
+  - Cursor now moves to end of buffer after applying completion
+  - Previously, cursor remained at old position after completion
 - Plugin keymap handler now correctly uses active window's buffer instead of initial buffer
   - Fixes issue where buffer-specific keymaps didn't work in split windows
 - Plugin keymap handler now properly returns handler result

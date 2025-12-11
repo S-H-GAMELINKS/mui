@@ -197,4 +197,42 @@ class TestCompletionState < Minitest::Test
       refute @state.active?
     end
   end
+
+  class TestConfirmed < TestCompletionState
+    def test_initially_not_confirmed
+      refute @state.confirmed?
+    end
+
+    def test_not_confirmed_after_start
+      @state.start(%w[foo bar], "f", :command)
+
+      refute @state.confirmed?
+    end
+
+    def test_confirmed_after_confirm
+      @state.start(%w[foo bar], "f", :command)
+
+      @state.confirm
+
+      assert @state.confirmed?
+    end
+
+    def test_reset_clears_confirmed
+      @state.start(%w[foo bar], "f", :command)
+      @state.confirm
+
+      @state.reset
+
+      refute @state.confirmed?
+    end
+
+    def test_start_clears_confirmed
+      @state.start(%w[foo bar], "f", :command)
+      @state.confirm
+
+      @state.start(%w[baz qux], "b", :file)
+
+      refute @state.confirmed?
+    end
+  end
 end

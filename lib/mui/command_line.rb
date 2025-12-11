@@ -74,6 +74,7 @@ module Mui
                 else
                   "#{context[:command]} #{text}"
                 end
+      @cursor_pos = @buffer.length
     end
 
     private

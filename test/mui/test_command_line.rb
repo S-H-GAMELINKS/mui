@@ -374,6 +374,33 @@ class TestCommandLine < Minitest::Test
 
       assert_equal "sp Gemfile", @command_line.buffer
     end
+
+    def test_apply_completion_updates_cursor_position_for_command
+      "tab".each_char { |c| @command_line.input(c) }
+      context = { type: :command, prefix: "tab" }
+
+      @command_line.apply_completion("tabnew", context)
+
+      assert_equal 6, @command_line.cursor_pos
+    end
+
+    def test_apply_completion_updates_cursor_position_for_file
+      "e ".each_char { |c| @command_line.input(c) }
+      context = { type: :file, command: "e", prefix: "" }
+
+      @command_line.apply_completion("lib/mui/", context)
+
+      assert_equal 10, @command_line.cursor_pos # "e lib/mui/".length
+    end
+
+    def test_apply_completion_cursor_at_end_of_buffer
+      "e li".each_char { |c| @command_line.input(c) }
+      context = { type: :file, command: "e", prefix: "li" }
+
+      @command_line.apply_completion("lib/", context)
+
+      assert_equal @command_line.buffer.length, @command_line.cursor_pos
+    end
   end
 
   class TestFileCommands < Minitest::Test
