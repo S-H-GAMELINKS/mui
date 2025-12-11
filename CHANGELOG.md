@@ -100,7 +100,7 @@
   - C lexer with support for: keywords, strings, char literals, comments, numbers, preprocessor directives
   - Multiline comment support: Ruby `=begin`/`=end`, C `/* */`
   - Line-based token caching for performance
-  - Language auto-detection from file extension
+  - Language auto-detection from file extension (`.rb`, `.rake`, `.gemspec`, `.c`, `.h`, `.y`)
   - Syntax colors defined for all 8 built-in themes
   - Configurable via `set :syntax, true/false` in `.muirc`
 - Tab page functionality (Vim-compatible):

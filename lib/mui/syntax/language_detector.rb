@@ -11,7 +11,8 @@ module Mui
         ".rake" => :ruby,
         ".gemspec" => :ruby,
         ".c" => :c,
-        ".h" => :c
+        ".h" => :c,
+        ".y" => :c
       }.freeze
 
       # Map basenames (files without extension) to language symbols
