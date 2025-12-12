@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Fixed
+- Improved Escape key response time in Insert mode
+  - Set `ESCDELAY = 10` to reduce escape sequence detection delay from 1000ms to 10ms
+  - Use `timeout = 0` instead of `nodelay` for `getch_nonblock`
+
 ## [0.2.0] - 2025-12-12
 
 ### Added

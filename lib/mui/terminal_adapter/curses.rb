@@ -8,6 +8,7 @@ module Mui
     class Curses < Base
       def init
         ::Curses.init_screen
+        ::Curses.ESCDELAY = 10
         ::Curses.raw
         ::Curses.noecho
         ::Curses.curs_set(1)
@@ -133,18 +134,19 @@ module Mui
       public
 
       def getch_nonblock
-        ::Curses.stdscr.nodelay = true
-        key = ::Curses.getch
-        return key.tap { ::Curses.stdscr.nodelay = false } unless key.is_a?(Integer)
-        return key.tap { ::Curses.stdscr.nodelay = false } if key.negative? || key > 255
+        ::Curses.stdscr.timeout = 0
 
-        result = if key >= 0x80
-                   read_utf8_char(key)
-                 else
-                   key
-                 end
-        ::Curses.stdscr.nodelay = false
-        result
+        key = ::Curses.getch
+
+        return if key == -1 || key.nil?
+        return key unless key.is_a?(Integer)
+        return key if key.negative? || key > 255
+
+        if key >= 0x80
+          read_utf8_char(key)
+        else
+          key
+        end
       end
 
       def suspend
