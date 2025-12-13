@@ -310,6 +310,7 @@ module Mui
         with_window_manager do |wm|
           buffer = path ? create_buffer_from_path(path) : nil
           buffer&.undo_manager = UndoManager.new
+          @mode_manager&.search_state&.find_all_matches(buffer) if buffer
           wm.split_horizontal(buffer)
           result
         end
@@ -319,6 +320,7 @@ module Mui
         with_window_manager do |wm|
           buffer = path ? create_buffer_from_path(path) : nil
           buffer&.undo_manager = UndoManager.new
+          @mode_manager&.search_state&.find_all_matches(buffer) if buffer
           wm.split_vertical(buffer)
           result
         end
@@ -361,6 +363,7 @@ module Mui
           new_tab = tm.add
           buffer = path ? create_buffer_from_path(path) : Buffer.new
           buffer.undo_manager = UndoManager.new
+          @mode_manager&.search_state&.find_all_matches(buffer) if path
           new_tab.window_manager.add_window(buffer)
           result
         end

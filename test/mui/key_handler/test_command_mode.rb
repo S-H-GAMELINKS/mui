@@ -886,4 +886,124 @@ class TestKeyHandlerCommandMode < Minitest::Test
       end
     end
   end
+
+  class TestSplitHorizontalSearchHighlight < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @screen = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "original content"
+      @window_manager = Mui::WindowManager.new(@screen)
+      @window_manager.add_window(@buffer)
+      @window = @window_manager.active_window
+      @command_line = Mui::CommandLine.new
+      @search_state = Mui::SearchState.new
+      @mock_mode_manager = MockModeManager.new(@window, search_state: @search_state)
+      @mock_mode_manager.window_manager = @window_manager
+      @handler = Mui::KeyHandler::CommandMode.new(@mock_mode_manager, @buffer, @command_line)
+    end
+
+    def test_recalculates_search_matches_on_split_horizontal
+      @search_state.set_pattern("hello", :forward)
+      @search_state.find_all_matches(@buffer)
+
+      # No matches in original buffer
+      assert_empty @search_state.matches_for_row(0)
+
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "split_file.txt")
+        File.write(path, "hello world\n")
+
+        "sp ".each_char { |c| @command_line.input(c) }
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        # Matches should be recalculated for new buffer
+        assert_equal 1, @search_state.matches_for_row(0).size
+        assert_equal 0, @search_state.matches_for_row(0).first[:col]
+      end
+    end
+  end
+
+  class TestSplitVerticalSearchHighlight < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @screen = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "original content"
+      @window_manager = Mui::WindowManager.new(@screen)
+      @window_manager.add_window(@buffer)
+      @window = @window_manager.active_window
+      @command_line = Mui::CommandLine.new
+      @search_state = Mui::SearchState.new
+      @mock_mode_manager = MockModeManager.new(@window, search_state: @search_state)
+      @mock_mode_manager.window_manager = @window_manager
+      @handler = Mui::KeyHandler::CommandMode.new(@mock_mode_manager, @buffer, @command_line)
+    end
+
+    def test_recalculates_search_matches_on_split_vertical
+      @search_state.set_pattern("hello", :forward)
+      @search_state.find_all_matches(@buffer)
+
+      # No matches in original buffer
+      assert_empty @search_state.matches_for_row(0)
+
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "split_file.txt")
+        File.write(path, "hello world\n")
+
+        "vs ".each_char { |c| @command_line.input(c) }
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        # Matches should be recalculated for new buffer
+        assert_equal 1, @search_state.matches_for_row(0).size
+        assert_equal 0, @search_state.matches_for_row(0).first[:col]
+      end
+    end
+  end
+
+  class TestTabNewSearchHighlight < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @screen = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "original content"
+      @tab_manager = Mui::TabManager.new(@screen)
+      @tab_manager.add
+      @window_manager = @tab_manager.current_tab.window_manager
+      @window_manager.add_window(@buffer)
+      @window = @window_manager.active_window
+      @command_line = Mui::CommandLine.new
+      @search_state = Mui::SearchState.new
+      @mock_mode_manager = MockModeManager.new(@window, search_state: @search_state)
+      @mock_mode_manager.window_manager = @window_manager
+      @mock_mode_manager.editor = MockEditorWithTabManager.new(@tab_manager)
+      @handler = Mui::KeyHandler::CommandMode.new(@mock_mode_manager, @buffer, @command_line)
+    end
+
+    def test_recalculates_search_matches_on_tabnew
+      @search_state.set_pattern("hello", :forward)
+      @search_state.find_all_matches(@buffer)
+
+      # No matches in original buffer
+      assert_empty @search_state.matches_for_row(0)
+
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "tab_file.txt")
+        File.write(path, "hello world\n")
+
+        "tabnew ".each_char { |c| @command_line.input(c) }
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        # Matches should be recalculated for new buffer
+        assert_equal 1, @search_state.matches_for_row(0).size
+        assert_equal 0, @search_state.matches_for_row(0).first[:col]
+      end
+    end
+  end
 end

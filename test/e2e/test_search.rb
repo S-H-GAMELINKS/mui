@@ -159,4 +159,73 @@ class TestE2ESearch < Minitest::Test
         .assert_cursor(1, 0)
     end
   end
+
+  def test_search_after_horizontal_split
+    # Scenario: Open file with :sp, then search in new buffer
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("first file content")
+        f1.flush
+        f2.write("second file xyz content\nanother line")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .assert_line(0, "first file content")
+          .type(":sp #{f2.path}<Enter>")
+          .assert_line(0, "second file xyz content")
+          .type("/xyz<Enter>")
+          .assert_mode(Mui::Mode::NORMAL)
+          # Should find "xyz" in the split buffer
+          .assert_cursor(0, 12)
+      end
+    end
+  end
+
+  def test_search_after_vertical_split
+    # Scenario: Open file with :vs, then search in new buffer
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("first file content")
+        f1.flush
+        f2.write("second file xyz content\nanother line")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .assert_line(0, "first file content")
+          .type(":vs #{f2.path}<Enter>")
+          .assert_line(0, "second file xyz content")
+          .type("/xyz<Enter>")
+          .assert_mode(Mui::Mode::NORMAL)
+          # Should find "xyz" in the split buffer
+          .assert_cursor(0, 12)
+      end
+    end
+  end
+
+  def test_search_after_tabnew
+    # Scenario: Open file with :tabnew, then search in new buffer
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("first file content")
+        f1.flush
+        f2.write("second file xyz content\nanother line")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .assert_line(0, "first file content")
+          .type(":tabnew #{f2.path}<Enter>")
+          .assert_line(0, "second file xyz content")
+          .type("/xyz<Enter>")
+          .assert_mode(Mui::Mode::NORMAL)
+          # Should find "xyz" in the new tab buffer
+          .assert_cursor(0, 12)
+      end
+    end
+  end
 end
