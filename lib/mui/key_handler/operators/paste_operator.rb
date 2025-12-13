@@ -37,6 +37,7 @@ module Mui
         private
 
         def paste_line_after(name: nil)
+          undo_manager&.begin_group
           text = @register.get(name:)
           lines = text.split("\n", -1)
           lines.reverse_each do |line|
@@ -44,15 +45,18 @@ module Mui
           end
           self.cursor_row = cursor_row + 1
           self.cursor_col = 0
+          undo_manager&.end_group
         end
 
         def paste_line_before(name: nil)
+          undo_manager&.begin_group
           text = @register.get(name:)
           lines = text.split("\n", -1)
           lines.reverse_each do |line|
             @buffer.insert_line(cursor_row, line)
           end
           self.cursor_col = 0
+          undo_manager&.end_group
         end
 
         def paste_char_after(name: nil)
@@ -63,7 +67,7 @@ module Mui
           if text.include?("\n")
             paste_multiline_char(text, line, insert_col)
           else
-            @buffer.lines[cursor_row] = line[0...insert_col].to_s + text + line[insert_col..].to_s
+            @buffer.replace_line(cursor_row, line[0...insert_col].to_s + text + line[insert_col..].to_s)
             self.cursor_col = insert_col + text.length - 1
             @window.clamp_cursor_to_line(@buffer)
           end
@@ -76,19 +80,20 @@ module Mui
           if text.include?("\n")
             paste_multiline_char(text, line, cursor_col)
           else
-            @buffer.lines[cursor_row] = line[0...cursor_col].to_s + text + line[cursor_col..].to_s
+            @buffer.replace_line(cursor_row, line[0...cursor_col].to_s + text + line[cursor_col..].to_s)
             self.cursor_col = cursor_col + text.length - 1
             @window.clamp_cursor_to_line(@buffer)
           end
         end
 
         def paste_multiline_char(text, line, insert_col)
+          undo_manager&.begin_group
           lines = text.split("\n", -1)
           before = line[0...insert_col].to_s
           after = line[insert_col..].to_s
 
           # First line: before + first part of pasted text
-          @buffer.lines[cursor_row] = before + lines.first
+          @buffer.replace_line(cursor_row, before + lines.first)
 
           # Middle lines: insert as new lines
           lines[1...-1].each_with_index do |pasted_line, idx|
@@ -106,6 +111,7 @@ module Mui
           self.cursor_col = lines.last.length - 1
           self.cursor_col = 0 if cursor_col.negative?
           @window.clamp_cursor_to_line(@buffer)
+          undo_manager&.end_group
         end
       end
     end

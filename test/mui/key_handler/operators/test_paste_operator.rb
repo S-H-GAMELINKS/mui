@@ -185,4 +185,79 @@ class TestPasteOperator < Minitest::Test
       assert_equal :cancel, result
     end
   end
+
+  class TestPasteUndo < TestPasteOperator
+    def setup
+      super
+      @undo_manager = Mui::UndoManager.new
+      @buffer.undo_manager = @undo_manager
+      @operator = Mui::KeyHandler::Operators::PasteOperator.new(
+        buffer: @buffer,
+        window: @window,
+        register: @register,
+        undo_manager: @undo_manager
+      )
+    end
+
+    def test_linewise_paste_undos_as_single_action
+      @register.yank("line1\nline2\nline3", linewise: true)
+      @operator.paste_after
+
+      assert_equal 4, @buffer.line_count
+
+      @undo_manager.undo(@buffer)
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+    end
+
+    def test_linewise_paste_before_undos_as_single_action
+      @register.yank("line1\nline2", linewise: true)
+      @operator.paste_before
+
+      assert_equal 3, @buffer.line_count
+
+      @undo_manager.undo(@buffer)
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+    end
+
+    def test_charwise_multiline_paste_undos_as_single_action
+      @register.yank("A\nB\nC", linewise: false)
+      @window.cursor_col = 5
+      @operator.paste_after
+
+      assert_equal 3, @buffer.line_count
+
+      @undo_manager.undo(@buffer)
+
+      assert_equal 1, @buffer.line_count
+      assert_equal "hello world", @buffer.line(0)
+    end
+
+    def test_charwise_single_line_paste_can_be_undone
+      @register.yank("XYZ", linewise: false)
+      @window.cursor_col = 5
+      @operator.paste_after
+
+      assert_equal "hello XYZworld", @buffer.line(0)
+
+      @undo_manager.undo(@buffer)
+
+      assert_equal "hello world", @buffer.line(0)
+    end
+
+    def test_charwise_single_line_paste_before_can_be_undone
+      @register.yank("XYZ", linewise: false)
+      @window.cursor_col = 6
+      @operator.paste_before
+
+      assert_equal "hello XYZworld", @buffer.line(0)
+
+      @undo_manager.undo(@buffer)
+
+      assert_equal "hello world", @buffer.line(0)
+    end
+  end
 end

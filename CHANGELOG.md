@@ -30,6 +30,10 @@
 - Plugin commands now appear in command completion suggestions
   - Previously, commands registered via `Mui.command` were not shown in Tab completion
   - `CommandCompleter` now includes plugin commands from `Mui.config.commands`
+- Multi-line paste now undos as a single action (Vim-compatible)
+  - Previously, pasting multiple lines would undo one line at a time
+  - Now uses `begin_group`/`end_group` to group all paste operations into a single undo unit
+  - Fixed direct array assignment to use `replace_line` for proper undo recording
 
 ## [0.2.0] - 2025-12-12
 

@@ -482,4 +482,89 @@ class TestE2EUndoRedo < Minitest::Test
       .type("<C-r>")
       .assert_line(0, "new content")
   end
+
+  # Multi-line paste undo
+
+  def test_linewise_paste_undos_as_single_action
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("Line 1<Enter>Line 2<Enter>Line 3")
+      .type("<Esc>")
+      .type("gg")
+      .assert_line_count(3)
+
+    # Yank line and paste twice
+    runner
+      .type("yy")
+      .type("p")
+      .type("p")
+      .assert_line_count(5)
+
+    # First undo should remove the second paste entirely
+    runner
+      .type("u")
+      .assert_line_count(4)
+
+    # Second undo should remove the first paste entirely
+    runner
+      .type("u")
+      .assert_line_count(3)
+  end
+
+  def test_multiline_linewise_paste_undos_as_single_action
+    Tempfile.create(["test", ".txt"]) do |f|
+      f.write("Line 1\nLine 2\nLine 3\n")
+      f.flush
+
+      runner = ScriptRunner.new(f.path)
+
+      runner
+        .assert_line_count(3)
+        .type("gg")
+
+      # Yank 2 lines using visual line mode then paste
+      runner
+        .type("V")
+        .type("j")  # Select 2 lines
+        .type("y")  # Yank
+        .type("G")  # Go to last line
+        .type("p")  # Paste 2 lines after
+        .assert_line_count(5)
+
+      # One undo should remove both pasted lines
+      runner
+        .type("u")
+        .assert_line_count(3)
+    end
+  end
+
+  def test_charwise_multiline_paste_undos_as_single_action
+    runner = ScriptRunner.new
+
+    runner
+      .type("i")
+      .type("hello world")
+      .type("<Esc>")
+      .type("0")
+      .assert_line_count(1)
+
+    # Yank "hello" (charwise)
+    runner
+      .type("v")
+      .type("llll")  # Select "hello"
+      .type("y")
+      .type("$")     # Go to end of line
+
+    # Paste (should insert after cursor)
+    runner
+      .type("p")
+      .assert_line(0, "hello worldhello")
+
+    # Undo should remove entire paste
+    runner
+      .type("u")
+      .assert_line(0, "hello world")
+  end
 end
