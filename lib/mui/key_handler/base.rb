@@ -27,6 +27,12 @@ module Mui
         @mode_manager&.editor
       end
 
+      # Returns the current buffer's undo_manager for dynamic access
+      # This ensures undo/redo works correctly when buffer changes (e.g., via :e)
+      def undo_manager
+        buffer&.undo_manager
+      end
+
       # Handle a key input
       def handle(_key)
         raise MethodNotOverriddenError, "Subclasses must orverride #handle"

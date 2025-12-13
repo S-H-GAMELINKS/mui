@@ -8,7 +8,8 @@ module Mui
         super(mode_manager, buffer)
         @undo_manager = undo_manager
         # Start undo group unless already started (e.g., by change operator)
-        @undo_manager&.begin_group unless group_started
+        # Use dynamic undo_manager to support buffer changes via :e/:sp/:vs/:tabnew
+        self.undo_manager&.begin_group unless group_started
         # Build word cache for fast completion (use active window's buffer)
         @word_cache = BufferWordCache.new(self.buffer)
       end
@@ -88,7 +89,7 @@ module Mui
         # Cancel completion if active
         editor.insert_completion_state.reset if completion_active?
 
-        @undo_manager&.end_group
+        undo_manager&.end_group
         # Remove trailing whitespace from current line if it's whitespace-only (Vim behavior)
         stripped = strip_trailing_whitespace_if_empty_line
         # Move cursor back one position unless we just stripped whitespace (cursor already at 0)

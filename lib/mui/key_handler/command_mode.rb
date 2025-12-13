@@ -264,6 +264,7 @@ module Mui
 
       def open_new_buffer(path)
         new_buffer = create_buffer_from_path(path)
+        new_buffer.undo_manager = UndoManager.new
         window.buffer = new_buffer
         result(message: "\"#{path}\" opened")
       rescue SystemCallError => e
@@ -303,6 +304,7 @@ module Mui
       def handle_split_horizontal(path = nil)
         with_window_manager do |wm|
           buffer = path ? create_buffer_from_path(path) : nil
+          buffer&.undo_manager = UndoManager.new
           wm.split_horizontal(buffer)
           result
         end
@@ -311,6 +313,7 @@ module Mui
       def handle_split_vertical(path = nil)
         with_window_manager do |wm|
           buffer = path ? create_buffer_from_path(path) : nil
+          buffer&.undo_manager = UndoManager.new
           wm.split_vertical(buffer)
           result
         end
@@ -352,6 +355,7 @@ module Mui
         with_tab_manager do |tm|
           new_tab = tm.add
           buffer = path ? create_buffer_from_path(path) : Buffer.new
+          buffer.undo_manager = UndoManager.new
           new_tab.window_manager.add_window(buffer)
           result
         end
