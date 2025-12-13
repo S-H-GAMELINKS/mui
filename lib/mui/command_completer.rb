@@ -13,9 +13,17 @@ module Mui
     ].freeze
 
     def complete(prefix)
-      return COMMANDS.sort if prefix.empty?
+      all_commands = COMMANDS + plugin_command_names
 
-      COMMANDS.select { |cmd| cmd.start_with?(prefix) }.sort
+      return all_commands.uniq.sort if prefix.empty?
+
+      all_commands.select { |cmd| cmd.start_with?(prefix) }.uniq.sort
+    end
+
+    private
+
+    def plugin_command_names
+      Mui.config.commands.keys.map(&:to_s)
     end
   end
 end
