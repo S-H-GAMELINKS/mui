@@ -281,6 +281,22 @@ class TestWindow < Minitest::Test
       refute_nil output_at_second_row, "Should have output at row 1"
       assert_equal " " * 80, output_at_second_row[:text], "Previous content should be cleared"
     end
+
+    def test_clears_lines_with_style_when_color_scheme_present
+      color_scheme = Mui::ColorScheme.new("test")
+      color_scheme.define :normal, fg: :white, bg: :black
+
+      color_manager = Mui::ColorManager.new
+      screen = Mui::Screen.new(adapter: @adapter, color_manager:)
+      window = Mui::Window.new(@buffer, width: 80, height: 24, color_scheme:)
+
+      @buffer.insert_line(0, "Line 1")
+      window.render(screen)
+
+      # Lines beyond buffer (y=1) should be rendered with style (background color)
+      styled_output = @adapter.all_output.find { |e| e[:y] == 1 && e[:x].zero? && e[:style] }
+      refute_nil styled_output, "Line beyond buffer should have style"
+    end
   end
 
   class TestScreenCursorPosition < Minitest::Test

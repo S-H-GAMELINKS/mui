@@ -21,6 +21,7 @@ module Mui
         @cursor_y = 0
         @cursor_x = 0
         @highlight_mode = false
+        @current_style = nil
       end
 
       def init
@@ -46,7 +47,7 @@ module Mui
       end
 
       def addstr(str)
-        @output_buffer << { y: @cursor_y, x: @cursor_x, text: str, highlight: @highlight_mode }
+        @output_buffer << { y: @cursor_y, x: @cursor_x, text: str, highlight: @highlight_mode, style: @current_style }
         str
       end
 
@@ -54,6 +55,18 @@ module Mui
         @highlight_mode = true
         result = yield
         @highlight_mode = false
+        result
+      end
+
+      def init_color_pair(_pair_index, _fg, _bg)
+        # No-op for testing
+      end
+
+      def with_color(pair_index, bold: false, underline: false)
+        old_style = @current_style
+        @current_style = { pair_index:, bold:, underline: }
+        result = yield
+        @current_style = old_style
         result
       end
 

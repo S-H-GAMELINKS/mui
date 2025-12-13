@@ -122,7 +122,11 @@ module Mui
 
     def clear_line(screen, screen_row)
       empty_line = " " * visible_width
-      screen.put(@y + screen_row, @x, empty_line)
+      if @color_scheme && @color_scheme[:normal]
+        screen.put_with_style(@y + screen_row, @x, empty_line, @color_scheme[:normal])
+      else
+        screen.put(@y + screen_row, @x, empty_line)
+      end
     end
 
     def create_line_renderer

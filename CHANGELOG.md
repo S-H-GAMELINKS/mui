@@ -18,6 +18,9 @@
 - Fixed screen remnants after `:e` command when new file has fewer lines
   - Previously, lines from the old buffer would remain visible below the new content
   - Now explicitly clears lines beyond buffer content during render
+- Fixed background color not applied to lines beyond buffer content
+  - Previously, when opening a file with fewer lines than the visible height, lines beyond buffer were rendered without background color (transparent)
+  - Now uses `put_with_style` with `:normal` color scheme to ensure consistent background color
 - Plugin commands now appear in command completion suggestions
   - Previously, commands registered via `Mui.command` were not shown in Tab completion
   - `CommandCompleter` now includes plugin commands from `Mui.config.commands`
