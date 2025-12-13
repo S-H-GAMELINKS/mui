@@ -295,5 +295,31 @@ class TestEditorInsertMode < Minitest::Test
       assert_equal 1, @editor.window.cursor_row
       assert_equal Mui::Mode::INSERT, @editor.mode
     end
+
+    def test_left_arrow_resets_completion
+      @editor.start_insert_completion([{ label: "test", insert_text: "test" }], prefix: "t")
+      assert @editor.insert_completion_active?
+
+      @editor.buffer.lines[0] = "t"
+      @editor.window.cursor_col = 1
+
+      @editor.handle_insert_key(Curses::KEY_LEFT)
+
+      refute @editor.insert_completion_active?
+      assert_equal 0, @editor.window.cursor_col
+    end
+
+    def test_right_arrow_resets_completion
+      @editor.start_insert_completion([{ label: "test", insert_text: "test" }], prefix: "t")
+      assert @editor.insert_completion_active?
+
+      @editor.buffer.lines[0] = "test"
+      @editor.window.cursor_col = 1
+
+      @editor.handle_insert_key(Curses::KEY_RIGHT)
+
+      refute @editor.insert_completion_active?
+      assert_equal 2, @editor.window.cursor_col
+    end
   end
 end

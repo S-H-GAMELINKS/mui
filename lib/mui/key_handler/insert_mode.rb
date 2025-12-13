@@ -107,11 +107,13 @@ module Mui
       end
 
       def handle_move_left
+        reset_insert_completion_state
         self.cursor_col = cursor_col - 1 if cursor_col.positive?
         result
       end
 
       def handle_move_right
+        reset_insert_completion_state
         self.cursor_col = cursor_col + 1 if cursor_col < current_line_length
         result
       end
@@ -134,7 +136,7 @@ module Mui
           update_completion_list if completion_active?
         elsif cursor_row.positive?
           join_with_previous_line
-          editor.insert_completion_state.reset if completion_active?
+          reset_insert_completion_state
         end
         result
       end
@@ -344,6 +346,10 @@ module Mui
           buffer.insert_char(cursor_row, cursor_col, c)
           self.cursor_col = cursor_col + 1
         end
+      end
+
+      def reset_insert_completion_state
+        editor.insert_completion_state.reset if completion_active?
       end
 
       def result(mode: nil, message: nil, quit: false)

@@ -4,6 +4,9 @@
 - Improved Escape key response time in Insert mode
   - Set `ESCDELAY = 10` to reduce escape sequence detection delay from 1000ms to 10ms
   - Use `timeout = 0` instead of `nodelay` for `getch_nonblock`
+- Insert mode completion now closes when pressing Left/Right arrow keys
+  - Previously, arrow keys would move cursor but completion popup remained open
+  - Now matches Vim behavior: completion closes on cursor movement
 
 ## [0.2.0] - 2025-12-12
 
