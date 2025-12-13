@@ -14,6 +14,9 @@
 - Fixed screen remnants after `:e` command when new file has fewer lines
   - Previously, lines from the old buffer would remain visible below the new content
   - Now explicitly clears lines beyond buffer content during render
+- Plugin commands now appear in command completion suggestions
+  - Previously, commands registered via `Mui.command` were not shown in Tab completion
+  - `CommandCompleter` now includes plugin commands from `Mui.config.commands`
 
 ## [0.2.0] - 2025-12-12
 

@@ -8,10 +8,12 @@ class TestCommandCompleter < Minitest::Test
   end
 
   class TestComplete < TestCommandCompleter
-    def test_complete_with_empty_prefix_returns_all_commands_sorted
+    def test_complete_with_empty_prefix_includes_all_builtin_commands
       result = @completer.complete("")
 
-      assert_equal Mui::CommandCompleter::COMMANDS.sort, result
+      Mui::CommandCompleter::COMMANDS.each do |cmd|
+        assert_includes result, cmd
+      end
     end
 
     def test_complete_with_prefix_filters_commands
@@ -101,6 +103,61 @@ class TestCommandCompleter < Minitest::Test
 
     def test_commands_is_frozen
       assert Mui::CommandCompleter::COMMANDS.frozen?
+    end
+  end
+
+  class TestPluginCommandCompletion < TestCommandCompleter
+    def setup
+      super
+      # Save original commands
+      @original_commands = Mui.config.commands.dup
+    end
+
+    def teardown
+      # Restore original commands
+      Mui.config.instance_variable_set(:@commands, @original_commands)
+    end
+
+    def test_includes_plugin_commands_in_completion
+      Mui.command(:mytest) { |_ctx| nil }
+
+      candidates = @completer.complete("")
+
+      assert_includes candidates, "mytest"
+    end
+
+    def test_filters_plugin_commands_by_prefix
+      Mui.command(:foo_cmd) { |_ctx| nil }
+      Mui.command(:bar_cmd) { |_ctx| nil }
+
+      candidates = @completer.complete("foo")
+
+      assert_includes candidates, "foo_cmd"
+      refute_includes candidates, "bar_cmd"
+    end
+
+    def test_mixed_builtin_and_plugin_commands
+      Mui.command(:tabnew_extra) { |_ctx| nil }
+
+      candidates = @completer.complete("tab")
+
+      # Should include both built-in and plugin commands
+      assert_includes candidates, "tabnew"
+      assert_includes candidates, "tabnew_extra"
+    end
+
+    def test_returns_sorted_unique_candidates
+      candidates = @completer.complete("")
+
+      assert_equal candidates, candidates.uniq.sort
+    end
+
+    def test_plugin_command_with_no_match_returns_empty
+      Mui.command(:zzz_unique_cmd) { |_ctx| nil }
+
+      candidates = @completer.complete("aaa")
+
+      refute_includes candidates, "zzz_unique_cmd"
     end
   end
 end
