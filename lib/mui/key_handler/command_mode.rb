@@ -266,6 +266,11 @@ module Mui
         new_buffer = create_buffer_from_path(path)
         new_buffer.undo_manager = UndoManager.new
         window.buffer = new_buffer
+
+        # Recalculate search highlights for the new buffer (Vim compatible behavior)
+        # Pattern is preserved, only matches are recalculated for new buffer
+        @mode_manager&.search_state&.find_all_matches(new_buffer)
+
         result(message: "\"#{path}\" opened")
       rescue SystemCallError => e
         result(message: "Error: #{e.message}")

@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 ### Fixed
+- Search highlight now recalculates correctly when switching buffers via `:e`
+  - Previously, search highlight from old buffer remained visible in new buffer
+  - Now calls `find_all_matches` on buffer switch to recalculate matches (Vim-compatible behavior)
+  - Search pattern is preserved, only match positions are updated for new buffer content
 - Improved Escape key response time in Insert mode
   - Set `ESCDELAY = 10` to reduce escape sequence detection delay from 1000ms to 10ms
   - Use `timeout = 0` instead of `nodelay` for `getch_nonblock`

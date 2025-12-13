@@ -798,4 +798,92 @@ class TestKeyHandlerCommandMode < Minitest::Test
       assert_match(/^e test\./, @command_line.buffer)
     end
   end
+
+  class TestOpenNewBufferSearchHighlight < Minitest::Test
+    def setup
+      @buffer = Mui::Buffer.new
+      @buffer.lines[0] = "hello world"
+      @buffer.lines[1] = "test line"
+      @window = Mui::Window.new(@buffer)
+      @command_line = Mui::CommandLine.new
+      @search_state = Mui::SearchState.new
+      @mode_manager = MockModeManager.new(@window, search_state: @search_state)
+      @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
+    end
+
+    def test_recalculates_search_matches_on_buffer_switch
+      # Set up search pattern in old buffer
+      @search_state.set_pattern("hello", :forward)
+      @search_state.find_all_matches(@buffer)
+
+      # Verify matches exist in old buffer
+      old_matches = @search_state.matches_for_row(0)
+      assert_equal 1, old_matches.size
+      assert_equal 0, old_matches.first[:col]
+
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "new_file.txt")
+        File.write(path, "different content\nhello at line 2\n")
+
+        # Open new buffer
+        @command_line.input("e")
+        @command_line.input(" ")
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        # Verify search pattern is preserved
+        assert @search_state.has_pattern?
+        assert_equal "hello", @search_state.pattern
+
+        # Verify matches are recalculated for new buffer
+        # Line 0 should have no matches (content: "different content")
+        assert_empty @search_state.matches_for_row(0)
+        # Line 1 should have a match (content: "hello at line 2")
+        new_matches = @search_state.matches_for_row(1)
+        assert_equal 1, new_matches.size
+        assert_equal 0, new_matches.first[:col]
+      end
+    end
+
+    def test_does_not_call_find_all_matches_without_pattern
+      # Ensure no pattern is set
+      assert_nil @search_state.pattern
+
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "test.txt")
+        File.write(path, "test content\n")
+
+        @command_line.input("e")
+        @command_line.input(" ")
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        # No error should occur and matches should remain empty
+        refute @search_state.has_pattern?
+        assert_empty @search_state.matches_for_row(0)
+      end
+    end
+
+    def test_clears_old_matches_when_new_buffer_has_no_matches
+      # Set up search pattern that matches in old buffer
+      @search_state.set_pattern("hello", :forward)
+      @search_state.find_all_matches(@buffer)
+
+      # Verify matches exist
+      assert_equal 1, @search_state.matches_for_row(0).size
+
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "no_match.txt")
+        File.write(path, "no matching content here\n")
+
+        @command_line.input("e")
+        @command_line.input(" ")
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        # All rows should have no matches
+        assert_empty @search_state.matches_for_row(0)
+      end
+    end
+  end
 end
