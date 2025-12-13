@@ -120,7 +120,7 @@ module Mui
         if @selection.line_mode
           change_lines(range)
         else
-          @undo_manager&.begin_group
+          undo_manager&.begin_group
           change_range(range)
         end
         @pending_register = nil
@@ -207,7 +207,7 @@ module Mui
       def change_lines(range)
         lines = (range[:start_row]..range[:end_row]).map { |r| buffer.line(r) }
         @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
-        @undo_manager&.begin_group
+        undo_manager&.begin_group
         (range[:end_row] - range[:start_row] + 1).times do
           buffer.delete_line(range[:start_row])
         end
@@ -229,11 +229,11 @@ module Mui
       def delete_lines(range)
         lines = (range[:start_row]..range[:end_row]).map { |r| buffer.line(r) }
         @register.delete(lines.join("\n"), linewise: true, name: @pending_register)
-        @undo_manager&.begin_group unless @undo_manager&.in_group?
+        undo_manager&.begin_group unless undo_manager&.in_group?
         (range[:end_row] - range[:start_row] + 1).times do
           buffer.delete_line(range[:start_row])
         end
-        @undo_manager&.end_group
+        undo_manager&.end_group
         self.cursor_row = [range[:start_row], buffer.line_count - 1].min
         self.cursor_col = 0
         window.clamp_cursor_to_line(buffer)
@@ -268,7 +268,7 @@ module Mui
       def indent_lines(start_row, end_row, direction)
         indent_string = build_indent_string
 
-        @undo_manager&.begin_group unless @undo_manager&.in_group?
+        undo_manager&.begin_group unless undo_manager&.in_group?
 
         (start_row..end_row).each do |row|
           if direction == :right
@@ -278,7 +278,7 @@ module Mui
           end
         end
 
-        @undo_manager&.end_group
+        undo_manager&.end_group
       end
 
       def build_indent_string

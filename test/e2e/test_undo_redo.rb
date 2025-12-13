@@ -373,4 +373,113 @@ class TestE2EUndoRedo < Minitest::Test
       .type("u")
       .assert_line(0, "")
   end
+
+  # Undo/Redo in newly opened buffer via :e
+
+  def test_undo_redo_works_after_edit_command
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "test.txt")
+      File.write(path, "original\n")
+
+      runner = ScriptRunner.new
+
+      runner
+        .type(":e #{path}<Enter>")
+        .assert_line(0, "original")
+        .type("i")
+        .type("NEW ")
+        .type("<Esc>")
+        .assert_line(0, "NEW original")
+        .type("u")
+        .assert_line(0, "original")
+        .type("<C-r>")
+        .assert_line(0, "NEW original")
+    end
+  end
+
+  # Undo/Redo in split window with file
+
+  def test_undo_redo_works_after_split_horizontal_with_file
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "split.txt")
+      File.write(path, "split content\n")
+
+      runner = ScriptRunner.new
+
+      runner
+        .type(":sp #{path}<Enter>")
+        .assert_window_count(2)
+        .assert_line(0, "split content")
+        .type("i")
+        .type("ADDED ")
+        .type("<Esc>")
+        .assert_line(0, "ADDED split content")
+        .type("u")
+        .assert_line(0, "split content")
+        .type("<C-r>")
+        .assert_line(0, "ADDED split content")
+    end
+  end
+
+  def test_undo_redo_works_after_split_vertical_with_file
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "vsplit.txt")
+      File.write(path, "vsplit content\n")
+
+      runner = ScriptRunner.new
+
+      runner
+        .type(":vs #{path}<Enter>")
+        .assert_window_count(2)
+        .assert_line(0, "vsplit content")
+        .type("i")
+        .type("ADDED ")
+        .type("<Esc>")
+        .assert_line(0, "ADDED vsplit content")
+        .type("u")
+        .assert_line(0, "vsplit content")
+        .type("<C-r>")
+        .assert_line(0, "ADDED vsplit content")
+    end
+  end
+
+  # Undo/Redo in new tab with file
+
+  def test_undo_redo_works_after_tabnew_with_file
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "tab.txt")
+      File.write(path, "tab content\n")
+
+      runner = ScriptRunner.new
+
+      runner
+        .type(":tabnew #{path}<Enter>")
+        .assert_tab_count(2)
+        .assert_line(0, "tab content")
+        .type("i")
+        .type("ADDED ")
+        .type("<Esc>")
+        .assert_line(0, "ADDED tab content")
+        .type("u")
+        .assert_line(0, "tab content")
+        .type("<C-r>")
+        .assert_line(0, "ADDED tab content")
+    end
+  end
+
+  def test_undo_redo_works_after_tabnew_empty
+    runner = ScriptRunner.new
+
+    runner
+      .type(":tabnew<Enter>")
+      .assert_tab_count(2)
+      .type("i")
+      .type("new content")
+      .type("<Esc>")
+      .assert_line(0, "new content")
+      .type("u")
+      .assert_line(0, "")
+      .type("<C-r>")
+      .assert_line(0, "new content")
+  end
 end

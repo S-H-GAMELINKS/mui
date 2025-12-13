@@ -7,6 +7,10 @@
 - Insert mode completion now closes when pressing Left/Right arrow keys
   - Previously, arrow keys would move cursor but completion popup remained open
   - Now matches Vim behavior: completion closes on cursor movement
+- Undo/Redo now works correctly for buffers opened via `:e`, `:sp`, `:vs`, `:tabnew`
+  - Previously, buffers opened with these commands had no UndoManager set
+  - Each buffer now gets its own UndoManager (Vim-compatible: independent undo history per buffer)
+  - Handlers now use dynamic `undo_manager` reference to support buffer switching
 
 ## [0.2.0] - 2025-12-12
 

@@ -95,7 +95,7 @@ module Mui
       end
 
       def sync_operators
-        @operators.each_value { |op| op.update(buffer:, window:) }
+        @operators.each_value { |op| op.update(buffer:, window:, undo_manager:) }
       end
 
       def handle_normal_key(key)
@@ -298,7 +298,7 @@ module Mui
       end
 
       def handle_open_below
-        @undo_manager&.begin_group
+        undo_manager&.begin_group
         buffer.insert_line(cursor_row + 1)
         self.cursor_row = cursor_row + 1
         self.cursor_col = 0
@@ -306,7 +306,7 @@ module Mui
       end
 
       def handle_open_above
-        @undo_manager&.begin_group
+        undo_manager&.begin_group
         buffer.insert_line(cursor_row)
         self.cursor_col = 0
         result(mode: Mode::INSERT, group_started: true)
@@ -410,7 +410,7 @@ module Mui
 
       # Undo/Redo handlers
       def handle_undo
-        if @undo_manager&.undo(buffer)
+        if undo_manager&.undo(buffer)
           window.clamp_cursor_to_line(buffer)
           result
         else
@@ -419,7 +419,7 @@ module Mui
       end
 
       def handle_redo
-        if @undo_manager&.redo(buffer)
+        if undo_manager&.redo(buffer)
           window.clamp_cursor_to_line(buffer)
           result
         else

@@ -274,6 +274,20 @@ class TestKeyHandlerCommandMode < Minitest::Test
         assert_equal "hello", @window.buffer.lines[0]
       end
     end
+
+    def test_open_new_buffer_sets_undo_manager
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "test.txt")
+        File.write(path, "test content\n")
+
+        @command_line.input("e")
+        @command_line.input(" ")
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        assert_instance_of Mui::UndoManager, @window.buffer.undo_manager
+      end
+    end
   end
 
   class TestOpenAsNewFile < Minitest::Test
@@ -621,6 +635,120 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       assert_equal Mui::Mode::NORMAL, result.mode
     end
+  end
+
+  class TestSplitHorizontal < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @screen = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @buffer = Mui::Buffer.new
+      @window_manager = Mui::WindowManager.new(@screen)
+      @window_manager.add_window(@buffer)
+      @window = @window_manager.active_window
+      @command_line = Mui::CommandLine.new
+      @mock_mode_manager = MockModeManager.new(@window)
+      @mock_mode_manager.window_manager = @window_manager
+      @handler = Mui::KeyHandler::CommandMode.new(@mock_mode_manager, @buffer, @command_line)
+    end
+
+    def test_split_horizontal_with_path_sets_undo_manager
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "test.txt")
+        File.write(path, "test content\n")
+
+        "sp ".each_char { |c| @command_line.input(c) }
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        new_window = @mock_mode_manager.window_manager.active_window
+        assert_instance_of Mui::UndoManager, new_window.buffer.undo_manager
+      end
+    end
+  end
+
+  class TestSplitVertical < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @screen = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @buffer = Mui::Buffer.new
+      @window_manager = Mui::WindowManager.new(@screen)
+      @window_manager.add_window(@buffer)
+      @window = @window_manager.active_window
+      @command_line = Mui::CommandLine.new
+      @mock_mode_manager = MockModeManager.new(@window)
+      @mock_mode_manager.window_manager = @window_manager
+      @handler = Mui::KeyHandler::CommandMode.new(@mock_mode_manager, @buffer, @command_line)
+    end
+
+    def test_split_vertical_with_path_sets_undo_manager
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "test.txt")
+        File.write(path, "test content\n")
+
+        "vs ".each_char { |c| @command_line.input(c) }
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        new_window = @mock_mode_manager.window_manager.active_window
+        assert_instance_of Mui::UndoManager, new_window.buffer.undo_manager
+      end
+    end
+  end
+
+  class TestTabNew < Minitest::Test
+    include MuiTestHelper
+
+    def setup
+      @screen = Mui::TerminalAdapter::Test.new(width: 80, height: 24)
+      @buffer = Mui::Buffer.new
+      @tab_manager = Mui::TabManager.new(@screen)
+      @tab_manager.add
+      @window_manager = @tab_manager.current_tab.window_manager
+      @window_manager.add_window(@buffer)
+      @window = @window_manager.active_window
+      @command_line = Mui::CommandLine.new
+      @mock_mode_manager = MockModeManager.new(@window)
+      @mock_mode_manager.window_manager = @window_manager
+      @mock_mode_manager.editor = MockEditorWithTabManager.new(@tab_manager)
+      @handler = Mui::KeyHandler::CommandMode.new(@mock_mode_manager, @buffer, @command_line)
+    end
+
+    def test_tabnew_sets_undo_manager
+      "tabnew".each_char { |c| @command_line.input(c) }
+      @handler.handle(13)
+
+      current_tab = @mock_mode_manager.editor.tab_manager.current_tab
+      buffer = current_tab.window_manager.active_window.buffer
+      assert_instance_of Mui::UndoManager, buffer.undo_manager
+    end
+
+    def test_tabnew_with_path_sets_undo_manager
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "test.txt")
+        File.write(path, "test content\n")
+
+        "tabnew ".each_char { |c| @command_line.input(c) }
+        path.each_char { |c| @command_line.input(c) }
+        @handler.handle(13)
+
+        current_tab = @mock_mode_manager.editor.tab_manager.current_tab
+        buffer = current_tab.window_manager.active_window.buffer
+        assert_instance_of Mui::UndoManager, buffer.undo_manager
+      end
+    end
+  end
+
+  # Helper class for tab tests
+  class MockEditorWithTabManager
+    attr_reader :tab_manager
+
+    def initialize(tab_manager)
+      @tab_manager = tab_manager
+    end
+
+    def trigger_autocmd(_event); end
   end
 
   class TestFileCompletion < Minitest::Test
