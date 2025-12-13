@@ -159,10 +159,10 @@ class TestEditorCommandMode < Minitest::Test
         @editor.mode = Mui::Mode::SEARCH_FORWARD
         search_state = @editor.mode_manager.search_state
         search_state.set_pattern("hello", :forward)
-        search_state.find_all_matches(@editor.buffer)
+        first_buffer = @editor.buffer
 
         # Verify matches in first file
-        assert_equal 1, search_state.matches_for_row(0).size
+        assert_equal 1, search_state.matches_for_row(0, buffer: first_buffer).size
 
         # Switch to second file using :e command
         @editor.mode = Mui::Mode::COMMAND
@@ -171,11 +171,14 @@ class TestEditorCommandMode < Minitest::Test
         file2.each_char { |c| @editor.command_line.input(c) }
         @editor.handle_command_key(13)
 
-        # Verify matches are recalculated for new buffer
+        # Get the new buffer
+        new_buffer = @editor.buffer
+
+        # Verify matches are calculated for new buffer (lazy evaluation)
         # Line 0 of file2 has "different content" - no match
-        assert_empty search_state.matches_for_row(0)
+        assert_empty search_state.matches_for_row(0, buffer: new_buffer)
         # Line 1 of file2 has "hello here" - should have match
-        assert_equal 1, search_state.matches_for_row(1).size
+        assert_equal 1, search_state.matches_for_row(1, buffer: new_buffer).size
       end
     end
 

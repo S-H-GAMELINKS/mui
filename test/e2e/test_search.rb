@@ -228,4 +228,72 @@ class TestE2ESearch < Minitest::Test
       end
     end
   end
+
+  def test_search_highlight_after_gt_tab_switch
+    # Scenario: Search in first tab, switch to second tab with gt, search should work
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("hello world\nfoo bar")
+        f1.flush
+        f2.write("another hello here\nmore hello")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .type(":tabnew #{f2.path}<Enter>")
+          .type("gT")                     # Go back to first tab
+          .type("/hello<Enter>")          # Search
+          .assert_cursor(0, 0)            # First "hello" at line 0
+          .type("gt")                     # Switch to second tab
+          .type("n")                      # Next match in new buffer (from cursor 0,0)
+          .assert_cursor(0, 8)            # "hello" at "another hello here"
+      end
+    end
+  end
+
+  def test_search_highlight_after_ctrl_w_window_switch
+    # Scenario: Search in one window, switch to another with Ctrl-W, search should work
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("hello world")
+        f1.flush
+        f2.write("hello again\nmore hello")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .type(":vs #{f2.path}<Enter>")
+          .type("/hello<Enter>")
+          .assert_cursor(0, 0)            # First "hello" in split window
+          .type("<C-w>l")                 # Switch to right window
+          .type("n")                      # Next match in original buffer
+          .assert_mode(Mui::Mode::NORMAL)
+      end
+    end
+  end
+
+  def test_search_highlight_after_tabn_command
+    # Scenario: Search, then switch tabs with :tabn command
+    Tempfile.create(["first", ".txt"]) do |f1|
+      Tempfile.create(["second", ".txt"]) do |f2|
+        f1.write("test pattern here")
+        f1.flush
+        f2.write("another test here\ntest again")
+        f2.flush
+
+        runner = ScriptRunner.new(f1.path)
+
+        runner
+          .type(":tabnew #{f2.path}<Enter>")
+          .type(":tabp<Enter>")           # Go back to first tab
+          .type("/test<Enter>")           # Search
+          .assert_cursor(0, 0)            # First "test"
+          .type(":tabn<Enter>")           # Switch to second tab via command
+          .type("n")                      # Next match (from cursor 0,0)
+          .assert_cursor(0, 8)            # "test" at "another test here"
+      end
+    end
+  end
 end

@@ -267,10 +267,6 @@ module Mui
         new_buffer.undo_manager = UndoManager.new
         window.buffer = new_buffer
 
-        # Recalculate search highlights for the new buffer (Vim compatible behavior)
-        # Pattern is preserved, only matches are recalculated for new buffer
-        @mode_manager&.search_state&.find_all_matches(new_buffer)
-
         result(message: "\"#{path}\" opened")
       rescue SystemCallError => e
         result(message: "Error: #{e.message}")
@@ -310,7 +306,6 @@ module Mui
         with_window_manager do |wm|
           buffer = path ? create_buffer_from_path(path) : nil
           buffer&.undo_manager = UndoManager.new
-          @mode_manager&.search_state&.find_all_matches(buffer) if buffer
           wm.split_horizontal(buffer)
           result
         end
@@ -320,7 +315,6 @@ module Mui
         with_window_manager do |wm|
           buffer = path ? create_buffer_from_path(path) : nil
           buffer&.undo_manager = UndoManager.new
-          @mode_manager&.search_state&.find_all_matches(buffer) if buffer
           wm.split_vertical(buffer)
           result
         end
@@ -363,7 +357,6 @@ module Mui
           new_tab = tm.add
           buffer = path ? create_buffer_from_path(path) : Buffer.new
           buffer.undo_manager = UndoManager.new
-          @mode_manager&.search_state&.find_all_matches(buffer) if path
           new_tab.window_manager.add_window(buffer)
           result
         end

@@ -865,7 +865,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @handler.handle("*")
 
       assert @search_state.has_pattern?
-      assert_equal 2, @search_state.matches.length # Two "hello" matches
+      assert_equal 2, @search_state.find_all_matches(@buffer).length # Two "hello" matches
     end
 
     def test_star_with_no_match_returns_message

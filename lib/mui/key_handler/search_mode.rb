@@ -136,19 +136,19 @@ module Mui
 
         direction = @search_input.prompt == "/" ? :forward : :backward
         @search_state.set_pattern(pattern, direction)
-        @search_state.find_all_matches(buffer)
 
         # Move cursor to first match from original position
-        return if @search_state.matches.empty?
+        matches = @search_state.find_all_matches(buffer)
+        return if matches.empty?
 
         # Use original position if set, otherwise use current cursor position
         search_row = @original_cursor_row || cursor_row
         search_col = @original_cursor_col || cursor_col
 
         match = if direction == :forward
-                  @search_state.find_next(search_row, search_col)
+                  @search_state.find_next(search_row, search_col, buffer:)
                 else
-                  @search_state.find_previous(search_row, search_col)
+                  @search_state.find_previous(search_row, search_col, buffer:)
                 end
 
         return unless match
@@ -163,12 +163,11 @@ module Mui
 
         direction = @search_input.prompt == "/" ? :forward : :backward
         @search_state.set_pattern(pattern, direction)
-        @search_state.find_all_matches(buffer)
 
         match = if direction == :forward
-                  @search_state.find_next(cursor_row, cursor_col)
+                  @search_state.find_next(cursor_row, cursor_col, buffer:)
                 else
-                  @search_state.find_previous(cursor_row, cursor_col)
+                  @search_state.find_previous(cursor_row, cursor_col, buffer:)
                 end
 
         if match

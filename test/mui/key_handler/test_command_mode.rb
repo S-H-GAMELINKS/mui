@@ -814,10 +814,9 @@ class TestKeyHandlerCommandMode < Minitest::Test
     def test_recalculates_search_matches_on_buffer_switch
       # Set up search pattern in old buffer
       @search_state.set_pattern("hello", :forward)
-      @search_state.find_all_matches(@buffer)
 
       # Verify matches exist in old buffer
-      old_matches = @search_state.matches_for_row(0)
+      old_matches = @search_state.matches_for_row(0, buffer: @buffer)
       assert_equal 1, old_matches.size
       assert_equal 0, old_matches.first[:col]
 
@@ -831,15 +830,18 @@ class TestKeyHandlerCommandMode < Minitest::Test
         path.each_char { |c| @command_line.input(c) }
         @handler.handle(13)
 
+        # Get the new buffer from window
+        new_buffer = @window.buffer
+
         # Verify search pattern is preserved
         assert @search_state.has_pattern?
         assert_equal "hello", @search_state.pattern
 
-        # Verify matches are recalculated for new buffer
+        # Verify matches are calculated for new buffer (lazy evaluation)
         # Line 0 should have no matches (content: "different content")
-        assert_empty @search_state.matches_for_row(0)
+        assert_empty @search_state.matches_for_row(0, buffer: new_buffer)
         # Line 1 should have a match (content: "hello at line 2")
-        new_matches = @search_state.matches_for_row(1)
+        new_matches = @search_state.matches_for_row(1, buffer: new_buffer)
         assert_equal 1, new_matches.size
         assert_equal 0, new_matches.first[:col]
       end
@@ -858,19 +860,20 @@ class TestKeyHandlerCommandMode < Minitest::Test
         path.each_char { |c| @command_line.input(c) }
         @handler.handle(13)
 
+        new_buffer = @window.buffer
+
         # No error should occur and matches should remain empty
         refute @search_state.has_pattern?
-        assert_empty @search_state.matches_for_row(0)
+        assert_empty @search_state.matches_for_row(0, buffer: new_buffer)
       end
     end
 
     def test_clears_old_matches_when_new_buffer_has_no_matches
       # Set up search pattern that matches in old buffer
       @search_state.set_pattern("hello", :forward)
-      @search_state.find_all_matches(@buffer)
 
-      # Verify matches exist
-      assert_equal 1, @search_state.matches_for_row(0).size
+      # Verify matches exist in old buffer
+      assert_equal 1, @search_state.matches_for_row(0, buffer: @buffer).size
 
       Dir.mktmpdir do |dir|
         path = File.join(dir, "no_match.txt")
@@ -881,8 +884,10 @@ class TestKeyHandlerCommandMode < Minitest::Test
         path.each_char { |c| @command_line.input(c) }
         @handler.handle(13)
 
-        # All rows should have no matches
-        assert_empty @search_state.matches_for_row(0)
+        new_buffer = @window.buffer
+
+        # New buffer should have no matches
+        assert_empty @search_state.matches_for_row(0, buffer: new_buffer)
       end
     end
   end
@@ -906,10 +911,9 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
     def test_recalculates_search_matches_on_split_horizontal
       @search_state.set_pattern("hello", :forward)
-      @search_state.find_all_matches(@buffer)
 
       # No matches in original buffer
-      assert_empty @search_state.matches_for_row(0)
+      assert_empty @search_state.matches_for_row(0, buffer: @buffer)
 
       Dir.mktmpdir do |dir|
         path = File.join(dir, "split_file.txt")
@@ -919,9 +923,12 @@ class TestKeyHandlerCommandMode < Minitest::Test
         path.each_char { |c| @command_line.input(c) }
         @handler.handle(13)
 
-        # Matches should be recalculated for new buffer
-        assert_equal 1, @search_state.matches_for_row(0).size
-        assert_equal 0, @search_state.matches_for_row(0).first[:col]
+        # Get the new buffer from active window
+        new_buffer = @window_manager.active_window.buffer
+
+        # Matches should be calculated for new buffer (lazy evaluation)
+        assert_equal 1, @search_state.matches_for_row(0, buffer: new_buffer).size
+        assert_equal 0, @search_state.matches_for_row(0, buffer: new_buffer).first[:col]
       end
     end
   end
@@ -945,10 +952,9 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
     def test_recalculates_search_matches_on_split_vertical
       @search_state.set_pattern("hello", :forward)
-      @search_state.find_all_matches(@buffer)
 
       # No matches in original buffer
-      assert_empty @search_state.matches_for_row(0)
+      assert_empty @search_state.matches_for_row(0, buffer: @buffer)
 
       Dir.mktmpdir do |dir|
         path = File.join(dir, "split_file.txt")
@@ -958,9 +964,12 @@ class TestKeyHandlerCommandMode < Minitest::Test
         path.each_char { |c| @command_line.input(c) }
         @handler.handle(13)
 
-        # Matches should be recalculated for new buffer
-        assert_equal 1, @search_state.matches_for_row(0).size
-        assert_equal 0, @search_state.matches_for_row(0).first[:col]
+        # Get the new buffer from active window
+        new_buffer = @window_manager.active_window.buffer
+
+        # Matches should be calculated for new buffer (lazy evaluation)
+        assert_equal 1, @search_state.matches_for_row(0, buffer: new_buffer).size
+        assert_equal 0, @search_state.matches_for_row(0, buffer: new_buffer).first[:col]
       end
     end
   end
@@ -987,10 +996,9 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
     def test_recalculates_search_matches_on_tabnew
       @search_state.set_pattern("hello", :forward)
-      @search_state.find_all_matches(@buffer)
 
       # No matches in original buffer
-      assert_empty @search_state.matches_for_row(0)
+      assert_empty @search_state.matches_for_row(0, buffer: @buffer)
 
       Dir.mktmpdir do |dir|
         path = File.join(dir, "tab_file.txt")
@@ -1000,9 +1008,12 @@ class TestKeyHandlerCommandMode < Minitest::Test
         path.each_char { |c| @command_line.input(c) }
         @handler.handle(13)
 
-        # Matches should be recalculated for new buffer
-        assert_equal 1, @search_state.matches_for_row(0).size
-        assert_equal 0, @search_state.matches_for_row(0).first[:col]
+        # Get the new buffer from the new tab's active window
+        new_buffer = @tab_manager.current_tab.window_manager.active_window.buffer
+
+        # Matches should be calculated for new buffer (lazy evaluation)
+        assert_equal 1, @search_state.matches_for_row(0, buffer: new_buffer).size
+        assert_equal 0, @search_state.matches_for_row(0, buffer: new_buffer).first[:col]
       end
     end
   end

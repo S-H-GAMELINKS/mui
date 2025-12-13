@@ -105,7 +105,7 @@ class MockSearchState
 
   alias has_pattern? pattern?
 
-  def matches_for_row(_row)
+  def matches_for_row(_row, buffer: nil)
     @matches
   end
 end

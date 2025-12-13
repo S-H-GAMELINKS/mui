@@ -154,16 +154,15 @@ module Mui
         # Escape special regex characters for literal search
         escaped_pattern = Regexp.escape(text)
 
-        # Set search state and find matches
+        # Set search state
         search_state = @mode_manager.search_state
         search_state.set_pattern(escaped_pattern, direction)
-        search_state.find_all_matches(buffer)
 
         # Find next/previous match from current position
         match = if direction == :forward
-                  search_state.find_next(cursor_row, cursor_col)
+                  search_state.find_next(cursor_row, cursor_col, buffer:)
                 else
-                  search_state.find_previous(cursor_row, cursor_col)
+                  search_state.find_previous(cursor_row, cursor_col, buffer:)
                 end
 
         if match

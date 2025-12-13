@@ -34,6 +34,12 @@
   - Previously, pasting multiple lines would undo one line at a time
   - Now uses `begin_group`/`end_group` to group all paste operations into a single undo unit
   - Fixed direct array assignment to use `replace_line` for proper undo recording
+- Search highlight now works correctly per buffer when switching tabs/windows
+  - Previously, search matches from old buffer remained when using `gt`/`gT` or `Ctrl+W` commands
+  - `SearchState` now caches matches per buffer (keyed by `object_id`) with lazy evaluation
+  - Each buffer maintains its own match positions while sharing the global search pattern
+  - Cache automatically invalidates when pattern changes or buffer content is modified
+  - Vim-compatible behavior: search pattern is global, highlights are buffer-specific
 
 ## [0.2.0] - 2025-12-12
 

@@ -112,7 +112,7 @@ class TestSearchMode < Minitest::Test
     search_input.input("\\d+")
     handler.handle(Mui::KeyCode::ENTER_CR)
 
-    assert_equal 1, search_state.matches.length
+    assert_equal 1, search_state.find_all_matches(buffer).length
   end
 
   def test_incremental_search_moves_cursor
@@ -127,7 +127,7 @@ class TestSearchMode < Minitest::Test
     # Should find "foo" at row 1
     assert_equal 1, @window.cursor_row
     assert_equal 0, @window.cursor_col
-    assert_equal 1, @search_state.matches.length
+    assert_equal 1, @search_state.find_all_matches(@buffer).length
   end
 
   def test_incremental_search_updates_on_backspace
@@ -140,11 +140,11 @@ class TestSearchMode < Minitest::Test
     @handler.handle("o")
     @handler.handle("x") # No match for "foox"
 
-    assert_equal 0, @search_state.matches.length
+    assert_equal 0, @search_state.find_all_matches(@buffer).length
 
     @handler.handle(Mui::KeyCode::BACKSPACE) # Back to "foo"
 
-    assert_equal 1, @search_state.matches.length
+    assert_equal 1, @search_state.find_all_matches(@buffer).length
     assert_equal 1, @window.cursor_row
   end
 
@@ -157,7 +157,7 @@ class TestSearchMode < Minitest::Test
     @handler.handle("o")
 
     # Two matches: row 0 "hello" and row 2 "hello"
-    assert_equal 2, @search_state.matches.length
+    assert_equal 2, @search_state.find_all_matches(@buffer).length
   end
 
   def test_escape_restores_cursor_position
@@ -194,7 +194,7 @@ class TestSearchMode < Minitest::Test
     @handler.handle(Mui::KeyCode::ESCAPE)
 
     refute @search_state.has_pattern?
-    assert_empty @search_state.matches
+    assert_empty @search_state.find_all_matches(@buffer)
   end
 
   def test_completion_shows_matching_words
@@ -277,6 +277,6 @@ class TestSearchMode < Minitest::Test
     assert_equal Mui::Mode::NORMAL, result.mode
     refute result.cancelled?
     refute_includes result.message.to_s, "Pattern not found"
-    assert_equal 1, @search_state.matches.length
+    assert_equal 1, @search_state.find_all_matches(new_buffer).length
   end
 end
