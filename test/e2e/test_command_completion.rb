@@ -72,4 +72,76 @@ class TestCommandCompletion < Minitest::Test
       assert(buffer.start_with?("tabn"), "Should complete to a tabn* command")
     end
   end
+
+  class TestCommandRegistryPluginIntegration < TestCommandCompletion
+    def test_command_registry_exists_returns_true_for_plugin_command
+      ScriptRunner.new
+      registry = Mui::CommandRegistry.new
+
+      # Register plugin command
+      Mui.command(:my_plugin_cmd) { |_ctx| nil }
+
+      # CommandRegistry should recognize plugin command via exists?
+      assert registry.exists?(:my_plugin_cmd),
+             "CommandRegistry should recognize plugin commands"
+    end
+
+    def test_command_registry_find_returns_plugin_command
+      ScriptRunner.new
+      registry = Mui::CommandRegistry.new
+
+      # Register plugin command
+      Mui.command(:findable_cmd) { |_ctx| "found" }
+
+      # CommandRegistry should find plugin command
+      command = registry.find(:findable_cmd)
+      assert command, "CommandRegistry#find should return plugin command"
+    end
+
+    def test_command_registry_execute_runs_plugin_command
+      runner = ScriptRunner.new
+      registry = Mui::CommandRegistry.new
+
+      # Register plugin command
+      executed = false
+      Mui.command(:exec_test_cmd) { |_ctx| executed = true }
+
+      # Create context
+      context = Mui::CommandContext.new(
+        editor: runner.editor,
+        buffer: runner.editor.buffer,
+        window: runner.editor.window
+      )
+
+      # Execute via registry
+      registry.execute(:exec_test_cmd, context)
+
+      assert executed, "Plugin command should be executed via CommandRegistry"
+    end
+
+    def test_builtin_command_takes_precedence_over_plugin
+      runner = ScriptRunner.new
+      registry = Mui::CommandRegistry.new
+
+      # Register both builtin and plugin with same name
+      builtin_called = false
+      plugin_called = false
+
+      registry.register(:duplicate_name) { |_ctx| builtin_called = true }
+      Mui.command(:duplicate_name) { |_ctx| plugin_called = true }
+
+      # Create context
+      context = Mui::CommandContext.new(
+        editor: runner.editor,
+        buffer: runner.editor.buffer,
+        window: runner.editor.window
+      )
+
+      # Execute - builtin should win
+      registry.execute(:duplicate_name, context)
+
+      assert builtin_called, "Built-in command should be called"
+      refute plugin_called, "Plugin command should not be called when builtin exists"
+    end
+  end
 end

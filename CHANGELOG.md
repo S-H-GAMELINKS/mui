@@ -40,6 +40,11 @@
   - Each buffer maintains its own match positions while sharing the global search pattern
   - Cache automatically invalidates when pattern changes or buffer content is modified
   - Vim-compatible behavior: search pattern is global, highlights are buffer-specific
+- Plugin commands now recognized by CommandRegistry for alias configuration
+  - Previously, `CommandRegistry#exists?` and `#find` only checked built-in commands
+  - Now also checks `Mui.config.commands` for plugin-registered commands
+  - Enables setting command aliases for plugin commands without errors
+  - Built-in commands take precedence over plugin commands with the same name
 
 ## [0.2.0] - 2025-12-12
 
