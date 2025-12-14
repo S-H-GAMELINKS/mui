@@ -19,7 +19,9 @@ module Mui
         instance_variable: :syntax_instance_variable,
         global_variable: :syntax_global_variable,
         method_call: :syntax_method_call,
-        type: :syntax_type
+        type: :syntax_type,
+        macro: :syntax_keyword,    # Rust macros (println!, vec!, etc.)
+        regex: :syntax_string      # JavaScript/TypeScript regex literals
       }.freeze
 
       def initialize(color_scheme, buffer: nil)
