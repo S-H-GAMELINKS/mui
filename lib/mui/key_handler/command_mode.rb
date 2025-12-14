@@ -176,6 +176,10 @@ module Mui
           handle_tab_move(command_result[:position])
         when :goto_line
           handle_goto_line(command_result[:line_number])
+        when :shell_command
+          handle_shell_command(command_result[:command])
+        when :shell_command_error
+          result(message: command_result[:message])
         when :unknown
           # Check plugin commands before reporting unknown
           plugin_result = try_plugin_command(command_result[:command])
@@ -427,6 +431,45 @@ module Mui
         window.ensure_cursor_visible
 
         result
+      end
+
+      def handle_shell_command(cmd)
+        return result(message: "Shell commands not available") unless @mode_manager&.editor
+
+        context = CommandContext.new(
+          editor: @mode_manager.editor,
+          buffer:,
+          window:
+        )
+
+        context.run_shell_command(cmd, on_complete: lambda { |job|
+          display_shell_result(job, cmd)
+        })
+
+        result(message: "Running: #{cmd}")
+      end
+
+      def display_shell_result(job, cmd)
+        return unless @mode_manager&.editor
+
+        output = build_shell_output(job, cmd)
+        @mode_manager.editor.update_or_create_scratch_buffer("[Shell Output]", output)
+      end
+
+      def build_shell_output(job, cmd)
+        res = job.result
+        lines = ["$ #{cmd}", ""]
+
+        lines << res[:stdout].chomp unless res[:stdout].empty?
+
+        unless res[:stderr].empty?
+          lines << "[stderr]"
+          lines << res[:stderr].chomp
+        end
+
+        lines << "" << "[Exit status: #{res[:exit_status]}]" unless res[:success]
+
+        lines.join("\n")
       end
 
       def create_buffer_from_path(path)

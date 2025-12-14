@@ -127,6 +127,13 @@ module Mui
         { action: :tab_move, position: ::Regexp.last_match(1).to_i }
       when /^(\d+)tabn(?:ext)?/, /^tabn(?:ext)?\s+(\d+)/
         { action: :tab_go, index: ::Regexp.last_match(1).to_i - 1 }
+      when /^!(.*)$/
+        shell_cmd = ::Regexp.last_match(1).strip
+        if shell_cmd.empty?
+          { action: :shell_command_error, message: "E471: Argument required" }
+        else
+          { action: :shell_command, command: shell_cmd }
+        end
       when /^(\d+)$/
         { action: :goto_line, line_number: ::Regexp.last_match(1).to_i }
       else
