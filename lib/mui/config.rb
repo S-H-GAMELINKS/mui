@@ -11,7 +11,9 @@ module Mui
         shiftwidth: 2, # Indent width for > and < commands
         expandtab: true, # Use spaces instead of tabs
         tabstop: 8, # Tab display width
-        reselect_after_indent: false # Keep selection after > / < in visual mode
+        reselect_after_indent: false, # Keep selection after > / < in visual mode
+        leader: "\\", # Leader key for key mappings (default: backslash)
+        timeoutlen: 1000 # Timeout for multi-key sequences in milliseconds
       }
       @plugins = []
       @keymaps = {}

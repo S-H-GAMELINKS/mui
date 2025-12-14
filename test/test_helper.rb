@@ -152,13 +152,14 @@ end
 
 # Mock ModeManager for KeyHandler unit tests
 class MockModeManager
-  attr_accessor :active_window, :editor, :window_manager, :search_state
+  attr_accessor :active_window, :editor, :window_manager, :search_state, :key_sequence_handler
 
   def initialize(window, search_state: nil)
     @active_window = window
     @editor = nil
     @window_manager = nil
     @search_state = search_state || Mui::SearchState.new
+    @key_sequence_handler = nil
   end
 end
 

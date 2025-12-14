@@ -9,7 +9,8 @@ class TestCommandModeHistory < Minitest::Test
     @history = Mui::CommandHistory.new(history_file: @temp_file.path)
     @command_line = Mui::CommandLine.new(history: @history)
     @buffer = Mui::Buffer.new
-    @mode_manager = Minitest::Mock.new
+    @window = MockWindow.new(@buffer)
+    @mode_manager = MockModeManager.new(@window)
     @handler = Mui::KeyHandler::CommandMode.new(@mode_manager, @buffer, @command_line)
   end
 

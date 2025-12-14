@@ -45,44 +45,6 @@ module Mui
         end
       end
 
-      def check_plugin_keymap(key, mode_symbol)
-        return nil unless @mode_manager&.editor
-
-        key_str = convert_key_to_string(key)
-        return nil unless key_str
-
-        plugin_handler = Mui.config.keymaps[mode_symbol]&.[](key_str)
-        return nil unless plugin_handler
-
-        context = CommandContext.new(
-          editor: @mode_manager.editor,
-          buffer:,
-          window:
-        )
-        handler_result = plugin_handler.call(context)
-
-        # If handler returns nil/false, let built-in handle it
-        return nil unless handler_result
-
-        # Return a valid result to indicate the key was handled
-        handler_result.is_a?(HandlerResult::InsertModeResult) ? handler_result : result
-      end
-
-      def convert_key_to_string(key)
-        return key if key.is_a?(String)
-
-        # Handle special Curses keys
-        case key
-        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
-          "\r"
-        else
-          key.chr
-        end
-      rescue RangeError
-        # Key code out of char range (e.g., special function keys)
-        nil
-      end
-
       private
 
       def handle_escape

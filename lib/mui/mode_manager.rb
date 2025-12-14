@@ -4,9 +4,9 @@ module Mui
   # Manages editor mode state and transitions
   class ModeManager
     attr_reader :mode, :selection, :register, :undo_manager, :search_state, :search_input, :editor,
-                :last_visual_selection
+                :last_visual_selection, :key_sequence_handler
 
-    def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil, register: nil)
+    def initialize(window:, buffer:, command_line:, undo_manager: nil, editor: nil, register: nil, key_sequence_handler: nil)
       @tab_manager = window.is_a?(TabManager) ? window : nil
       @window_manager = window.is_a?(WindowManager) ? window : nil
       @window = !@tab_manager && !@window_manager ? window : nil
@@ -15,6 +15,7 @@ module Mui
       @register = register || Mui.register
       @undo_manager = undo_manager
       @editor = editor
+      @key_sequence_handler = key_sequence_handler
       @search_state = SearchState.new
       @search_input = SearchInput.new
       @mode = Mode::NORMAL

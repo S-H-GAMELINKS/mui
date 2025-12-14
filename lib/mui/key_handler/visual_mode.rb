@@ -18,6 +18,12 @@ module Mui
       end
 
       def handle(key)
+        # Check plugin keymaps first (only when no pending motion)
+        unless @pending_motion
+          plugin_result = check_plugin_keymap(key, :visual)
+          return plugin_result if plugin_result
+        end
+
         if @pending_motion
           handle_pending_motion(key)
         else

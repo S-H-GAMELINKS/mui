@@ -4,7 +4,7 @@ module Mui
   # Main editor class that coordinates all components
   class Editor
     attr_reader :tab_manager, :undo_manager, :autocmd, :command_registry, :job_manager, :color_scheme, :floating_window,
-                :insert_completion_state
+                :insert_completion_state, :key_sequence_handler
     attr_accessor :message, :running
 
     def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
@@ -46,12 +46,17 @@ module Mui
       # Load plugin autocmds
       load_plugin_autocmds
 
+      # Initialize key sequence handler for multi-key mappings
+      @key_sequence_handler = KeySequenceHandler.new(Mui.config)
+      @key_sequence_handler.rebuild_keymaps
+
       @mode_manager = ModeManager.new(
         window: @tab_manager,
         buffer: @buffer,
         command_line: @command_line,
         undo_manager: @undo_manager,
-        editor: self
+        editor: self,
+        key_sequence_handler: @key_sequence_handler
       )
 
       # Trigger BufEnter event
@@ -85,6 +90,7 @@ module Mui
     def run
       while @running
         process_job_results
+        check_key_sequence_timeout
         update_window_size
         render
         key = @input.read_nonblock
@@ -350,6 +356,40 @@ module Mui
 
     def process_job_results
       @job_manager.poll
+    end
+
+    def check_key_sequence_timeout
+      return unless @key_sequence_handler.pending?
+
+      mode_symbol = mode_to_symbol(@mode_manager.mode)
+      result = @key_sequence_handler.check_timeout(mode_symbol)
+
+      return unless result
+
+      type, data = result
+      case type
+      when KeySequenceHandler::RESULT_HANDLED
+        execute_keymap_handler(data)
+      when KeySequenceHandler::RESULT_PASSTHROUGH
+        # Re-process the passthrough key
+        handle_key(data) if data
+      end
+    end
+
+    def mode_to_symbol(mode)
+      case mode
+      when Mode::NORMAL then :normal
+      when Mode::INSERT then :insert
+      when Mode::VISUAL, Mode::VISUAL_LINE then :visual
+      when Mode::COMMAND then :command
+      when Mode::SEARCH_FORWARD, Mode::SEARCH_BACKWARD then :search
+      else :normal
+      end
+    end
+
+    def execute_keymap_handler(handler)
+      context = CommandContext.new(editor: self, buffer:, window:)
+      handler.call(context)
     end
   end
 end

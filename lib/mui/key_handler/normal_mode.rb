@@ -21,8 +21,9 @@ module Mui
         # Sync operators with current buffer/window (may have changed via tab switch)
         sync_operators
 
-        # Check plugin keymaps first (only when no pending motion)
-        unless @pending_motion
+        # Check plugin keymaps first
+        # Skip if: has pending motion OR (is builtin key AND no pending sequence)
+        unless @pending_motion || (builtin_operator_key?(key) && !pending_sequence?)
           plugin_result = check_plugin_keymap(key, :normal)
           return plugin_result if plugin_result
         end
@@ -34,48 +35,21 @@ module Mui
         end
       end
 
-      def check_plugin_keymap(key, mode_symbol)
-        return nil unless @mode_manager&.editor
+      # Check if there's a pending multi-key sequence in progress
+      def pending_sequence?
+        key_sequence_handler&.pending?
+      end
 
-        key_str = convert_key_to_string(key)
-        return nil unless key_str
+      # Check if key starts a built-in operator (takes priority over plugins)
+      def builtin_operator_key?(key)
+        char = key_to_char(key)
+        return false unless char
 
-        plugin_handler = Mui.config.keymaps[mode_symbol]&.[](key_str)
-        return nil unless plugin_handler
-
-        context = CommandContext.new(
-          editor: @mode_manager.editor,
-          buffer:,
-          window:
-        )
-        handler_result = plugin_handler.call(context)
-
-        # If handler returns nil/false, let built-in handle it
-        # This allows buffer-specific keymaps to pass through for other buffers
-        return nil unless handler_result
-
-        # Return a valid result to indicate the key was handled
-        handler_result.is_a?(HandlerResult::NormalModeResult) ? handler_result : result
+        # Built-in operators and motions that set pending_motion
+        %w[d c y g f F t T].include?(char) || key == KeyCode::CTRL_W
       end
 
       private
-
-      # Convert key to string for keymap lookup
-      # Handles special keys like Enter that have Curses constants
-      def convert_key_to_string(key)
-        return key if key.is_a?(String)
-
-        # Handle special Curses keys
-        case key
-        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
-          "\r"
-        else
-          key.chr
-        end
-      rescue RangeError
-        # Key code out of char range (e.g., special function keys)
-        nil
-      end
 
       def initialize_operators
         @operators = {

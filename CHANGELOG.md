@@ -1,6 +1,19 @@
 ## [Unreleased]
 
 ### Added
+- Multi-key sequence and leader key support (Vim-compatible):
+  - Leader key: `Mui.set :leader, "\\"` (default: backslash)
+  - `<Leader>` notation: `Mui.keymap :normal, "<Leader>gd" do ... end`
+  - Multi-key sequences: `<Leader>ff`, `<C-x><C-s>`, etc.
+  - Special key notation: `<Space>`, `<Tab>`, `<CR>`, `<Enter>`, `<Esc>`, `<BS>`
+  - Control key notation: `<C-x>`, `<Ctrl-x>`, `<C-S-x>` (Ctrl+Shift)
+  - Shift key notation: `<S-x>`, `<Shift-x>`
+  - Timeout setting: `Mui.set :timeoutlen, 1000` (milliseconds)
+  - All modes supported: Normal, Insert, Visual, Command, Search
+  - Built-in commands (dd, dw, gg, etc.) take priority over plugin keymaps
+  - Partial match waiting: typing `<Leader>g` waits for more keys if `<Leader>gd` is registered
+  - Exact match with longer possibilities: waits for timeout before executing
+  - Backward compatible with single-key keymaps
 - External shell command execution (`:!cmd`):
   - `:!echo hello` to run shell commands asynchronously
   - Output displayed in `[Shell Output]` scratch buffer (readonly)

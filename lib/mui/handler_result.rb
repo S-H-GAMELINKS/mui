@@ -6,15 +6,21 @@ module Mui
     class Base
       attr_reader :mode, :message
 
-      def initialize(mode: nil, message: nil, quit: false)
+      def initialize(mode: nil, message: nil, quit: false, pending_sequence: false)
         @mode = mode
         @message = message
         @quit = quit
+        @pending_sequence = pending_sequence
         freeze
       end
 
       def quit?
         @quit
+      end
+
+      # True when waiting for more keys in a multi-key sequence
+      def pending_sequence?
+        @pending_sequence
       end
 
       def start_selection?
@@ -36,11 +42,11 @@ module Mui
 
     # Result for NormalMode - handles visual mode start
     class NormalModeResult < Base
-      def initialize(mode: nil, message: nil, quit: false, start_selection: false, line_mode: false, group_started: false)
+      def initialize(mode: nil, message: nil, quit: false, pending_sequence: false, start_selection: false, line_mode: false, group_started: false)
         @start_selection = start_selection
         @line_mode = line_mode
         @group_started = group_started
-        super(mode:, message:, quit:)
+        super(mode:, message:, quit:, pending_sequence:)
       end
 
       def start_selection?
@@ -58,11 +64,11 @@ module Mui
 
     # Result for VisualMode - handles selection clear and line mode toggle
     class VisualModeResult < Base
-      def initialize(mode: nil, message: nil, quit: false, clear_selection: false, toggle_line_mode: false, group_started: false)
+      def initialize(mode: nil, message: nil, quit: false, pending_sequence: false, clear_selection: false, toggle_line_mode: false, group_started: false)
         @clear_selection = clear_selection
         @toggle_line_mode = toggle_line_mode
         @group_started = group_started
-        super(mode:, message:, quit:)
+        super(mode:, message:, quit:, pending_sequence:)
       end
 
       def clear_selection?
@@ -88,9 +94,9 @@ module Mui
 
     # Result for SearchMode - handles search execution
     class SearchModeResult < Base
-      def initialize(mode: nil, message: nil, quit: false, cancelled: false)
+      def initialize(mode: nil, message: nil, quit: false, pending_sequence: false, cancelled: false)
         @cancelled = cancelled
-        super(mode:, message:, quit:)
+        super(mode:, message:, quit:, pending_sequence:)
       end
 
       def cancelled?

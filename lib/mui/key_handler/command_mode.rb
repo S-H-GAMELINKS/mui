@@ -15,6 +15,10 @@ module Mui
       end
 
       def handle(key)
+        # Check plugin keymaps first
+        plugin_result = check_plugin_keymap(key, :command)
+        return plugin_result if plugin_result
+
         case key
         when KeyCode::ESCAPE
           handle_escape
