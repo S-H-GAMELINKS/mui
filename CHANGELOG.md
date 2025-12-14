@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 ### Added
+- Additional syntax highlighting for 7 languages:
+  - Go: keywords, types, constants, raw strings (backtick), block comments
+  - Rust: macros (`println!`), lifetimes (`'a`), attributes (`#[derive]`), doc comments (`///`), raw strings (`r#"..."#`)
+  - JavaScript: template literals, regex literals, BigInt (`123n`), ES6+ keywords (`const`, `let`, `async`, `await`)
+  - TypeScript: extends JavaScript with type keywords (`interface`, `type`, `enum`, `declare`, `abstract`)
+  - Markdown: headings, emphasis (`*italic*`, `**bold**`), code blocks, links, lists, blockquotes
+  - HTML: tags, attributes, comments (`<!-- -->`), DOCTYPE, entities (`&amp;`)
+  - CSS: selectors (`.class`, `#id`, `:pseudo`), properties, hex colors, @rules, functions (`calc`, `rgb`, `var`)
+  - Supported extensions: `.go`, `.rs`, `.js`/`.mjs`/`.cjs`/`.jsx`, `.ts`/`.tsx`/`.mts`/`.cts`, `.md`/`.markdown`, `.html`/`.htm`/`.xhtml`, `.css`/`.scss`/`.sass`
 - Multi-key sequence and leader key support (Vim-compatible):
   - Leader key: `Mui.set :leader, "\\"` (default: backslash)
   - `<Leader>` notation: `Mui.keymap :normal, "<Leader>gd" do ... end`
