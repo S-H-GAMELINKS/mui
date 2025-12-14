@@ -105,6 +105,13 @@ module Mui
       @active_window = target if target
     end
 
+    def focus_window(window)
+      return false unless windows.include?(window)
+
+      @active_window = window
+      true
+    end
+
     def windows
       return [] unless @layout_root
 

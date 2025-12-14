@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+### Added
+- External shell command execution (`:!cmd`):
+  - `:!echo hello` to run shell commands asynchronously
+  - Output displayed in `[Shell Output]` scratch buffer (readonly)
+  - stdout/stderr/exit status formatted and displayed
+  - "Running: cmd" message shown during execution
+  - Subsequent `:!cmd` updates existing scratch buffer (doesn't create new windows)
+  - Supports pipes, redirects, and all shell features via Open3
+  - Empty command (`:!` or `:!   `) shows error: "E471: Argument required"
+
 ### Fixed
 - Fixed long lines not displaying correctly by implementing line wrapping
   - Lines exceeding screen width are now automatically wrapped to next screen line

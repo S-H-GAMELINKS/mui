@@ -108,6 +108,42 @@ module Mui
       window_manager.split_horizontal(scratch_buffer)
     end
 
+    # Update existing scratch buffer or create new one
+    def update_or_create_scratch_buffer(name, content)
+      existing = find_scratch_buffer(name)
+
+      if existing
+        existing.content = content
+        focus_buffer(existing)
+      else
+        open_scratch_buffer(name, content)
+      end
+    end
+
+    # Find a scratch buffer by name across all tabs and windows
+    def find_scratch_buffer(name)
+      @tab_manager.tabs.each do |tab|
+        tab.window_manager.windows.each do |win|
+          return win.buffer if win.buffer.name == name && win.buffer.readonly?
+        end
+      end
+      nil
+    end
+
+    # Focus a specific buffer by switching to its window
+    def focus_buffer(target_buffer)
+      @tab_manager.tabs.each_with_index do |tab, tab_index|
+        tab.window_manager.windows.each do |win|
+          next unless win.buffer == target_buffer
+
+          @tab_manager.go_to(tab_index)
+          tab.window_manager.focus_window(win)
+          return true
+        end
+      end
+      false
+    end
+
     # Suspend UI for running external interactive commands (e.g., fzf)
     def suspend_ui
       @adapter.suspend
