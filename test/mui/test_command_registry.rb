@@ -57,4 +57,63 @@ class TestCommandRegistry < Minitest::Test
     refute first_called
     assert second_called
   end
+
+  # Tests for plugin command integration
+  def test_exists_returns_true_for_plugin_command
+    Mui.config.add_command(:plugin_cmd, ->(_ctx) { "plugin" })
+
+    assert @registry.exists?(:plugin_cmd)
+  ensure
+    Mui.config.commands.delete(:plugin_cmd)
+  end
+
+  def test_find_returns_builtin_command
+    @registry.register(:test_cmd) { "builtin" }
+
+    command = @registry.find(:test_cmd)
+
+    assert command
+  end
+
+  def test_find_returns_plugin_command
+    Mui.config.add_command(:plugin_cmd, ->(_ctx) { "plugin" })
+
+    command = @registry.find(:plugin_cmd)
+
+    assert command
+  ensure
+    Mui.config.commands.delete(:plugin_cmd)
+  end
+
+  def test_find_returns_nil_for_unknown
+    command = @registry.find(:unknown_cmd)
+
+    assert_nil command
+  end
+
+  def test_builtin_takes_precedence_over_plugin
+    builtin_called = false
+    plugin_called = false
+
+    @registry.register(:same_name) { |_ctx| builtin_called = true }
+    Mui.config.add_command(:same_name, ->(_ctx) { plugin_called = true })
+
+    @registry.execute(:same_name, @context)
+
+    assert builtin_called
+    refute plugin_called
+  ensure
+    Mui.config.commands.delete(:same_name)
+  end
+
+  def test_execute_plugin_command
+    result = nil
+    Mui.config.add_command(:plugin_exec, ->(_ctx) { result = "executed" })
+
+    @registry.execute(:plugin_exec, @context)
+
+    assert_equal "executed", result
+  ensure
+    Mui.config.commands.delete(:plugin_exec)
+  end
 end
