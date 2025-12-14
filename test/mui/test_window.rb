@@ -16,7 +16,6 @@ class TestWindow < Minitest::Test
       assert_equal 0, window.cursor_row
       assert_equal 0, window.cursor_col
       assert_equal 0, window.scroll_row
-      assert_equal 0, window.scroll_col
     end
 
     def test_with_custom_geometry
@@ -213,22 +212,15 @@ class TestWindow < Minitest::Test
       assert_equal 5, @window.scroll_row
     end
 
-    def test_scrolls_right_when_cursor_past_visible
+    def test_scrolls_down_when_cursor_on_wrapped_line
+      # Create a line that wraps (100 chars with width 80)
       @buffer.insert_line(0, "a" * 100)
-      @window.cursor_col = 90
+      @window.cursor_col = 90 # Cursor on second wrapped line
 
       @window.ensure_cursor_visible
 
-      assert_equal 11, @window.scroll_col
-    end
-
-    def test_scrolls_left_when_cursor_before_visible
-      @window.scroll_col = 20
-      @window.cursor_col = 10
-
-      @window.ensure_cursor_visible
-
-      assert_equal 10, @window.scroll_col
+      # Cursor should be visible (scroll_row should accommodate wrapped lines)
+      assert_equal 0, @window.scroll_row
     end
   end
 
@@ -315,11 +307,13 @@ class TestWindow < Minitest::Test
       @window.cursor_row = 10
       @window.cursor_col = 15
       @window.scroll_row = 3
-      @window.scroll_col = 5
 
-      # screen_cursor_x = window.x + display_width(text[scroll_col...cursor_col])
-      # = 5 + width("56789abcde") = 5 + 10 = 15
-      assert_equal 15, @window.screen_cursor_x
+      # screen_cursor_x = window.x + display_width(text[0...cursor_col])
+      # = 5 + width("0123456789abcde") = 5 + 15 = 20
+      assert_equal 20, @window.screen_cursor_x
+      # screen_cursor_y = window.y + screen_rows_from_scroll_to_cursor
+      # rows 3-9 = 7 rows (each 1 screen line since short content)
+      # + row offset within line 10 = 0
       assert_equal 9, @window.screen_cursor_y
     end
 
@@ -329,23 +323,37 @@ class TestWindow < Minitest::Test
       @window.x = 0
       @window.cursor_row = 0
       @window.cursor_col = 7 # After "Hello世界" (5 + 2 chars)
-      @window.scroll_col = 0
 
       # "Hello世界" = 5 (ASCII) + 4 (2 wide chars) = 9 display width
       assert_equal 9, @window.screen_cursor_x
     end
 
-    def test_cursor_position_with_scroll_and_japanese
-      @buffer.replace_line(0, "あいうえおABCDE")
+    def test_cursor_position_with_wrapped_line
+      # Create a line that wraps: 100 'a' chars with width 80
+      @buffer.replace_line(0, "a" * 100)
 
       @window.x = 0
       @window.cursor_row = 0
-      @window.cursor_col = 7  # After "あいうえおAB"
-      @window.scroll_col = 2  # Skip "あい"
+      @window.cursor_col = 90 # Position on second wrapped line
 
-      # visible: "うえおAB" from scroll_col=2 to cursor_col=7
-      # "うえおAB" = 6 (3 wide chars) + 2 (ASCII) = 8 display width
-      assert_equal 8, @window.screen_cursor_x
+      # First 80 chars on first screen line, cols 80-99 on second line
+      # Position 90 is at offset 10 on second screen line
+      assert_equal 10, @window.screen_cursor_x
+      assert_equal 1, @window.screen_cursor_y # On second screen line
+    end
+
+    def test_cursor_position_with_wrapped_japanese
+      # "あいうえおかきくけこ" = 10 chars, 20 width, wraps at width 10
+      @buffer.replace_line(0, "あいうえおかきくけこ")
+
+      window = Mui::Window.new(@buffer, width: 10, height: 24)
+      window.cursor_row = 0
+      window.cursor_col = 6 # After "あいうえおか" on second screen line
+
+      # First 5 chars "あいうえお" (width 10) on first line
+      # Char 6 "か" starts second line at screen_col 0
+      assert_equal 2, window.screen_cursor_x  # "か" has width 2, cursor is after it
+      assert_equal 1, window.screen_cursor_y  # On second screen line
     end
   end
 end

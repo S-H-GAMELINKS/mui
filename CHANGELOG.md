@@ -1,6 +1,14 @@
 ## [Unreleased]
 
 ### Fixed
+- Fixed long lines not displaying correctly by implementing line wrapping
+  - Lines exceeding screen width are now automatically wrapped to next screen line
+  - Unicode width aware wrapping (Japanese characters count as 2 width)
+  - Removed broken horizontal scrolling (`scroll_col`) in favor of wrap mode
+  - Cursor position correctly calculated across wrapped lines
+  - Selection and search highlights work correctly across wrap boundaries
+  - Added `WrapCache` for performance optimization (content-based caching)
+  - Added `WrapHelper` module for wrap calculations
 - Fixed search returning "Pattern not found" after switching buffers via `:e`
   - `execute_search` was using `@buffer` (initial buffer) instead of `buffer` method (current buffer)
   - Now correctly searches in the current buffer after buffer switch

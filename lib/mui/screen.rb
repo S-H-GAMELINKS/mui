@@ -30,8 +30,8 @@ module Mui
       return if y >= @height || x >= @width
 
       @adapter.setpos(y, x)
-      max_len = @width - x
-      @adapter.addstr(text.length > max_len ? text[0, max_len] : text)
+      max_width = @width - x
+      @adapter.addstr(truncate_to_width(text, max_width))
     end
 
     def put_with_highlight(y, x, text)
@@ -39,9 +39,9 @@ module Mui
       return if y >= @height || x >= @width
 
       @adapter.setpos(y, x)
-      max_len = @width - x
+      max_width = @width - x
       @adapter.with_highlight do
-        @adapter.addstr(text.length > max_len ? text[0, max_len] : text)
+        @adapter.addstr(truncate_to_width(text, max_width))
       end
     end
 
@@ -51,8 +51,8 @@ module Mui
       return put(y, x, text) unless @color_manager && style
 
       @adapter.setpos(y, x)
-      max_len = @width - x
-      truncated_text = text.length > max_len ? text[0, max_len] : text
+      max_width = @width - x
+      truncated_text = truncate_to_width(text, max_width)
 
       pair_index = ensure_color_pair(style[:fg], style[:bg])
       @adapter.with_color(pair_index, bold: style[:bold], underline: style[:underline]) do
@@ -80,6 +80,24 @@ module Mui
     def update_size
       @width = @adapter.width
       @height = @adapter.height
+    end
+
+    # Truncates text to fit within max_width display columns
+    def truncate_to_width(text, max_width)
+      return text if max_width <= 0
+
+      current_width = 0
+      result = String.new
+
+      text.each_char do |char|
+        char_w = UnicodeWidth.char_width(char)
+        break if current_width + char_w > max_width
+
+        result << char
+        current_width += char_w
+      end
+
+      result
     end
   end
 end

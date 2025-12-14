@@ -17,7 +17,58 @@ module Mui
       render_with_highlights(screen, line, x, y, highlights)
     end
 
+    # Renders a wrapped line segment with screen coordinate-based highlights
+    # wrap_info: { text:, start_col:, end_col: }
+    # options: { selection:, search_state:, logical_row:, visible_width: }
+    def render_wrapped_line(screen, y, x, wrap_info, options = {})
+      text = wrap_info[:text]
+      return if text.nil?
+
+      logical_row = options[:logical_row]
+      start_col = wrap_info[:start_col]
+      end_col = wrap_info[:end_col]
+
+      # Collect highlights for this row and clip to wrapped segment range
+      highlights = collect_highlights(logical_row, text, options)
+      clipped_highlights = clip_highlights_to_range(highlights, start_col, end_col)
+
+      # Adjust highlight positions to be relative to wrap segment start
+      adjusted_highlights = clipped_highlights.map do |h|
+        adjusted_start = h.start_col - start_col
+        adjusted_end = h.end_col - start_col
+        Highlight.new(
+          start_col: adjusted_start,
+          end_col: adjusted_end,
+          style: h.style,
+          priority: h.priority
+        )
+      end
+
+      render_with_highlights(screen, text, x, y, adjusted_highlights)
+    end
+
     private
+
+    # Clips highlights to a column range and returns only overlapping portions
+    def clip_highlights_to_range(highlights, range_start, range_end)
+      highlights.filter_map do |h|
+        # Skip if highlight doesn't overlap with range
+        next if h.end_col < range_start || h.start_col >= range_end
+
+        # Clip to range
+        clipped_start = [h.start_col, range_start].max
+        clipped_end = [h.end_col, range_end - 1].min
+
+        next if clipped_start > clipped_end
+
+        Highlight.new(
+          start_col: clipped_start,
+          end_col: clipped_end,
+          style: h.style,
+          priority: h.priority
+        )
+      end
+    end
 
     def collect_highlights(row, line, options)
       @highlighters
@@ -36,7 +87,7 @@ module Mui
 
       segments.each do |segment|
         put_text(screen, y, current_x, segment[:text], segment[:style])
-        current_x += segment[:text].length
+        current_x += UnicodeWidth.string_width(segment[:text])
       end
     end
 

@@ -2,7 +2,7 @@
 
 module Mui
   class Window
-    attr_accessor :x, :y, :width, :height, :cursor_row, :cursor_col, :scroll_row, :scroll_col
+    attr_accessor :x, :y, :width, :height, :cursor_row, :cursor_col, :scroll_row
     attr_reader :buffer
 
     def initialize(buffer, x: 0, y: 0, width: 80, height: 24, color_scheme: nil)
@@ -14,8 +14,8 @@ module Mui
       @cursor_row = 0
       @cursor_col = 0
       @scroll_row = 0
-      @scroll_col = 0
       @color_scheme = color_scheme
+      @wrap_cache = WrapCache.new
       @syntax_highlighter = Highlighters::SyntaxHighlighter.new(color_scheme, buffer:)
       @line_renderer = create_line_renderer
       @status_line_renderer = StatusLineRenderer.new(buffer, self, color_scheme)
@@ -26,7 +26,7 @@ module Mui
       @cursor_row = 0
       @cursor_col = 0
       @scroll_row = 0
-      @scroll_col = 0
+      @wrap_cache.clear
       @syntax_highlighter.buffer = new_buffer
       @line_renderer = create_line_renderer
       @status_line_renderer = StatusLineRenderer.new(new_buffer, self, @color_scheme)
@@ -41,52 +41,72 @@ module Mui
     end
 
     def ensure_cursor_visible
-      # 縦スクロール
-      if @cursor_row < @scroll_row
-        @scroll_row = @cursor_row
-      elsif @cursor_row >= @scroll_row + visible_height
-        @scroll_row = @cursor_row - visible_height + 1
-      end
+      # Calculate screen row of cursor considering line wrapping
+      cursor_screen_row = screen_rows_from_scroll_to_cursor
 
-      # 横スクロール
-      if @cursor_col < @scroll_col
-        @scroll_col = @cursor_col
-      elsif @cursor_col >= @scroll_col + visible_width
-        @scroll_col = @cursor_col - visible_width + 1
+      # Scroll up if cursor is above visible area
+      @scroll_row -= 1 while @cursor_row < @scroll_row
+
+      # Scroll down if cursor is below visible area
+      while cursor_screen_row >= visible_height
+        @scroll_row += 1
+        cursor_screen_row = screen_rows_from_scroll_to_cursor
       end
     end
 
     def render(screen, selection: nil, search_state: nil)
       options = build_render_options(selection, search_state)
+      screen_row = 0
+      logical_row = @scroll_row
 
-      visible_height.times do |i|
-        row = @scroll_row + i
-        if row < @buffer.line_count
-          render_line(screen, row, i, options)
-        else
-          # Clear lines beyond buffer content to prevent screen remnants
-          clear_line(screen, i)
+      while screen_row < visible_height && logical_row < @buffer.line_count
+        line = @buffer.line(logical_row)
+        wrapped_lines = WrapHelper.wrap_line(line, visible_width, cache: @wrap_cache)
+
+        wrapped_lines.each do |wrap_info|
+          break if screen_row >= visible_height
+
+          render_wrapped_segment(screen, logical_row, wrap_info, screen_row, options)
+          screen_row += 1
         end
+
+        logical_row += 1
+      end
+
+      # Clear remaining lines
+      while screen_row < visible_height
+        clear_line(screen, screen_row)
+        screen_row += 1
       end
 
       @status_line_renderer.render(screen, @y + visible_height)
     end
 
-    def render_line(screen, row, screen_row, options)
-      line = prepare_visible_line(row)
-      adjusted_options = adjust_options_for_scroll(options)
-      @line_renderer.render(screen, line, row, @x, @y + screen_row, adjusted_options)
+    def render_wrapped_segment(screen, logical_row, wrap_info, screen_row, options)
+      wrap_options = options.merge(logical_row:)
+      @line_renderer.render_wrapped_line(screen, @y + screen_row, @x, wrap_info, wrap_options)
+
+      # Fill remaining width with spaces if line is shorter
+      text_width = UnicodeWidth.string_width(wrap_info[:text])
+      return unless text_width < visible_width
+
+      remaining_width = visible_width - text_width
+      fill_text = " " * remaining_width
+      if @color_scheme && @color_scheme[:normal]
+        screen.put_with_style(@y + screen_row, @x + text_width, fill_text, @color_scheme[:normal])
+      else
+        screen.put(@y + screen_row, @x + text_width, fill_text)
+      end
     end
 
     def screen_cursor_x
       line = @buffer.line(@cursor_row) || ""
-      # Calculate display width from scroll_col to cursor_col
-      visible_text = line[@scroll_col...@cursor_col] || ""
-      @x + UnicodeWidth.string_width(visible_text)
+      _, screen_col = WrapHelper.logical_to_screen(line, @cursor_col, visible_width, cache: @wrap_cache)
+      @x + screen_col
     end
 
     def screen_cursor_y
-      @y + @cursor_row - @scroll_row
+      @y + screen_rows_from_scroll_to_cursor
     end
 
     # カーソル移動
@@ -129,6 +149,29 @@ module Mui
       end
     end
 
+    # Calculates screen rows from scroll_row to cursor position
+    def screen_rows_from_scroll_to_cursor
+      screen_rows = 0
+
+      # Add screen lines for rows between scroll_row and cursor_row
+      (@scroll_row...@cursor_row).each do |row|
+        line = @buffer.line(row) || ""
+        screen_rows += WrapHelper.screen_line_count(line, visible_width, cache: @wrap_cache)
+      end
+
+      # Add the row offset within the cursor's line
+      cursor_line = @buffer.line(@cursor_row) || ""
+      row_offset, = WrapHelper.logical_to_screen(cursor_line, @cursor_col, visible_width, cache: @wrap_cache)
+      screen_rows + row_offset
+    end
+
+    # Clear wrap cache when window dimensions change
+    def resize(new_width, new_height)
+      @width = new_width
+      @height = new_height
+      @wrap_cache.clear
+    end
+
     def create_line_renderer
       renderer = LineRenderer.new(@color_scheme)
       renderer.add_highlighter(@syntax_highlighter)
@@ -143,22 +186,8 @@ module Mui
       renderer
     end
 
-    def prepare_visible_line(row)
-      line = @buffer.line(row)
-      visible_line = @scroll_col < line.length ? line[@scroll_col, visible_width] || "" : ""
-      visible_line.ljust(visible_width)
-    end
-
     def build_render_options(selection, search_state)
-      { selection:, search_state:, scroll_col: @scroll_col, buffer: @buffer }
-    end
-
-    def adjust_options_for_scroll(options)
-      return options unless options[:selection] || options[:search_state]
-
-      adjusted = options.dup
-      adjusted[:scroll_col] = @scroll_col
-      adjusted
+      { selection:, search_state:, buffer: @buffer }
     end
 
     def max_cursor_col
