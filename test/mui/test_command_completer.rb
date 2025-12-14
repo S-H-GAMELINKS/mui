@@ -160,4 +160,71 @@ class TestCommandCompleter < Minitest::Test
       refute_includes candidates, "zzz_unique_cmd"
     end
   end
+
+  class TestCaseInsensitiveCompletion < TestCommandCompleter
+    def setup
+      super
+      @original_commands = Mui.config.commands.dup
+    end
+
+    def teardown
+      Mui.config.instance_variable_set(:@commands, @original_commands)
+    end
+
+    def test_lowercase_prefix_matches_capitalized_command
+      Mui.command(:Git) { |_ctx| nil }
+
+      candidates = @completer.complete("git")
+
+      assert_includes candidates, "Git"
+    end
+
+    def test_uppercase_prefix_matches_lowercase_command
+      candidates = @completer.complete("TAB")
+
+      assert_includes candidates, "tabnew"
+      assert_includes candidates, "tabclose"
+    end
+
+    def test_mixed_case_prefix_matches
+      Mui.command(:LspHover) { |_ctx| nil }
+
+      candidates = @completer.complete("lsp")
+
+      assert_includes candidates, "LspHover"
+    end
+
+    def test_exact_case_still_works
+      Mui.command(:Git) { |_ctx| nil }
+
+      candidates = @completer.complete("Git")
+
+      assert_includes candidates, "Git"
+    end
+
+    def test_preserves_original_case_in_results
+      Mui.command(:LspHover) { |_ctx| nil }
+      Mui.command(:LspDefinition) { |_ctx| nil }
+
+      candidates = @completer.complete("lsp")
+
+      assert(candidates.any? { |c| c == "LspHover" })
+      assert(candidates.any? { |c| c == "LspDefinition" })
+    end
+
+    def test_case_insensitive_with_partial_match
+      Mui.command(:Rg) { |_ctx| nil }
+
+      candidates = @completer.complete("rg")
+
+      assert_includes candidates, "Rg"
+    end
+
+    def test_case_insensitive_with_builtin_commands
+      candidates = @completer.complete("SP")
+
+      assert_includes candidates, "sp"
+      assert_includes candidates, "split"
+    end
+  end
 end

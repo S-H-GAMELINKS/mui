@@ -9,6 +9,17 @@
   - Subsequent `:!cmd` updates existing scratch buffer (doesn't create new windows)
   - Supports pipes, redirects, and all shell features via Open3
   - Empty command (`:!` or `:!   `) shows error: "E471: Argument required"
+- Case-insensitive command completion:
+  - `:git` now matches `:Git`, `:lsp` matches `:LspHover`, `:LspDefinition`, etc.
+  - Original command case is preserved in completion results
+  - Only applies to command completion (file path completion remains case-sensitive)
+- Command history with persistence:
+  - Up/Down arrow keys navigate through command history in command mode
+  - History saved to `~/.mui_history` (persists across sessions)
+  - Maximum 100 entries stored
+  - Duplicate commands move to most recent position
+  - Empty commands are not added to history
+  - Current input is preserved when browsing history (restored with Down at end)
 
 ### Fixed
 - Fixed long lines not displaying correctly by implementing line wrapping

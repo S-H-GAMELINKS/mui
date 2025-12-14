@@ -5,11 +5,12 @@ module Mui
     # Commands that accept file path arguments
     FILE_COMMANDS = %w[e w sp split vs vsplit tabnew tabe tabedit].freeze
 
-    attr_reader :buffer, :cursor_pos
+    attr_reader :buffer, :cursor_pos, :history
 
-    def initialize
+    def initialize(history: CommandHistory.new)
       @buffer = ""
       @cursor_pos = 0
+      @history = history
     end
 
     def input(char)
@@ -27,6 +28,25 @@ module Mui
     def clear
       @buffer = ""
       @cursor_pos = 0
+      @history.reset
+    end
+
+    def history_previous
+      result = @history.previous(@buffer)
+      return false unless result
+
+      @buffer = result.dup
+      @cursor_pos = @buffer.length
+      true
+    end
+
+    def history_next
+      result = @history.next_entry
+      return false unless result
+
+      @buffer = result.dup
+      @cursor_pos = @buffer.length
+      true
     end
 
     def move_cursor_left
@@ -38,6 +58,9 @@ module Mui
     end
 
     def execute
+      command = @buffer.strip
+      @history.add(command) unless command.empty?
+      @history.reset
       result = parse(@buffer)
       @buffer = ""
       @cursor_pos = 0

@@ -30,6 +30,10 @@ module Mui
           handle_cursor_left
         when Curses::KEY_RIGHT
           handle_cursor_right
+        when Curses::KEY_UP
+          handle_history_up
+        when Curses::KEY_DOWN
+          handle_history_down
         else
           handle_character_input(key)
         end
@@ -79,6 +83,18 @@ module Mui
 
       def handle_cursor_right
         @command_line.move_cursor_right
+        result
+      end
+
+      def handle_history_up
+        @completion_state.reset
+        @command_line.history_previous
+        result
+      end
+
+      def handle_history_down
+        @completion_state.reset
+        @command_line.history_next
         result
       end
 

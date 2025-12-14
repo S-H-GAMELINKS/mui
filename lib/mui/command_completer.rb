@@ -17,7 +17,8 @@ module Mui
 
       return all_commands.uniq.sort if prefix.empty?
 
-      all_commands.select { |cmd| cmd.start_with?(prefix) }.uniq.sort
+      prefix_downcase = prefix.downcase
+      all_commands.select { |cmd| cmd.downcase.start_with?(prefix_downcase) }.uniq.sort
     end
 
     private
