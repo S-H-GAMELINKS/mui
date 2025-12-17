@@ -17,8 +17,25 @@ module Mui
       end
 
       def init_colors
+        return unless ::Curses.has_colors?
+
         ::Curses.start_color
         ::Curses.use_default_colors
+        @has_colors = true
+        @available_colors = ::Curses.respond_to?(:colors) ? ::Curses.colors : 8
+        @max_pairs = ::Curses.respond_to?(:color_pairs) ? ::Curses.color_pairs : 64
+      end
+
+      def has_colors?
+        @has_colors || false
+      end
+
+      def colors
+        @available_colors || 0
+      end
+
+      def color_pairs
+        @max_pairs || 0
       end
 
       def init_color_pair(pair_index, fg, bg)

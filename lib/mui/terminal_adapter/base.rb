@@ -87,6 +87,21 @@ module Mui
       def resume
         raise MethodNotOverriddenError, __method__
       end
+
+      # Check if terminal supports colors
+      def has_colors?
+        raise MethodNotOverriddenError, __method__
+      end
+
+      # Get available color count (8, 256, etc.)
+      def colors
+        raise MethodNotOverriddenError, __method__
+      end
+
+      # Get available color pair count
+      def color_pairs
+        raise MethodNotOverriddenError, __method__
+      end
     end
   end
 end

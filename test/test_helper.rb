@@ -11,7 +11,8 @@ module Mui
   module TerminalAdapter
     # Test adapter for unit testing without actual terminal
     class Test < Base
-      attr_accessor :input_queue, :width, :height
+      attr_accessor :input_queue, :width, :height,
+                    :test_has_colors, :test_colors, :test_color_pairs
 
       def initialize(width: 80, height: 24)
         @width = width
@@ -22,6 +23,9 @@ module Mui
         @cursor_x = 0
         @highlight_mode = false
         @current_style = nil
+        @test_has_colors = true
+        @test_colors = 256
+        @test_color_pairs = 256
       end
 
       def init
@@ -58,8 +62,24 @@ module Mui
         result
       end
 
+      def init_colors
+        # No-op for testing
+      end
+
       def init_color_pair(_pair_index, _fg, _bg)
         # No-op for testing
+      end
+
+      def has_colors?
+        @test_has_colors
+      end
+
+      def colors
+        @test_colors
+      end
+
+      def color_pairs
+        @test_color_pairs
       end
 
       def with_color(pair_index, bold: false, underline: false)
