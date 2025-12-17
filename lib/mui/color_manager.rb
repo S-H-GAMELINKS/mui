@@ -104,18 +104,76 @@ module Mui
       tokyo_yellow: 223        # #ffd7af (~#e0af68)
     }.freeze
 
-    attr_reader :pairs
+    # Fallback map: 256-color to 8-color
+    FALLBACK_MAP = {
+      darkgray: :black,
+      # solarized
+      solarized_base03: :black, solarized_base02: :black,
+      solarized_base01: :white, solarized_base00: :white,
+      solarized_base0: :white, solarized_base1: :white,
+      solarized_base2: :white, solarized_base3: :white,
+      solarized_yellow: :yellow, solarized_orange: :red,
+      solarized_red: :red, solarized_magenta: :magenta,
+      solarized_violet: :blue, solarized_blue: :blue,
+      solarized_cyan: :cyan, solarized_green: :green,
+      # monokai
+      monokai_bg: :black, monokai_fg: :white,
+      monokai_pink: :magenta, monokai_green: :green,
+      monokai_orange: :yellow, monokai_purple: :magenta,
+      monokai_cyan: :cyan, monokai_yellow: :yellow,
+      # nord
+      nord_polar0: :black, nord_polar1: :black,
+      nord_polar2: :black, nord_polar3: :white,
+      nord_snow0: :white, nord_snow1: :white, nord_snow2: :white,
+      nord_frost0: :cyan, nord_frost1: :cyan,
+      nord_frost2: :blue, nord_frost3: :blue,
+      nord_aurora_red: :red, nord_aurora_orange: :yellow,
+      nord_aurora_yellow: :yellow, nord_aurora_green: :green,
+      nord_aurora_purple: :magenta,
+      # gruvbox
+      gruvbox_bg: :black, gruvbox_fg: :white,
+      gruvbox_red: :red, gruvbox_green: :green,
+      gruvbox_yellow: :yellow, gruvbox_blue: :blue,
+      gruvbox_purple: :magenta, gruvbox_aqua: :cyan,
+      gruvbox_orange: :yellow, gruvbox_gray: :white,
+      # dracula
+      dracula_bg: :black, dracula_fg: :white,
+      dracula_selection: :black, dracula_comment: :blue,
+      dracula_cyan: :cyan, dracula_green: :green,
+      dracula_orange: :yellow, dracula_pink: :magenta,
+      dracula_purple: :magenta, dracula_red: :red,
+      dracula_yellow: :yellow,
+      # tokyo night
+      tokyo_bg: :black, tokyo_fg: :white,
+      tokyo_comment: :blue, tokyo_cyan: :cyan,
+      tokyo_blue: :blue, tokyo_purple: :magenta,
+      tokyo_green: :green, tokyo_orange: :yellow,
+      tokyo_red: :red, tokyo_yellow: :yellow
+    }.freeze
 
-    def initialize
+    attr_reader :pairs, :supports_256_colors
+
+    def initialize(adapter: nil)
       @pair_index = 1
       @pairs = {}
+      @pair_order = []
+      @adapter = adapter
+      configure_color_capability
     end
 
     def register_pair(fg, bg)
       key = [fg, bg]
-      return @pairs[key] if @pairs[key]
+
+      if @pairs[key]
+        touch_pair(key)
+        return @pairs[key]
+      end
+
+      # Check pair limit and evict oldest if needed
+      evict_oldest_pair if @max_pairs.positive? && @pair_index >= @max_pairs
 
       @pairs[key] = @pair_index
+      @pair_order << key
       @pair_index += 1
       @pairs[key]
     end
@@ -128,9 +186,46 @@ module Mui
       return -1 if color.nil?
       return color if color.is_a?(Integer)
 
-      COLOR_MAP[color] || EXTENDED_COLOR_MAP[color] || -1
+      resolved_color = resolve_with_fallback(color)
+      COLOR_MAP[resolved_color] || EXTENDED_COLOR_MAP[resolved_color] || -1
     end
 
     alias resolve color_code
+
+    private
+
+    def configure_color_capability
+      if @adapter.nil?
+        # Backward compatibility: assume 256 colors when adapter is not specified
+        @available_colors = 256
+        @max_pairs = 256
+        @supports_256_colors = true
+      elsif @adapter.has_colors?
+        @available_colors = @adapter.colors
+        @max_pairs = [@adapter.color_pairs, 256].min
+        @supports_256_colors = @available_colors >= 256
+      else
+        @available_colors = 0
+        @max_pairs = 0
+        @supports_256_colors = false
+      end
+    end
+
+    def resolve_with_fallback(color)
+      return color if @supports_256_colors
+      return color if COLOR_MAP.key?(color)
+
+      FALLBACK_MAP[color] || :white
+    end
+
+    def touch_pair(key)
+      @pair_order.delete(key)
+      @pair_order << key
+    end
+
+    def evict_oldest_pair
+      oldest_key = @pair_order.shift
+      @pairs.delete(oldest_key) if oldest_key
+    end
   end
 end

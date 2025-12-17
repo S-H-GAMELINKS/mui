@@ -1,5 +1,16 @@
 ## [Unreleased]
 
+### Added
+- 256-color support stabilization:
+  - Environment capability detection (`Curses.has_colors?`, `Curses.colors`, `Curses.color_pairs`)
+  - Automatic 8-color fallback for terminals without 256-color support
+  - `FALLBACK_MAP` to map extended colors to nearest basic 8-color equivalents
+  - LRU cache for color pairs to prevent pair exhaustion
+  - Automatic eviction of oldest pairs when limit is reached
+  - Backward compatible: `ColorManager.new` without adapter assumes 256 colors
+  - `ColorManager#supports_256_colors` to check color capability
+  - `TerminalAdapter::Base#has_colors?`, `#colors`, `#color_pairs` interface methods
+
 ## [0.3.0] - 2025-12-15
 
 ### Added

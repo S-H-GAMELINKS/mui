@@ -123,16 +123,20 @@ Naming/PredicateMethod:
     - 'lib/mui/undo_manager.rb'
     - 'lib/mui/window_manager.rb'
 
-# Offense count: 1
+# Offense count: 4
 # Configuration parameters: NamePrefix, ForbiddenPrefixes, AllowedMethods, MethodDefinitionMacros, UseSorbetSigs.
 # NamePrefix: is_, has_, have_, does_
 # ForbiddenPrefixes: is_, has_, have_, does_
 # AllowedMethods: is_a?
 # MethodDefinitionMacros: define_method, define_singleton_method
+# Note: has_colors? is intentionally named to match Curses API
 Naming/PredicatePrefix:
   Exclude:
     - 'spec/**/*'
     - 'lib/mui/search_state.rb'
+    - 'lib/mui/terminal_adapter/base.rb'
+    - 'lib/mui/terminal_adapter/curses.rb'
+    - 'test/test_helper.rb'
 
 # Offense count: 2
 # Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers, AllowedPatterns.
