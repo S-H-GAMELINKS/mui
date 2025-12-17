@@ -132,3 +132,40 @@ class TestColorManagerColorCapability < Minitest::Test
     end
   end
 end
+
+class TestMuiExtendedColors < Minitest::Test
+  MUI_COLORS = %i[
+    mui_bg mui_fg mui_comment mui_constant mui_identifier
+    mui_statement mui_preproc mui_type mui_special mui_function
+    mui_line_number mui_status_bg mui_visual
+    mui_search mui_tab_bg mui_tab_active mui_error mui_info
+  ].freeze
+
+  def test_mui_extended_colors_exist
+    MUI_COLORS.each do |color|
+      assert Mui::ColorManager::EXTENDED_COLOR_MAP.key?(color),
+             "#{color} should be defined in EXTENDED_COLOR_MAP"
+    end
+  end
+
+  def test_mui_colors_fallback_to_8_colors
+    adapter = Mui::TerminalAdapter::Test.new
+    adapter.test_colors = 8
+    manager = Mui::ColorManager.new(adapter:)
+
+    # mui_constant (110) should fallback to cyan (6)
+    assert_equal 6, manager.color_code(:mui_constant)
+
+    # mui_statement (186) should fallback to yellow (3)
+    assert_equal 3, manager.color_code(:mui_statement)
+  end
+
+  def test_mui_colors_use_256_palette
+    manager = Mui::ColorManager.new
+
+    assert_equal 236, manager.color_code(:mui_bg)
+    assert_equal 253, manager.color_code(:mui_fg)
+    assert_equal 110, manager.color_code(:mui_constant)
+    assert_equal 186, manager.color_code(:mui_statement)
+  end
+end

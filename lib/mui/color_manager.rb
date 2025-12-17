@@ -17,8 +17,27 @@ module Mui
     # 256-color palette extended colors
     # Use https://www.ditig.com/256-colors-cheat-sheet for reference
     EXTENDED_COLOR_MAP = {
-      # mui theme
-      darkgray: 235, # #262626 (~#2b2b2b)
+      # mui theme - Eye-friendly gray-based theme
+      mui_bg: 236,             # #303030 - Calm dark gray background
+      mui_fg: 253,             # #dadada - Soft white (easy on the eyes)
+      mui_comment: 102,        # #878787 - Subtle gray (for comments)
+      mui_constant: 110,       # #87afd7 - Calm blue (constants/strings/numbers)
+      mui_identifier: 174,     # #d78787 - Soft salmon pink
+      mui_statement: 186,      # #d7d787 - Subtle yellow (keywords)
+      mui_preproc: 173,        # #d7875f - Orange/brown (preprocessor)
+      mui_type: 109,           # #87afaf - Calm cyan (types)
+      mui_special: 180,        # #d7af87 - Soft beige (symbols)
+      mui_function: 216,       # #ffaf87 - Peach/orange (functions)
+      # UI colors
+      mui_line_number: 243,    # #767676 - Subtle gray
+      mui_status_bg: 238,      # #444444 - Status bar background
+      mui_visual: 239,         # #4e4e4e - Selection background
+      mui_search: 222,         # #ffd787 - Search highlight (prominent yellow)
+      mui_tab_bg: 237,         # #3a3a3a - Tab bar background
+      mui_tab_active: 110,     # #87afd7 - Active tab
+      mui_error: 167,          # #d75f5f - Error messages
+      mui_info: 109,           # #87afaf - Info messages
+      darkgray: 235,           # #262626 (~#2b2b2b) - Kept for backward compatibility
 
       # solarized
       solarized_base03: 234,   # #1c1c1c (~#002b36)
@@ -106,6 +125,25 @@ module Mui
 
     # Fallback map: 256-color to 8-color
     FALLBACK_MAP = {
+      # mui theme
+      mui_bg: :black,
+      mui_fg: :white,
+      mui_comment: :white,
+      mui_constant: :cyan,
+      mui_identifier: :red,
+      mui_statement: :yellow,
+      mui_preproc: :yellow,
+      mui_type: :cyan,
+      mui_special: :yellow,
+      mui_function: :yellow,
+      mui_line_number: :white,
+      mui_status_bg: :blue,
+      mui_visual: :magenta,
+      mui_search: :yellow,
+      mui_tab_bg: :blue,
+      mui_tab_active: :cyan,
+      mui_error: :red,
+      mui_info: :cyan,
       darkgray: :black,
       # solarized
       solarized_base03: :black, solarized_base02: :black,

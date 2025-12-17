@@ -1,6 +1,11 @@
 ## [Unreleased]
 
 ### Added
+- Improved mui default theme with 256-color palette:
+  - Eye-friendly gray-based color scheme using 256-color palette
+  - 19 new `mui_*` colors in `EXTENDED_COLOR_MAP` (mui_bg, mui_fg, mui_comment, etc.)
+  - Syntax highlighting follows Vim standard highlight groups (Comment, Constant, Identifier, Statement, PreProc, Type, Special)
+  - 8-color fallbacks for all mui colors
 - 256-color support stabilization:
   - Environment capability detection (`Curses.has_colors?`, `Curses.colors`, `Curses.color_pairs`)
   - Automatic 8-color fallback for terminals without 256-color support

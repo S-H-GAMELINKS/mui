@@ -4,46 +4,68 @@ module Mui
   module Themes
     def self.mui
       scheme = ColorScheme.new("mui")
-      scheme.define :normal, fg: :white, bg: :darkgray
-      scheme.define :status_line, fg: :white, bg: :blue
-      scheme.define :status_line_mode, fg: :white, bg: :magenta, bold: true
-      scheme.define :search_highlight, fg: :black, bg: :cyan
-      scheme.define :visual_selection, fg: :white, bg: :magenta
-      scheme.define :line_number, fg: :cyan, bg: :darkgray
-      scheme.define :message_error, fg: :red, bg: :darkgray, bold: true
-      scheme.define :message_info, fg: :cyan, bg: :darkgray
-      scheme.define :separator, fg: :white, bg: :blue
-      scheme.define :command_line, fg: :white, bg: :darkgray
-      scheme.define :tab_bar, fg: :white, bg: :blue
-      scheme.define :tab_bar_active, fg: :white, bg: :magenta, bold: true
-      scheme.define :completion_popup, fg: :white, bg: :blue
-      scheme.define :completion_popup_selected, fg: :white, bg: :magenta, bold: true
-      # Syntax highlighting
-      scheme.define :syntax_keyword, fg: :magenta, bold: true
-      scheme.define :syntax_string, fg: :green
-      scheme.define :syntax_comment, fg: :cyan
-      scheme.define :syntax_number, fg: :red
-      scheme.define :syntax_symbol, fg: :yellow
-      scheme.define :syntax_constant, fg: :yellow
-      scheme.define :syntax_operator, fg: :white
-      scheme.define :syntax_identifier, fg: :white
-      scheme.define :syntax_preprocessor, fg: :magenta
-      scheme.define :syntax_instance_variable, fg: :cyan
-      scheme.define :syntax_global_variable, fg: :red
-      scheme.define :syntax_method_call, fg: :blue
-      scheme.define :syntax_type, fg: :green
+
+      # Basic UI colors
+      scheme.define :normal, fg: :mui_fg, bg: :mui_bg
+      scheme.define :status_line, fg: :mui_fg, bg: :mui_status_bg
+      scheme.define :status_line_mode, fg: :mui_bg, bg: :mui_tab_active, bold: true
+      scheme.define :search_highlight, fg: :mui_bg, bg: :mui_search
+      scheme.define :visual_selection, fg: :mui_fg, bg: :mui_visual
+      scheme.define :line_number, fg: :mui_line_number, bg: :mui_bg
+      scheme.define :message_error, fg: :mui_error, bg: :mui_bg, bold: true
+      scheme.define :message_info, fg: :mui_info, bg: :mui_bg
+      scheme.define :separator, fg: :mui_fg, bg: :mui_status_bg
+      scheme.define :command_line, fg: :mui_fg, bg: :mui_bg
+      scheme.define :tab_bar, fg: :mui_fg, bg: :mui_tab_bg
+      scheme.define :tab_bar_active, fg: :mui_bg, bg: :mui_tab_active, bold: true
+      scheme.define :completion_popup, fg: :mui_fg, bg: :mui_status_bg
+      scheme.define :completion_popup_selected, fg: :mui_bg, bg: :mui_tab_active, bold: true
+
+      # Syntax highlighting following Vim standard highlight groups
+      # Comment group
+      scheme.define :syntax_comment, fg: :mui_comment
+
+      # Constant group (unified color)
+      scheme.define :syntax_string, fg: :mui_constant
+      scheme.define :syntax_number, fg: :mui_constant
+      scheme.define :syntax_constant, fg: :mui_constant
+
+      # Identifier group (unified color)
+      scheme.define :syntax_identifier, fg: :mui_identifier
+      scheme.define :syntax_instance_variable, fg: :mui_identifier
+      scheme.define :syntax_global_variable, fg: :mui_identifier
+
+      # Statement group
+      scheme.define :syntax_keyword, fg: :mui_statement, bold: true
+      scheme.define :syntax_operator, fg: :mui_fg
+
+      # PreProc group
+      scheme.define :syntax_preprocessor, fg: :mui_preproc
+
+      # Type group
+      scheme.define :syntax_type, fg: :mui_type
+
+      # Special group
+      scheme.define :syntax_symbol, fg: :mui_special
+
+      # Function calls
+      scheme.define :syntax_method_call, fg: :mui_function
+
       # Diff highlighting
       scheme.define :diff_add, fg: :green
-      scheme.define :diff_delete, fg: :red
-      scheme.define :diff_hunk, fg: :cyan
-      scheme.define :diff_header, fg: :yellow, bold: true
+      scheme.define :diff_delete, fg: :mui_error
+      scheme.define :diff_hunk, fg: :mui_info
+      scheme.define :diff_header, fg: :mui_statement, bold: true
+
       # LSP diagnostics
-      scheme.define :diagnostic_error, fg: :red, underline: true
-      scheme.define :diagnostic_warning, fg: :yellow, underline: true
-      scheme.define :diagnostic_info, fg: :blue, underline: true
-      scheme.define :diagnostic_hint, fg: :cyan, underline: true
+      scheme.define :diagnostic_error, fg: :mui_error, underline: true
+      scheme.define :diagnostic_warning, fg: :mui_statement, underline: true
+      scheme.define :diagnostic_info, fg: :mui_constant, underline: true
+      scheme.define :diagnostic_hint, fg: :mui_info, underline: true
+
       # Floating window
-      scheme.define :floating_window, fg: :white, bg: :blue
+      scheme.define :floating_window, fg: :mui_fg, bg: :mui_status_bg
+
       scheme
     end
 

@@ -31,8 +31,8 @@ class TestThemes < Minitest::Test
   def test_mui_status_line_colors
     scheme = Mui::Themes.mui
     status = scheme[:status_line]
-    assert_equal :white, status[:fg]
-    assert_equal :blue, status[:bg]
+    assert_equal :mui_fg, status[:fg]
+    assert_equal :mui_status_bg, status[:bg]
   end
 
   def test_all_themes_exist
