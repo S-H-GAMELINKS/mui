@@ -25,6 +25,12 @@ module Mui
       @adapter.clear
     end
 
+    # Force a complete redraw of the screen
+    # This is needed when multibyte characters may have been corrupted
+    def touchwin
+      @adapter.touchwin
+    end
+
     def put(y, x, text)
       return if y.negative?
       return if y >= @height || x >= @width

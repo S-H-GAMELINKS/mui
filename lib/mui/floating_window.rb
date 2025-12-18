@@ -3,7 +3,7 @@
 module Mui
   # A floating window (popup) for displaying temporary content like hover info
   class FloatingWindow
-    attr_reader :content, :row, :col, :width, :height
+    attr_reader :content, :row, :col, :width, :height, :last_bounds
     attr_accessor :visible
 
     def initialize(color_scheme)
@@ -15,6 +15,8 @@ module Mui
       @height = 0
       @visible = false
       @scroll_offset = 0
+      @last_bounds = nil
+      @needs_clear = false
     end
 
     # Show the floating window with content at the specified position
@@ -27,12 +29,47 @@ module Mui
       @scroll_offset = 0
       calculate_dimensions
       @visible = true
+      @needs_clear = false
     end
 
     # Hide the floating window
     def hide
+      return unless @visible
+
+      # Record bounds for clearing on next render
+      @last_bounds = {
+        row: @row,
+        col: @col,
+        width: @width,
+        height: @height
+      }
+      @needs_clear = true
       @visible = false
       @content = []
+    end
+
+    # Check if the previous window area needs to be cleared
+    def needs_clear?
+      @needs_clear && @last_bounds
+    end
+
+    # Clear the area where the floating window was previously displayed
+    def clear_last_bounds(screen)
+      return unless needs_clear?
+
+      bounds = @last_bounds
+      adjusted_row, adjusted_col = adjust_position_for_bounds(screen, bounds)
+
+      bounds[:height].times do |i|
+        row = adjusted_row + i
+        next if row.negative? || row >= screen.height
+
+        spaces = " " * bounds[:width]
+        screen.put(row, adjusted_col, spaces)
+      end
+
+      @needs_clear = false
+      @last_bounds = nil
     end
 
     # Scroll content up
@@ -100,6 +137,21 @@ module Mui
         # Try above the original position
         row = @row - @height
       end
+      row = [row, 0].max
+
+      [row, col]
+    end
+
+    def adjust_position_for_bounds(screen, bounds)
+      row = bounds[:row]
+      col = bounds[:col]
+
+      # Adjust horizontal position
+      col = screen.width - bounds[:width] if col + bounds[:width] > screen.width
+      col = [col, 0].max
+
+      # Adjust vertical position
+      row = bounds[:row] - bounds[:height] if row + bounds[:height] > screen.height
       row = [row, 0].max
 
       [row, col]

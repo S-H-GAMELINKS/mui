@@ -297,4 +297,49 @@ class TestInsertCompletionState < Minitest::Test
       assert_equal 0, @state.items.length
     end
   end
+
+  class TestNeedsClear < TestInsertCompletionState
+    def test_initially_not_needs_clear
+      refute @state.needs_clear?
+    end
+
+    def test_reset_sets_needs_clear_when_had_items
+      @state.start([{ label: "foo" }], prefix: "f")
+
+      @state.reset
+
+      assert @state.needs_clear?
+    end
+
+    def test_reset_does_not_set_needs_clear_when_empty
+      @state.reset
+
+      refute @state.needs_clear?
+    end
+
+    def test_clear_needs_clear_resets_flag
+      @state.start([{ label: "foo" }], prefix: "f")
+      @state.reset
+
+      @state.clear_needs_clear
+
+      refute @state.needs_clear?
+    end
+
+    def test_start_does_not_affect_needs_clear
+      @state.start([{ label: "foo" }], prefix: "f")
+
+      refute @state.needs_clear?
+    end
+
+    def test_multiple_reset_calls_maintain_needs_clear
+      @state.start([{ label: "foo" }], prefix: "f")
+      @state.reset
+
+      # Second reset when already empty should not change needs_clear
+      @state.reset
+
+      assert @state.needs_clear?
+    end
+  end
 end

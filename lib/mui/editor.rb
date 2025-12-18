@@ -238,7 +238,19 @@ module Mui
     end
 
     def render
+      # Force complete redraw if floating window or completion popup was closed
+      # This is needed because multibyte characters (CJK) can be corrupted
+      # when partially overwritten by popups
+      if @floating_window.needs_clear? || @insert_completion_state.needs_clear?
+        @screen.touchwin
+        @insert_completion_state.clear_needs_clear
+      end
+
       @screen.clear
+
+      # Clear the area where the floating window was previously displayed
+      # Must be done before window rendering to avoid overwriting text
+      @floating_window.clear_last_bounds(@screen) if @floating_window.needs_clear?
 
       @tab_bar_renderer.render(@screen, 0)
 

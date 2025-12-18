@@ -17,6 +17,11 @@ class TestFloatingWindow < Minitest::Test
       @positions << [row, col]
       @output << text
     end
+
+    def put(row, col, text)
+      @positions << [row, col]
+      @output << text
+    end
   end
 
   class MockColorScheme
@@ -198,6 +203,84 @@ class TestFloatingWindow < Minitest::Test
 
       # All positions should be within screen bounds
       assert(screen.positions.all? { |row, _col| row < 24 })
+    end
+  end
+
+  class TestClearBounds < TestFloatingWindow
+    def test_hide_sets_needs_clear_flag
+      @floating.show("Hello", row: 5, col: 10)
+      @floating.hide
+
+      assert @floating.needs_clear?
+    end
+
+    def test_hide_records_last_bounds
+      @floating.show("Hello", row: 5, col: 10)
+      @floating.hide
+
+      assert_equal 5, @floating.last_bounds[:row]
+      assert_equal 10, @floating.last_bounds[:col]
+      assert_equal 7, @floating.last_bounds[:width]   # "Hello" + 2 (border)
+      assert_equal 3, @floating.last_bounds[:height]  # 1 line + 2 (border)
+    end
+
+    def test_needs_clear_returns_false_when_not_hidden
+      @floating.show("Hello", row: 5, col: 10)
+
+      refute @floating.needs_clear?
+    end
+
+    def test_needs_clear_returns_false_after_clearing
+      screen = MockScreen.new
+      @floating.show("Hello", row: 5, col: 10)
+      @floating.hide
+      @floating.clear_last_bounds(screen)
+
+      refute @floating.needs_clear?
+    end
+
+    def test_clear_last_bounds_resets_last_bounds
+      screen = MockScreen.new
+      @floating.show("Hello", row: 5, col: 10)
+      @floating.hide
+      @floating.clear_last_bounds(screen)
+
+      assert_nil @floating.last_bounds
+    end
+
+    def test_clear_last_bounds_fills_area_with_spaces
+      screen = MockScreen.new
+      @floating.show("Hi", row: 5, col: 10)
+      @floating.hide
+      @floating.clear_last_bounds(screen)
+
+      # Should have output spaces to clear the area
+      assert(screen.output.any? { |s| s.match?(/^\s+$/) })
+    end
+
+    def test_hide_when_not_visible_does_nothing
+      @floating.hide
+
+      refute @floating.needs_clear?
+      assert_nil @floating.last_bounds
+    end
+
+    def test_show_clears_needs_clear_flag
+      @floating.show("Hello", row: 5, col: 10)
+      @floating.hide
+      @floating.show("World", row: 10, col: 20)
+
+      refute @floating.needs_clear?
+    end
+
+    def test_clear_last_bounds_adjusts_position_for_screen_edge
+      screen = MockScreen.new(width: 80, height: 24)
+      @floating.show("Hello", row: 5, col: 78) # Near right edge
+      @floating.hide
+      @floating.clear_last_bounds(screen)
+
+      # All positions should be within screen bounds
+      assert(screen.positions.all? { |_row, col| col < 80 })
     end
   end
 end

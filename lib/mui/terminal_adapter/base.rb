@@ -102,6 +102,12 @@ module Mui
       def color_pairs
         raise MethodNotOverriddenError, __method__
       end
+
+      # Force a complete redraw of the screen
+      # This is needed when multibyte characters may have been corrupted
+      def touchwin
+        # Default implementation does nothing (for mock adapters)
+      end
     end
   end
 end

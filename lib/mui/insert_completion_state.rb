@@ -6,14 +6,27 @@ module Mui
     attr_reader :items, :selected_index, :prefix, :original_items
 
     def initialize
-      reset
+      @needs_clear = false
+      reset(set_needs_clear: false)
     end
 
-    def reset
+    def reset(set_needs_clear: true)
+      # Set needs_clear flag if we had items (popup was visible)
+      @needs_clear = true if set_needs_clear && !@items.empty?
       @items = []
       @original_items = []
       @selected_index = 0
       @prefix = ""
+    end
+
+    # Check if the previous popup area needs to be cleared
+    def needs_clear?
+      @needs_clear
+    end
+
+    # Clear the needs_clear flag after redraw
+    def clear_needs_clear
+      @needs_clear = false
     end
 
     def active?

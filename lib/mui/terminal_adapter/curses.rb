@@ -176,6 +176,13 @@ module Mui
         ::Curses.refresh
         ::Curses.curs_set(1)
       end
+
+      # Force a complete redraw of the screen
+      # This is needed when multibyte characters may have been corrupted
+      def touchwin
+        ::Curses.stdscr.redraw
+        ::Curses.refresh
+      end
     end
   end
 end

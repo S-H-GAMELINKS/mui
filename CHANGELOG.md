@@ -35,6 +35,14 @@
   - `ColorManager#supports_256_colors` to check color capability
   - `TerminalAdapter::Base#has_colors?`, `#colors`, `#color_pairs` interface methods
 
+### Fixed
+- Fixed text corruption after closing floating window or completion popup:
+  - Japanese/CJK multibyte characters were not displaying correctly after popup closed
+  - Added `touchwin` method to force complete screen redraw using `Curses.stdscr.redraw`
+  - `FloatingWindow` now tracks `last_bounds` and `needs_clear` flag
+  - `InsertCompletionState` now tracks `needs_clear` flag
+  - Editor calls `touchwin` when popup is closed to restore corrupted characters
+
 ### Changed
 - Improved search performance for large files:
   - Added row-based index (`row_index`) to search match cache for O(1) lookup
