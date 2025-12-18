@@ -35,6 +35,16 @@
   - `ColorManager#supports_256_colors` to check color capability
   - `TerminalAdapter::Base#has_colors?`, `#colors`, `#color_pairs` interface methods
 
+### Changed
+- Improved search performance for large files:
+  - Added row-based index (`row_index`) to search match cache for O(1) lookup
+  - `matches_for_row()` now uses hash lookup instead of linear search
+  - Before: O(M × visible_rows) per frame, After: O(visible_rows) per frame
+- Improved navigation performance for large files (G, gg commands):
+  - Added smart scroll jump for cursor movements over 100 rows
+  - Directly calculates scroll position instead of iterating line by line
+  - Before: O(n) where n = cursor distance, After: O(1)
+
 ## [0.3.0] - 2025-12-15
 
 ### Added

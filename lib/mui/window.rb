@@ -2,6 +2,9 @@
 
 module Mui
   class Window
+    # Threshold for using smart scroll jump (in logical rows)
+    SMART_JUMP_THRESHOLD = 100
+
     attr_accessor :x, :y, :width, :height, :cursor_row, :cursor_col, :scroll_row
     attr_reader :buffer
 
@@ -41,6 +44,13 @@ module Mui
     end
 
     def ensure_cursor_visible
+      # Use smart jump for large cursor movements to avoid O(n) iteration
+      distance = (@cursor_row - @scroll_row).abs
+      if distance > SMART_JUMP_THRESHOLD
+        smart_scroll_to_cursor
+        return
+      end
+
       # Calculate screen row of cursor considering line wrapping
       cursor_screen_row = screen_rows_from_scroll_to_cursor
 
@@ -52,6 +62,15 @@ module Mui
         @scroll_row += 1
         cursor_screen_row = screen_rows_from_scroll_to_cursor
       end
+    end
+
+    # Smart scroll: directly position scroll to center cursor on screen
+    # Used for large cursor jumps (G, gg, search, etc.) to avoid O(n) iteration
+    def smart_scroll_to_cursor
+      # Position cursor roughly in the middle of the visible area
+      half_visible = visible_height / 2
+      target_scroll = @cursor_row - half_visible
+      @scroll_row = target_scroll.clamp(0, max_scroll_row)
     end
 
     def render(screen, selection: nil, search_state: nil)
@@ -192,6 +211,10 @@ module Mui
 
     def max_cursor_col
       [@buffer.line(@cursor_row).length - 1, 0].max
+    end
+
+    def max_scroll_row
+      [@buffer.line_count - 1, 0].max
     end
 
     def clamp_cursor_col

@@ -62,49 +62,62 @@ module Mui
     end
 
     # Get matches for a specific row in a specific buffer
+    # O(1) lookup using row_index
     def matches_for_row(row, buffer: nil)
       return [] if buffer.nil?
 
-      matches = get_or_calculate_matches(buffer)
-      matches.select { |m| m[:row] == row }
+      cache = get_or_calculate_cache(buffer)
+      cache[:row_index][row] || []
     end
 
     private
 
     def get_or_calculate_matches(buffer)
+      get_or_calculate_cache(buffer)[:matches]
+    end
+
+    def get_or_calculate_cache(buffer)
       buffer_id = buffer.object_id
       cached = @buffer_matches[buffer_id]
 
-      # Return cached matches if valid (same pattern version and buffer hasn't changed)
-      return cached[:matches] if cached && cached[:version] == @pattern_version && cached[:change_count] == buffer.change_count
+      # Return cached data if valid (same pattern version and buffer hasn't changed)
+      return cached if cached && cached[:version] == @pattern_version && cached[:change_count] == buffer.change_count
 
       # Calculate and cache matches for this buffer
-      matches = calculate_matches(buffer)
+      matches, row_index = calculate_matches(buffer)
       @buffer_matches[buffer_id] = {
         version: @pattern_version,
         change_count: buffer.change_count,
-        matches:
+        matches:,
+        row_index:
       }
-      matches
+      @buffer_matches[buffer_id]
     end
 
     def calculate_matches(buffer)
-      return [] if @pattern.nil? || @pattern.empty?
+      empty_result = [[], {}]
+      return empty_result if @pattern.nil? || @pattern.empty?
 
       matches = []
+      row_index = {}
       begin
         regex = Regexp.new(@pattern)
         buffer.line_count.times do |row|
           line = buffer.line(row)
-          scan_line_matches(matches, line, row, regex)
+          row_matches = scan_line_matches(line, row, regex)
+          unless row_matches.empty?
+            matches.concat(row_matches)
+            row_index[row] = row_matches
+          end
         end
       rescue RegexpError
         # Invalid regex pattern - no matches
       end
-      matches
+      [matches, row_index]
     end
 
-    def scan_line_matches(matches, line, row, regex)
+    def scan_line_matches(line, row, regex)
+      matches = []
       offset = 0
       while (match_data = line.match(regex, offset))
         col = match_data.begin(0)
@@ -116,6 +129,7 @@ module Mui
         offset += 1 if match_data[0].empty?
         break if offset >= line.length
       end
+      matches
     end
   end
 end
