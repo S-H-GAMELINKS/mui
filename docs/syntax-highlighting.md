@@ -144,6 +144,12 @@ Each theme defines colors for:
 | `syntax_number` | Numeric literals |
 | `syntax_type` | Types and classes |
 | `syntax_function` | Function names |
+| `syntax_function_definition` | Function definition names |
 | `syntax_variable` | Variables |
 | `syntax_constant` | Constants |
 | `syntax_operator` | Operators |
+| `diagnostic_error` | LSP diagnostic errors |
+| `diagnostic_warning` | LSP diagnostic warnings |
+| `diagnostic_info` | LSP diagnostic information |
+| `diagnostic_hint` | LSP diagnostic hints |
+| `floating_window` | Floating window background |

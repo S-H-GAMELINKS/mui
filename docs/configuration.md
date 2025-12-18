@@ -36,15 +36,27 @@ Configuration files are written in Ruby using Mui's DSL.
 Mui.set :colorscheme, "tokyo_night"
 ```
 
-Available themes:
-- `mui` (default)
-- `solarized_dark`
-- `solarized_light`
-- `monokai`
-- `nord`
-- `gruvbox_dark`
-- `dracula`
-- `tokyo_night`
+Available themes (all themes support 256-color palette with 8-color fallback):
+
+| Theme | Description |
+|-------|-------------|
+| `mui` | Default theme with eye-friendly gray-based colors |
+| `solarized_dark` | Solarized dark theme |
+| `solarized_light` | Solarized light theme |
+| `monokai` | Monokai theme |
+| `nord` | Nord theme |
+| `gruvbox_dark` | Gruvbox dark theme |
+| `dracula` | Dracula theme |
+| `tokyo_night` | Tokyo Night theme |
+
+### 256-Color Support
+
+All bundled themes utilize 256-color palettes for rich syntax highlighting and UI elements. Mui automatically detects your terminal's color capabilities:
+
+- **256-color terminals**: Full color palette with all theme colors
+- **8-color terminals**: Automatic fallback to basic 8-color equivalents
+
+Most modern terminals (iTerm2, gnome-terminal, Windows Terminal, etc.) support 256 colors. If colors appear incorrect, ensure your terminal's `TERM` environment variable is set correctly (e.g., `xterm-256color`).
 
 ### Indentation
 
@@ -125,6 +137,7 @@ end
 | `<Leader>` | Leader key |
 | `<Space>` | Space bar |
 | `<Tab>` | Tab key |
+| `<S-Tab>`, `<btab>` | Shift+Tab |
 | `<CR>`, `<Enter>` | Enter key |
 | `<Esc>` | Escape key |
 | `<BS>` | Backspace |
