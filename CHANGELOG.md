@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.4.1] 2025-12-20
+
 ### Fixed
 - Fixed Ctrl+w window commands not working in new tabs
   - Previously, Ctrl+w w/h/j/k/l/s/v/c/o commands would use the first tab's WindowManager even after switching tabs
