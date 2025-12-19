@@ -5,7 +5,7 @@ require "test_helper"
 class TestVersion < Minitest::Test
   class TestVersionConstant < Minitest::Test
     def test_version_is_defined
-      assert_equal true, Mui.const_defined?(:VERSION)
+      assert Mui.const_defined?(:VERSION)
     end
 
     def test_version_is_string
@@ -35,19 +35,19 @@ class TestVersion < Minitest::Test
     def test_major_version_is_non_negative
       major = Mui::VERSION.split(".")[0].to_i
 
-      assert major >= 0
+      assert_operator major, :>=, 0
     end
 
     def test_minor_version_is_non_negative
       minor = Mui::VERSION.split(".")[1].to_i
 
-      assert minor >= 0
+      assert_operator minor, :>=, 0
     end
 
     def test_patch_version_is_non_negative
       patch = Mui::VERSION.split(".")[2].to_i
 
-      assert patch >= 0
+      assert_operator patch, :>=, 0
     end
   end
 end

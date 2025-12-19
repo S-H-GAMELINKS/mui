@@ -39,7 +39,7 @@ class TestKeyHandlerBase < Minitest::Test
 
   class TestMethodNotOverriddenError < Minitest::Test
     def test_inherits_from_mui_error
-      assert Mui::KeyHandler::MethodNotOverriddenError < Mui::Error
+      assert_operator Mui::KeyHandler::MethodNotOverriddenError, :<, Mui::Error
     end
   end
 end

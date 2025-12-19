@@ -96,11 +96,13 @@ class TestKeySequenceMatcher < Minitest::Test
     matcher_space = Mui::KeySequenceMatcher.new(@keymaps, " ")
 
     type, handler = matcher_space.match(:normal, [" ", "g", "d"])
+
     assert_equal :exact, type
     assert_equal @handler_gd, handler
 
     # Original backslash leader should not match
     type_backslash, = matcher_space.match(:normal, ["\\", "g", "d"])
+
     assert_equal :none, type_backslash
   end
 

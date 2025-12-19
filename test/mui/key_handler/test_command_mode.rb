@@ -182,7 +182,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       result = @handler.handle(13)
 
-      assert result.quit?
+      assert_predicate result, :quit?
     end
 
     def test_modified_buffer_shows_warning
@@ -192,7 +192,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       result = @handler.handle(13)
 
       assert_match(/No write since last change/, result.message)
-      refute result.quit?
+      refute_predicate result, :quit?
     end
   end
 
@@ -212,7 +212,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @command_line.input("!")
       result = @handler.handle(13)
 
-      assert result.quit?
+      assert_predicate result, :quit?
     end
   end
 
@@ -234,7 +234,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @command_line.input("q")
         result = @handler.handle(13)
 
-        assert result.quit?
+        assert_predicate result, :quit?
         assert_match(/written/, result.message)
       end
     end
@@ -245,7 +245,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       result = @handler.handle(13)
 
       assert_equal "No file name", result.message
-      refute result.quit?
+      refute_predicate result, :quit?
     end
   end
 
@@ -474,7 +474,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @handler.handle("a")
       @handler.handle("b")
 
-      assert @handler.completion_state.active?
+      assert_predicate @handler.completion_state, :active?
       assert_equal :command, @handler.completion_state.completion_type
     end
 
@@ -504,7 +504,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       # After first TAB, it confirms current selection without cycling
       assert_equal first_index, @handler.completion_state.selected_index
-      assert @handler.completion_state.confirmed?
+      assert_predicate @handler.completion_state, :confirmed?
     end
 
     def test_second_tab_cycles_to_next_candidate
@@ -530,7 +530,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       @handler.handle(Mui::KeyCode::ESCAPE)
 
-      refute @handler.completion_state.active?
+      refute_predicate @handler.completion_state, :active?
     end
 
     def test_backspace_updates_completion
@@ -542,7 +542,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       # Backspace updates completion for new prefix
       @handler.handle(Mui::KeyCode::BACKSPACE)
 
-      assert @handler.completion_state.active?
+      assert_predicate @handler.completion_state, :active?
       assert_equal "tab", @command_line.buffer
     end
   end
@@ -662,6 +662,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @handler.handle(13)
 
         new_window = @mock_mode_manager.window_manager.active_window
+
         assert_instance_of Mui::UndoManager, new_window.buffer.undo_manager
       end
     end
@@ -692,6 +693,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         @handler.handle(13)
 
         new_window = @mock_mode_manager.window_manager.active_window
+
         assert_instance_of Mui::UndoManager, new_window.buffer.undo_manager
       end
     end
@@ -721,6 +723,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       current_tab = @mock_mode_manager.editor.tab_manager.current_tab
       buffer = current_tab.window_manager.active_window.buffer
+
       assert_instance_of Mui::UndoManager, buffer.undo_manager
     end
 
@@ -735,6 +738,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
         current_tab = @mock_mode_manager.editor.tab_manager.current_tab
         buffer = current_tab.window_manager.active_window.buffer
+
         assert_instance_of Mui::UndoManager, buffer.undo_manager
       end
     end
@@ -779,7 +783,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
       @handler.handle("s")
       @handler.handle("t")
 
-      assert @handler.completion_state.active?
+      assert_predicate @handler.completion_state, :active?
       assert_equal :file, @handler.completion_state.completion_type
     end
 
@@ -817,6 +821,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
 
       # Verify matches exist in old buffer
       old_matches = @search_state.matches_for_row(0, buffer: @buffer)
+
       assert_equal 1, old_matches.size
       assert_equal 0, old_matches.first[:col]
 
@@ -834,7 +839,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         new_buffer = @window.buffer
 
         # Verify search pattern is preserved
-        assert @search_state.has_pattern?
+        assert_predicate @search_state, :has_pattern?
         assert_equal "hello", @search_state.pattern
 
         # Verify matches are calculated for new buffer (lazy evaluation)
@@ -842,6 +847,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         assert_empty @search_state.matches_for_row(0, buffer: new_buffer)
         # Line 1 should have a match (content: "hello at line 2")
         new_matches = @search_state.matches_for_row(1, buffer: new_buffer)
+
         assert_equal 1, new_matches.size
         assert_equal 0, new_matches.first[:col]
       end
@@ -863,7 +869,7 @@ class TestKeyHandlerCommandMode < Minitest::Test
         new_buffer = @window.buffer
 
         # No error should occur and matches should remain empty
-        refute @search_state.has_pattern?
+        refute_predicate @search_state, :has_pattern?
         assert_empty @search_state.matches_for_row(0, buffer: new_buffer)
       end
     end

@@ -11,18 +11,20 @@ class TestSearchState < Minitest::Test
   def test_initial_state
     assert_nil @search_state.pattern
     assert_equal :forward, @search_state.direction
-    refute @search_state.has_pattern?
+    refute_predicate @search_state, :has_pattern?
   end
 
   def test_set_pattern
     @search_state.set_pattern("test", :forward)
+
     assert_equal "test", @search_state.pattern
     assert_equal :forward, @search_state.direction
-    assert @search_state.has_pattern?
+    assert_predicate @search_state, :has_pattern?
   end
 
   def test_set_pattern_backward
     @search_state.set_pattern("hello", :backward)
+
     assert_equal "hello", @search_state.pattern
     assert_equal :backward, @search_state.direction
   end
@@ -30,8 +32,9 @@ class TestSearchState < Minitest::Test
   def test_clear
     @search_state.set_pattern("test", :forward)
     @search_state.clear
+
     assert_nil @search_state.pattern
-    refute @search_state.has_pattern?
+    refute_predicate @search_state, :has_pattern?
   end
 
   def test_find_all_matches_simple
@@ -89,6 +92,7 @@ class TestSearchState < Minitest::Test
     @search_state.set_pattern("foo", :forward)
 
     match = @search_state.find_next(0, 0, buffer: @buffer)
+
     assert_equal({ row: 0, col: 4, end_col: 6 }, match)
   end
 
@@ -99,6 +103,7 @@ class TestSearchState < Minitest::Test
 
     # Current position is after the only match, should wrap to first match
     match = @search_state.find_next(1, 0, buffer: @buffer)
+
     assert_equal({ row: 0, col: 0, end_col: 2 }, match)
   end
 
@@ -107,6 +112,7 @@ class TestSearchState < Minitest::Test
     @search_state.set_pattern("foo", :forward)
 
     match = @search_state.find_previous(0, 10, buffer: @buffer)
+
     assert_equal({ row: 0, col: 8, end_col: 10 }, match)
   end
 
@@ -117,6 +123,7 @@ class TestSearchState < Minitest::Test
 
     # Current position is before the only match, should wrap to last match
     match = @search_state.find_previous(0, 0, buffer: @buffer)
+
     assert_equal({ row: 1, col: 0, end_col: 2 }, match)
   end
 
@@ -125,6 +132,7 @@ class TestSearchState < Minitest::Test
     @search_state.set_pattern("xyz", :forward)
 
     match = @search_state.find_next(0, 0, buffer: @buffer)
+
     assert_nil match
   end
 
@@ -133,6 +141,7 @@ class TestSearchState < Minitest::Test
     @search_state.set_pattern("xyz", :forward)
 
     match = @search_state.find_previous(0, 0, buffer: @buffer)
+
     assert_nil match
   end
 
@@ -142,12 +151,15 @@ class TestSearchState < Minitest::Test
     @search_state.set_pattern("foo", :forward)
 
     row0_matches = @search_state.matches_for_row(0, buffer: @buffer)
+
     assert_equal 1, row0_matches.length
 
     row1_matches = @search_state.matches_for_row(1, buffer: @buffer)
+
     assert_equal 2, row1_matches.length
 
     row2_matches = @search_state.matches_for_row(2, buffer: @buffer)
+
     assert_empty row2_matches
   end
 
@@ -161,14 +173,17 @@ class TestSearchState < Minitest::Test
 
     # Get matches for buffer1
     matches1 = @search_state.find_all_matches(buffer1)
+
     assert_equal 1, matches1.length
 
     # Get matches for buffer2 (should be different)
     matches2 = @search_state.find_all_matches(buffer2)
+
     assert_equal 2, matches2.length
 
     # Verify buffer1 matches are still cached correctly
     matches1_again = @search_state.find_all_matches(buffer1)
+
     assert_equal 1, matches1_again.length
   end
 
@@ -176,11 +191,13 @@ class TestSearchState < Minitest::Test
     @buffer.lines[0] = "hello world"
     @search_state.set_pattern("hello", :forward)
     matches1 = @search_state.find_all_matches(@buffer)
+
     assert_equal 1, matches1.length
 
     # Change pattern
     @search_state.set_pattern("world", :forward)
     matches2 = @search_state.find_all_matches(@buffer)
+
     assert_equal 1, matches2.length
     assert_equal 6, matches2[0][:col] # "world" starts at col 6
   end
@@ -189,11 +206,13 @@ class TestSearchState < Minitest::Test
     @buffer.lines[0] = "hello"
     @search_state.set_pattern("hello", :forward)
     matches1 = @search_state.find_all_matches(@buffer)
+
     assert_equal 1, matches1.length
 
     # Modify buffer content (this increments change_count)
     @buffer.replace_line(0, "hello hello")
     matches2 = @search_state.find_all_matches(@buffer)
+
     assert_equal 2, matches2.length
   end
 end

@@ -14,8 +14,8 @@ class TestUndoManager < Minitest::Test
   def test_initial_state
     assert_equal 0, @undo_manager.undo_stack_size
     assert_equal 0, @undo_manager.redo_stack_size
-    refute @undo_manager.can_undo?
-    refute @undo_manager.can_redo?
+    refute_predicate @undo_manager, :can_undo?
+    refute_predicate @undo_manager, :can_redo?
   end
 
   def test_record_adds_to_undo_stack
@@ -23,8 +23,8 @@ class TestUndoManager < Minitest::Test
     @undo_manager.record(action)
 
     assert_equal 1, @undo_manager.undo_stack_size
-    assert @undo_manager.can_undo?
-    refute @undo_manager.can_redo?
+    assert_predicate @undo_manager, :can_undo?
+    refute_predicate @undo_manager, :can_redo?
   end
 
   def test_undo_moves_action_to_redo_stack
@@ -36,8 +36,8 @@ class TestUndoManager < Minitest::Test
 
     assert_equal 0, @undo_manager.undo_stack_size
     assert_equal 1, @undo_manager.redo_stack_size
-    refute @undo_manager.can_undo?
-    assert @undo_manager.can_redo?
+    refute_predicate @undo_manager, :can_undo?
+    assert_predicate @undo_manager, :can_redo?
   end
 
   def test_redo_moves_action_to_undo_stack
@@ -50,8 +50,8 @@ class TestUndoManager < Minitest::Test
 
     assert_equal 1, @undo_manager.undo_stack_size
     assert_equal 0, @undo_manager.redo_stack_size
-    assert @undo_manager.can_undo?
-    refute @undo_manager.can_redo?
+    assert_predicate @undo_manager, :can_undo?
+    refute_predicate @undo_manager, :can_redo?
   end
 
   def test_new_record_clears_redo_stack
@@ -109,12 +109,14 @@ class TestUndoManager < Minitest::Test
 
   def test_begin_group
     @undo_manager.begin_group
-    assert @undo_manager.in_group?
+
+    assert_predicate @undo_manager, :in_group?
   end
 
   def test_end_group_without_begin
     @undo_manager.end_group
-    refute @undo_manager.in_group?
+
+    refute_predicate @undo_manager, :in_group?
     assert_equal 0, @undo_manager.undo_stack_size
   end
 
@@ -185,12 +187,15 @@ class TestUndoManager < Minitest::Test
     assert_equal "abc", @buffer.line(0)
 
     @undo_manager.undo(@buffer)
+
     assert_equal "ab", @buffer.line(0)
 
     @undo_manager.undo(@buffer)
+
     assert_equal "a", @buffer.line(0)
 
     @undo_manager.undo(@buffer)
+
     assert_equal "", @buffer.line(0)
   end
 
@@ -210,12 +215,15 @@ class TestUndoManager < Minitest::Test
     assert_equal "", @buffer.line(0)
 
     @undo_manager.redo(@buffer)
+
     assert_equal "a", @buffer.line(0)
 
     @undo_manager.redo(@buffer)
+
     assert_equal "ab", @buffer.line(0)
 
     @undo_manager.redo(@buffer)
+
     assert_equal "abc", @buffer.line(0)
   end
 end

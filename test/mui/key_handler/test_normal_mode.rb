@@ -50,15 +50,19 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @window.cursor_row = 0
 
       @handler.handle(Curses::KEY_LEFT)
+
       assert_equal 1, @window.cursor_col
 
       @handler.handle(Curses::KEY_RIGHT)
+
       assert_equal 2, @window.cursor_col
 
       @handler.handle(Curses::KEY_DOWN)
+
       assert_equal 1, @window.cursor_row
 
       @handler.handle(Curses::KEY_UP)
+
       assert_equal 0, @window.cursor_row
     end
   end
@@ -285,16 +289,16 @@ class TestKeyHandlerNormalMode < Minitest::Test
       result = @handler.handle("v")
 
       assert_equal Mui::Mode::VISUAL, result.mode
-      assert result.start_selection?
-      refute result.line_mode?
+      assert_predicate result, :start_selection?
+      refute_predicate result, :line_mode?
     end
 
     def test_upper_v_returns_visual_line_mode_with_start_selection
       result = @handler.handle("V")
 
       assert_equal Mui::Mode::VISUAL_LINE, result.mode
-      assert result.start_selection?
-      assert result.line_mode?
+      assert_predicate result, :start_selection?
+      assert_predicate result, :line_mode?
     end
   end
 
@@ -700,7 +704,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @handler.handle("y")
 
       assert_equal "second line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_yw_yanks_word
@@ -710,7 +714,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @handler.handle("w")
 
       assert_equal "hello", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
 
     def test_ye_yanks_to_end_of_word
@@ -747,7 +751,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @handler.handle("G")
 
       assert_equal "second line\nthird line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_ygg_yanks_to_file_start
@@ -758,7 +762,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
       @handler.handle("g")
 
       assert_equal "hello world\nsecond line\nthird line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_yf_yanks_to_char
@@ -990,6 +994,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
 
       # Go back to first tab
       @tab_manager.first_tab
+
       assert_equal 0, @tab_manager.current_index
 
       # Use gt to go to next tab
@@ -1035,6 +1040,7 @@ class TestKeyHandlerNormalMode < Minitest::Test
       # Create second tab and go back to first
       @tab_manager.add
       @tab_manager.first_tab
+
       assert_equal 0, @tab_manager.current_index
 
       # gT should wrap to last tab

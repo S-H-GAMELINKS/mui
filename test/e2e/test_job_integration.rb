@@ -66,7 +66,7 @@ class TestJobIntegration < Minitest::Test
     job = manager.run_async { sleep 10 }
 
     assert manager.cancel(job.id)
-    assert job.cancelled?
+    assert_predicate job, :cancelled?
   end
 
   def test_command_context_run_async
@@ -101,7 +101,7 @@ class TestJobIntegration < Minitest::Test
     sleep 0.1
     editor.job_manager.poll
 
-    assert job.completed?
+    assert_predicate job, :completed?
     assert_equal "hello\n", job.result[:stdout]
   end
 
@@ -115,14 +115,16 @@ class TestJobIntegration < Minitest::Test
       window: editor.window
     )
 
-    refute context.jobs_running?
+    refute_predicate context, :jobs_running?
 
     context.run_async { sleep 0.1 }
-    assert context.jobs_running?
+
+    assert_predicate context, :jobs_running?
 
     sleep 0.15
     editor.job_manager.poll
-    refute context.jobs_running?
+
+    refute_predicate context, :jobs_running?
   end
 end
 
@@ -145,7 +147,7 @@ class TestScratchBufferIntegration < Minitest::Test
     editor.open_scratch_buffer("[Test]", "Content")
 
     # The new window should be active and its buffer should be readonly
-    assert editor.buffer.readonly?
+    assert_predicate editor.buffer, :readonly?
   end
 
   def test_scratch_buffer_content
@@ -173,7 +175,7 @@ class TestScratchBufferIntegration < Minitest::Test
 
     context.open_scratch_buffer("[Output]", "Test content")
 
-    assert editor.buffer.readonly?
+    assert_predicate editor.buffer, :readonly?
     assert_equal "[Output]", editor.buffer.name
   end
 end
@@ -281,7 +283,8 @@ class TestJobAutocmdEvents < Minitest::Test
     event_triggered = false
     editor.autocmd.register(:JobCompleted) do |kwargs|
       event_triggered = true
-      assert kwargs[:job].completed?
+
+      assert_predicate kwargs[:job], :completed?
     end
 
     editor.job_manager.run_async { "result" }
@@ -299,7 +302,8 @@ class TestJobAutocmdEvents < Minitest::Test
     event_triggered = false
     editor.autocmd.register(:JobFailed) do |kwargs|
       event_triggered = true
-      assert kwargs[:job].failed?
+
+      assert_predicate kwargs[:job], :failed?
     end
 
     editor.job_manager.run_async { raise "error" }

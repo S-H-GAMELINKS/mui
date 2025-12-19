@@ -7,20 +7,20 @@ class TestJob < Minitest::Test
   def test_initial_status_is_pending
     job = Mui::Job.new(1) { "result" }
 
-    assert job.pending?
-    refute job.running?
-    refute job.completed?
-    refute job.failed?
-    refute job.cancelled?
-    refute job.finished?
+    assert_predicate job, :pending?
+    refute_predicate job, :running?
+    refute_predicate job, :completed?
+    refute_predicate job, :failed?
+    refute_predicate job, :cancelled?
+    refute_predicate job, :finished?
   end
 
   def test_run_changes_status_to_completed
     job = Mui::Job.new(1) { "result" }
     job.run
 
-    assert job.completed?
-    assert job.finished?
+    assert_predicate job, :completed?
+    assert_predicate job, :finished?
     assert_equal "result", job.result
     assert_nil job.error
   end
@@ -29,8 +29,8 @@ class TestJob < Minitest::Test
     job = Mui::Job.new(1) { raise "test error" }
     job.run
 
-    assert job.failed?
-    assert job.finished?
+    assert_predicate job, :failed?
+    assert_predicate job, :finished?
     assert_instance_of RuntimeError, job.error
     assert_equal "test error", job.error.message
     assert_nil job.result
@@ -41,8 +41,8 @@ class TestJob < Minitest::Test
     result = job.cancel
 
     assert result
-    assert job.cancelled?
-    assert job.finished?
+    assert_predicate job, :cancelled?
+    assert_predicate job, :finished?
   end
 
   def test_cancel_completed_job_fails
@@ -51,7 +51,7 @@ class TestJob < Minitest::Test
     result = job.cancel
 
     refute result
-    assert job.completed?
+    assert_predicate job, :completed?
   end
 
   def test_cancel_failed_job_fails
@@ -60,7 +60,7 @@ class TestJob < Minitest::Test
     result = job.cancel
 
     refute result
-    assert job.failed?
+    assert_predicate job, :failed?
   end
 
   def test_cancelled_job_does_not_run
@@ -68,7 +68,7 @@ class TestJob < Minitest::Test
     job.cancel
     job.run
 
-    assert job.cancelled?
+    assert_predicate job, :cancelled?
     assert_nil job.result
   end
 
@@ -87,7 +87,7 @@ class TestJob < Minitest::Test
     job.run
 
     assert status_during_run
-    assert job.completed?
+    assert_predicate job, :completed?
   end
 
   def test_thread_safety_of_status_changes
@@ -102,7 +102,7 @@ class TestJob < Minitest::Test
     threads.each(&:join)
 
     jobs.each_with_index do |job, i|
-      assert job.completed?, "Job #{i} should be completed"
+      assert_predicate job, :completed?, "Job #{i} should be completed"
       assert_equal i, job.result
     end
   end

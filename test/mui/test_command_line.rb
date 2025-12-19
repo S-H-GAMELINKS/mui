@@ -433,7 +433,7 @@ class TestCommandLine < Minitest::Test
     end
 
     def test_file_commands_is_frozen
-      assert Mui::CommandLine::FILE_COMMANDS.frozen?
+      assert_predicate Mui::CommandLine::FILE_COMMANDS, :frozen?
     end
   end
 end

@@ -90,10 +90,12 @@ class TestE2EWindowSplit < Minitest::Test
     # Move left
     runner.type("<C-w>h")
     left_window = runner.editor.window
+
     refute_equal right_window, left_window
 
     # Move right
     runner.type("<C-w>l")
+
     assert_equal right_window, runner.editor.window
   end
 
@@ -111,10 +113,12 @@ class TestE2EWindowSplit < Minitest::Test
     # Move up
     runner.type("<C-w>k")
     top_window = runner.editor.window
+
     refute_equal bottom_window, top_window
 
     # Move down
     runner.type("<C-w>j")
+
     assert_equal bottom_window, runner.editor.window
   end
 
@@ -191,6 +195,7 @@ class TestE2EWindowSplit < Minitest::Test
 
     # Both windows should share the same buffer
     windows = runner.editor.window_manager.windows
+
     assert_same windows[0].buffer, windows[1].buffer
     assert_equal "Hello", windows[0].buffer.line(0)
     assert_equal "Hello", windows[1].buffer.line(0)

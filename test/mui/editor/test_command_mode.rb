@@ -205,7 +205,7 @@ class TestEditorCommandMode < Minitest::Test
         @editor.handle_command_key(13)
 
         # Pattern should be preserved
-        assert search_state.has_pattern?
+        assert_predicate search_state, :has_pattern?
         assert_equal "test", search_state.pattern
       end
     end

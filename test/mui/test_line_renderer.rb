@@ -32,6 +32,7 @@ class TestLineRenderer < Minitest::Test
 
       # Render should use the highlighter
       @renderer.render(@screen, "test", 0, 0, 0)
+
       assert highlighter.called
     end
   end
@@ -41,6 +42,7 @@ class TestLineRenderer < Minitest::Test
       @renderer.render(@screen, "Hello World", 0, 0, 0)
 
       output = @adapter.all_output
+
       assert_equal 1, output.size
       assert_equal "Hello World", output[0][:text]
     end
@@ -49,6 +51,7 @@ class TestLineRenderer < Minitest::Test
       @renderer.render(@screen, "Test", 0, 5, 3)
 
       output = @adapter.all_output
+
       assert_equal 1, output.size
       assert_equal 5, output[0][:x]
       assert_equal 3, output[0][:y]
@@ -71,7 +74,7 @@ class TestLineRenderer < Minitest::Test
 
       output = @adapter.all_output
       # Should have at least 2 segments: highlighted "Hello" and normal " World"
-      assert output.size >= 1
+      assert_operator output.size, :>=, 1
     end
 
     def test_renders_with_multiple_highlights
@@ -83,7 +86,8 @@ class TestLineRenderer < Minitest::Test
       @renderer.render(@screen, "Hello World", 0, 0, 0)
 
       output = @adapter.all_output
-      assert output.size >= 1
+
+      assert_operator output.size, :>=, 1
     end
   end
 
@@ -102,14 +106,14 @@ class TestLineRenderer < Minitest::Test
       segments = @renderer.send(:build_segments, "Hello", [highlight])
 
       # Should have highlighted "Hel" and normal "lo"
-      assert segments.size >= 2
+      assert_operator segments.size, :>=, 2
     end
 
     def test_builds_segments_with_full_line_highlight
       highlight = Mui::Highlight.new(start_col: 0, end_col: 4, style: :search_highlight, priority: 100)
       segments = @renderer.send(:build_segments, "Hello", [highlight])
 
-      assert segments.size >= 1
+      assert_operator segments.size, :>=, 1
       assert_equal :search_highlight, segments[0][:style]
     end
   end

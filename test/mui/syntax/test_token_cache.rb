@@ -128,6 +128,7 @@ class TestTokenCache < Minitest::Test
     buffer_lines = ["if x"]
 
     tokens1 = @cache.tokens_for(0, buffer_lines[0], buffer_lines)
+
     assert_equal 2, tokens1.length
 
     # Change the line
@@ -149,14 +150,17 @@ class TestTokenCache < Minitest::Test
     ]
 
     tokens0 = cache.tokens_for(0, buffer_lines[0], buffer_lines)
+
     assert_equal 1, tokens0.length
     assert_equal :comment, tokens0[0].type
 
     tokens1 = cache.tokens_for(1, buffer_lines[1], buffer_lines)
+
     assert_equal 1, tokens1.length
     assert_equal :comment, tokens1[0].type
 
     tokens2 = cache.tokens_for(2, buffer_lines[2], buffer_lines)
+
     assert_equal 1, tokens2.length
     assert_equal :comment, tokens2[0].type
   end
@@ -168,12 +172,14 @@ class TestTokenCache < Minitest::Test
   def test_cached_returns_true_for_cached_row
     buffer_lines = ["if"]
     @cache.tokens_for(0, buffer_lines[0], buffer_lines)
+
     assert @cache.cached?(0)
   end
 
   def test_handles_empty_buffer
     buffer_lines = []
     tokens = @cache.tokens_for(0, "", buffer_lines)
+
     assert_empty tokens
   end
 

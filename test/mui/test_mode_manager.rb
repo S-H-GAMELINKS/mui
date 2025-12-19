@@ -24,7 +24,7 @@ module Mui
     end
 
     def test_visual_mode_returns_false_initially
-      refute @mode_manager.visual_mode?
+      refute_predicate @mode_manager, :visual_mode?
     end
 
     def test_current_handler_returns_normal_mode_handler
@@ -71,7 +71,7 @@ module Mui
       @mode_manager.transition(result)
 
       assert_equal Mode::VISUAL, @mode_manager.mode
-      assert @mode_manager.visual_mode?
+      assert_predicate @mode_manager, :visual_mode?
       assert_instance_of Selection, @mode_manager.selection
       refute @mode_manager.selection.line_mode
     end
@@ -86,7 +86,7 @@ module Mui
       @mode_manager.transition(result)
 
       assert_equal Mode::VISUAL_LINE, @mode_manager.mode
-      assert @mode_manager.visual_mode?
+      assert_predicate @mode_manager, :visual_mode?
       assert_instance_of Selection, @mode_manager.selection
       assert @mode_manager.selection.line_mode
     end
@@ -130,7 +130,7 @@ module Mui
       @mode_manager.transition(normal_result)
 
       assert_equal Mode::NORMAL, @mode_manager.mode
-      refute @mode_manager.visual_mode?
+      refute_predicate @mode_manager, :visual_mode?
       assert_nil @mode_manager.selection
     end
 

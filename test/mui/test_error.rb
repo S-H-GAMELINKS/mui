@@ -5,7 +5,7 @@ require "test_helper"
 class TestError < Minitest::Test
   class TestMuiError < Minitest::Test
     def test_inherits_from_standard_error
-      assert Mui::Error < StandardError
+      assert_operator Mui::Error, :<, StandardError
     end
 
     def test_can_be_raised
@@ -23,7 +23,7 @@ class TestError < Minitest::Test
 
   class TestMethodNotOverriddenError < Minitest::Test
     def test_inherits_from_mui_error
-      assert Mui::MethodNotOverriddenError < Mui::Error
+      assert_operator Mui::MethodNotOverriddenError, :<, Mui::Error
     end
 
     def test_formats_message_with_method_name
@@ -41,7 +41,7 @@ class TestError < Minitest::Test
 
   class TestPluginError < Minitest::Test
     def test_inherits_from_mui_error
-      assert Mui::PluginError < Mui::Error
+      assert_operator Mui::PluginError, :<, Mui::Error
     end
 
     def test_can_be_raised
@@ -53,7 +53,7 @@ class TestError < Minitest::Test
 
   class TestPluginNotFoundError < Minitest::Test
     def test_inherits_from_plugin_error
-      assert Mui::PluginNotFoundError < Mui::PluginError
+      assert_operator Mui::PluginNotFoundError, :<, Mui::PluginError
     end
 
     def test_formats_message_with_plugin_name
@@ -71,7 +71,7 @@ class TestError < Minitest::Test
 
   class TestUnknownCommandError < Minitest::Test
     def test_inherits_from_mui_error
-      assert Mui::UnknownCommandError < Mui::Error
+      assert_operator Mui::UnknownCommandError, :<, Mui::Error
     end
 
     def test_formats_message_with_command_name

@@ -69,6 +69,7 @@ class TestCommandCompletion < Minitest::Test
 
       # Should complete to one of them
       buffer = runner.editor.command_line.buffer
+
       assert(buffer.start_with?("tabn"), "Should complete to a tabn* command")
     end
   end
@@ -95,6 +96,7 @@ class TestCommandCompletion < Minitest::Test
 
       # CommandRegistry should find plugin command
       command = registry.find(:findable_cmd)
+
       assert command, "CommandRegistry#find should return plugin command"
     end
 

@@ -20,7 +20,7 @@ class TestSearchMode < Minitest::Test
     result = @handler.handle(Mui::KeyCode::ESCAPE)
 
     assert_equal Mui::Mode::NORMAL, result.mode
-    assert result.cancelled?
+    assert_predicate result, :cancelled?
     assert_equal "", @search_input.buffer
   end
 
@@ -28,7 +28,7 @@ class TestSearchMode < Minitest::Test
     result = @handler.handle(Mui::KeyCode::BACKSPACE)
 
     assert_equal Mui::Mode::NORMAL, result.mode
-    assert result.cancelled?
+    assert_predicate result, :cancelled?
   end
 
   def test_backspace_removes_character
@@ -51,7 +51,7 @@ class TestSearchMode < Minitest::Test
     result = @handler.handle(Mui::KeyCode::ENTER_CR)
 
     assert_equal Mui::Mode::NORMAL, result.mode
-    refute result.cancelled?
+    refute_predicate result, :cancelled?
     assert_equal "hello", @search_state.pattern
     # Cursor should move to first match (which is at 0,0, but we start there so should find next)
     # Actually, find_next from 0,0 finds match starting after col 0, which is row 2, col 0
@@ -62,7 +62,7 @@ class TestSearchMode < Minitest::Test
     result = @handler.handle(Mui::KeyCode::ENTER_CR)
 
     assert_equal Mui::Mode::NORMAL, result.mode
-    assert result.cancelled?
+    assert_predicate result, :cancelled?
   end
 
   def test_enter_pattern_not_found
@@ -189,11 +189,11 @@ class TestSearchMode < Minitest::Test
     @handler.handle("l")
     @handler.handle("o")
 
-    assert @search_state.has_pattern?
+    assert_predicate @search_state, :has_pattern?
 
     @handler.handle(Mui::KeyCode::ESCAPE)
 
-    refute @search_state.has_pattern?
+    refute_predicate @search_state, :has_pattern?
     assert_empty @search_state.find_all_matches(@buffer)
   end
 
@@ -204,7 +204,8 @@ class TestSearchMode < Minitest::Test
     @handler.handle("l")
 
     completion_state = @handler.completion_state
-    assert completion_state.active?
+
+    assert_predicate completion_state, :active?
     assert_includes completion_state.candidates, "hello"
   end
 
@@ -220,7 +221,7 @@ class TestSearchMode < Minitest::Test
     @handler.handle(Mui::KeyCode::TAB)
 
     # After tab, should be on next candidate or wrapped
-    assert completion_state.active?
+    assert_predicate completion_state, :active?
   end
 
   def test_tab_applies_completion_to_search_input
@@ -236,7 +237,7 @@ class TestSearchMode < Minitest::Test
 
     # Search input should now contain the completion
     # (after tab, it moves to next candidate and applies it)
-    assert completion_state.active?
+    assert_predicate completion_state, :active?
   end
 
   def test_escape_clears_completion
@@ -245,11 +246,11 @@ class TestSearchMode < Minitest::Test
     @handler.handle("e")
     @handler.handle("l")
 
-    assert @handler.completion_state.active?
+    assert_predicate @handler.completion_state, :active?
 
     @handler.handle(Mui::KeyCode::ESCAPE)
 
-    refute @handler.completion_state.active?
+    refute_predicate @handler.completion_state, :active?
   end
 
   def test_enter_clears_completion
@@ -258,11 +259,11 @@ class TestSearchMode < Minitest::Test
     @handler.handle("e")
     @handler.handle("l")
 
-    assert @handler.completion_state.active?
+    assert_predicate @handler.completion_state, :active?
 
     @handler.handle(Mui::KeyCode::ENTER_CR)
 
-    refute @handler.completion_state.active?
+    refute_predicate @handler.completion_state, :active?
   end
 
   def test_execute_search_uses_current_buffer_after_switch
@@ -275,7 +276,7 @@ class TestSearchMode < Minitest::Test
     result = @handler.handle(Mui::KeyCode::ENTER_CR)
 
     assert_equal Mui::Mode::NORMAL, result.mode
-    refute result.cancelled?
+    refute_predicate result, :cancelled?
     refute_includes result.message.to_s, "Pattern not found"
     assert_equal 1, @search_state.find_all_matches(new_buffer).length
   end

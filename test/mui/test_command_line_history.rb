@@ -54,12 +54,15 @@ class TestCommandLineHistory < Minitest::Test
       @history.add("third")
 
       @command_line.history_previous
+
       assert_equal "third", @command_line.buffer
 
       @command_line.history_previous
+
       assert_equal "second", @command_line.buffer
 
       @command_line.history_previous
+
       assert_equal "first", @command_line.buffer
     end
 
@@ -126,18 +129,18 @@ class TestCommandLineHistory < Minitest::Test
     def test_execute_does_not_add_empty_command
       @command_line.execute
 
-      assert @history.empty?
+      assert_empty @history
     end
 
     def test_execute_resets_history_state
       @history.add("old")
       @command_line.history_previous
 
-      assert @history.browsing?
+      assert_predicate @history, :browsing?
 
       @command_line.execute
 
-      refute @history.browsing?
+      refute_predicate @history, :browsing?
     end
 
     def test_execute_clears_buffer
@@ -153,11 +156,11 @@ class TestCommandLineHistory < Minitest::Test
       @history.add("cmd")
       @command_line.history_previous
 
-      assert @history.browsing?
+      assert_predicate @history, :browsing?
 
       @command_line.clear
 
-      refute @history.browsing?
+      refute_predicate @history, :browsing?
     end
   end
 
@@ -175,16 +178,20 @@ class TestCommandLineHistory < Minitest::Test
 
       # Now browse history
       @command_line.history_previous
+
       assert_equal "e file2.txt", @command_line.buffer
 
       @command_line.history_previous
+
       assert_equal "w", @command_line.buffer
 
       @command_line.history_previous
+
       assert_equal "e file1.txt", @command_line.buffer
 
       # Go back forward
       @command_line.history_next
+
       assert_equal "w", @command_line.buffer
     end
 

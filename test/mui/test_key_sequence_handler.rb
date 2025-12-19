@@ -18,24 +18,28 @@ class TestKeySequenceHandler < Minitest::Test
   def test_leader_key_default
     Mui.reset_config!
     handler = Mui::KeySequenceHandler.new(Mui.config)
+
     assert_equal "\\", handler.leader_key
   end
 
   def test_leader_key_custom
     Mui.set :leader, " "
     handler = Mui::KeySequenceHandler.new(Mui.config)
+
     assert_equal " ", handler.leader_key
   end
 
   def test_timeout_ms_default
     Mui.reset_config!
     handler = Mui::KeySequenceHandler.new(Mui.config)
+
     assert_equal 1000, handler.timeout_ms
   end
 
   def test_timeout_ms_custom
     Mui.set :timeoutlen, 500
     handler = Mui::KeySequenceHandler.new(Mui.config)
+
     assert_equal 500, handler.timeout_ms
   end
 
@@ -55,14 +59,17 @@ class TestKeySequenceHandler < Minitest::Test
 
     # First key: \
     type1, = @handler.process("\\", :normal)
+
     assert_equal :pending, type1
 
     # Second key: g
     type2, = @handler.process("g", :normal)
+
     assert_equal :pending, type2
 
     # Third key: d - complete match
     type3, handler = @handler.process("d", :normal)
+
     assert_equal :handled, type3
     assert_equal handler_proc, handler
   end
@@ -99,12 +106,14 @@ class TestKeySequenceHandler < Minitest::Test
 
     # Input <Leader>
     type1, = @handler.process("\\", :normal)
+
     assert_equal :pending, type1
 
     # Input g - exact match exists, but longer sequence too
     type2, = @handler.process("g", :normal)
+
     assert_equal :pending, type2
-    assert @handler.pending?
+    assert_predicate @handler, :pending?
   end
 
   def test_timeout_executes_pending_handler
@@ -124,7 +133,7 @@ class TestKeySequenceHandler < Minitest::Test
 
     assert_equal :handled, type
     assert_equal handler_g, handler
-    refute @handler.pending?
+    refute_predicate @handler, :pending?
   end
 
   def test_timeout_passthrough_when_no_exact_match
@@ -139,7 +148,7 @@ class TestKeySequenceHandler < Minitest::Test
 
     assert_equal :passthrough, type
     assert_equal "\\", key
-    refute @handler.pending?
+    refute_predicate @handler, :pending?
   end
 
   def test_check_timeout_returns_nil_when_not_timed_out
@@ -154,6 +163,7 @@ class TestKeySequenceHandler < Minitest::Test
 
   def test_check_timeout_returns_nil_when_empty
     result = @handler.check_timeout(:normal)
+
     assert_nil result
   end
 
@@ -161,11 +171,11 @@ class TestKeySequenceHandler < Minitest::Test
     @handler.register(:normal, "<Leader>gd", proc { :test })
     @handler.process("\\", :normal)
 
-    assert @handler.pending?
+    assert_predicate @handler, :pending?
 
     @handler.clear
 
-    refute @handler.pending?
+    refute_predicate @handler, :pending?
   end
 
   def test_pending_keys_display
@@ -189,6 +199,7 @@ class TestKeySequenceHandler < Minitest::Test
     @handler.rebuild_keymaps
 
     type1, = @handler.process("\\", :normal)
+
     assert_equal :pending, type1
   end
 
@@ -202,12 +213,14 @@ class TestKeySequenceHandler < Minitest::Test
     # Test normal mode
     @handler.process("\\", :normal)
     type1, handler1 = @handler.process("g", :normal)
+
     assert_equal :handled, type1
     assert_equal handler_normal, handler1
 
     # Test insert mode
     @handler.process("\\", :insert)
     type2, handler2 = @handler.process("g", :insert)
+
     assert_equal :handled, type2
     assert_equal handler_insert, handler2
   end
@@ -218,10 +231,12 @@ class TestKeySequenceHandler < Minitest::Test
 
     # Ctrl-X = 24
     type1, = @handler.process(24, :normal)
+
     assert_equal :pending, type1
 
     # Ctrl-S = 19
     type2, handler = @handler.process(19, :normal)
+
     assert_equal :handled, type2
     assert_equal handler_proc, handler
   end

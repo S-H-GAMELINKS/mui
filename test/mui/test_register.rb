@@ -13,7 +13,7 @@ class TestRegister < Minitest::Test
     end
 
     def test_initially_empty
-      assert @register.empty?
+      assert_empty @register
       assert_nil @register.get
     end
 
@@ -21,20 +21,20 @@ class TestRegister < Minitest::Test
       @register.set("hello")
 
       assert_equal "hello", @register.get
-      refute @register.empty?
+      refute_empty @register
     end
 
     def test_set_linewise_flag
       @register.set("line content", linewise: true)
 
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
       assert_equal "line content", @register.get
     end
 
     def test_set_charwise_flag
       @register.set("char content", linewise: false)
 
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
 
     def test_overwrite_previous_content
@@ -104,7 +104,7 @@ class TestRegister < Minitest::Test
     def test_yank_linewise_flag
       @register.yank("line", linewise: true)
 
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
       assert @register.linewise?(name: "0")
     end
 
@@ -171,7 +171,7 @@ class TestRegister < Minitest::Test
     def test_delete_linewise_flag
       @register.delete("line", linewise: true)
 
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
       assert @register.linewise?(name: "1")
     end
 

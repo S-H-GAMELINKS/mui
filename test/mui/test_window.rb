@@ -245,11 +245,13 @@ class TestWindow < Minitest::Test
 
       # Check that line 3 (y=3) is cleared with spaces
       output_at_third_row = @adapter.all_output.find { |entry| entry[:y] == 3 && entry[:x].zero? }
+
       refute_nil output_at_third_row, "Should have output at row 3"
       assert_equal " " * 80, output_at_third_row[:text], "Line beyond buffer should be cleared with spaces"
 
       # Check that last visible line (22) is also cleared
       output_at_last_row = @adapter.all_output.find { |entry| entry[:y] == 22 && entry[:x].zero? }
+
       refute_nil output_at_last_row, "Should have output at row 22"
       assert_equal " " * 80, output_at_last_row[:text], "Last visible line should be cleared"
     end
@@ -270,6 +272,7 @@ class TestWindow < Minitest::Test
 
       # Lines beyond the new buffer's content should be cleared
       output_at_second_row = @adapter.all_output.find { |entry| entry[:y] == 1 && entry[:x].zero? }
+
       refute_nil output_at_second_row, "Should have output at row 1"
       assert_equal " " * 80, output_at_second_row[:text], "Previous content should be cleared"
     end
@@ -287,6 +290,7 @@ class TestWindow < Minitest::Test
 
       # Lines beyond buffer (y=1) should be rendered with style (background color)
       styled_output = @adapter.all_output.find { |e| e[:y] == 1 && e[:x].zero? && e[:style] }
+
       refute_nil styled_output, "Line beyond buffer should have style"
     end
   end

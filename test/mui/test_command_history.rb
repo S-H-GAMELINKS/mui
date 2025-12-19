@@ -25,13 +25,13 @@ class TestCommandHistory < Minitest::Test
     def test_add_ignores_empty_string
       @history.add("")
 
-      assert @history.empty?
+      assert_empty @history
     end
 
     def test_add_ignores_whitespace_only
       @history.add("   ")
 
-      assert @history.empty?
+      assert_empty @history
     end
 
     def test_add_removes_duplicate_and_appends
@@ -135,7 +135,7 @@ class TestCommandHistory < Minitest::Test
       @history.previous("saved")
       @history.next_entry
 
-      refute @history.browsing?
+      refute_predicate @history, :browsing?
     end
   end
 
@@ -144,24 +144,24 @@ class TestCommandHistory < Minitest::Test
       @history.add("cmd")
       @history.previous("input")
 
-      assert @history.browsing?
+      assert_predicate @history, :browsing?
 
       @history.reset
 
-      refute @history.browsing?
+      refute_predicate @history, :browsing?
     end
   end
 
   class TestBrowsing < TestCommandHistory
     def test_browsing_returns_false_initially
-      refute @history.browsing?
+      refute_predicate @history, :browsing?
     end
 
     def test_browsing_returns_true_after_previous
       @history.add("cmd")
       @history.previous("")
 
-      assert @history.browsing?
+      assert_predicate @history, :browsing?
     end
 
     def test_browsing_returns_false_after_reset
@@ -169,7 +169,7 @@ class TestCommandHistory < Minitest::Test
       @history.previous("")
       @history.reset
 
-      refute @history.browsing?
+      refute_predicate @history, :browsing?
     end
   end
 
@@ -204,7 +204,7 @@ class TestCommandHistory < Minitest::Test
     def test_handles_missing_file_gracefully
       new_history = Mui::CommandHistory.new(history_file: "/nonexistent/path/file")
 
-      assert new_history.empty?
+      assert_empty new_history
     end
 
     def test_handles_corrupt_file_gracefully
@@ -213,19 +213,19 @@ class TestCommandHistory < Minitest::Test
       new_history = Mui::CommandHistory.new(history_file: @temp_file.path)
 
       # Should not raise, history might be empty or contain the corrupt data
-      assert new_history.is_a?(Mui::CommandHistory)
+      assert_kind_of Mui::CommandHistory, new_history
     end
   end
 
   class TestEmptyAndSize < TestCommandHistory
     def test_empty_returns_true_initially
-      assert @history.empty?
+      assert_empty @history
     end
 
     def test_empty_returns_false_after_add
       @history.add("cmd")
 
-      refute @history.empty?
+      refute_empty @history
     end
 
     def test_size_returns_zero_initially

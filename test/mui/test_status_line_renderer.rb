@@ -32,6 +32,7 @@ class TestStatusLineRenderer < Minitest::Test
       @renderer.render(@screen, 22)
 
       output = @adapter.all_output
+
       assert(output.any? { |o| o[:y] == 22 })
     end
 
@@ -42,6 +43,7 @@ class TestStatusLineRenderer < Minitest::Test
       renderer.render(@screen, 22)
 
       output = @adapter.all_output
+
       assert(output.any? { |o| o[:x] == 10 })
     end
 
@@ -52,6 +54,7 @@ class TestStatusLineRenderer < Minitest::Test
 
       output = @adapter.all_output
       text = output.map { |o| o[:text] }.join
+
       assert_includes text, "file.rb"
     end
 
@@ -62,6 +65,7 @@ class TestStatusLineRenderer < Minitest::Test
 
       output = @adapter.all_output
       text = output.map { |o| o[:text] }.join
+
       assert_includes text, "[+]"
     end
 
@@ -72,6 +76,7 @@ class TestStatusLineRenderer < Minitest::Test
 
       output = @adapter.all_output
       text = output.map { |o| o[:text] }.join
+
       refute_includes text, "[+]"
     end
 

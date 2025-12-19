@@ -9,7 +9,7 @@ class TestTerminalAdapterCurses < Minitest::Test
 
   class TestInheritance < Minitest::Test
     def test_inherits_from_base
-      assert Mui::TerminalAdapter::Curses < Mui::TerminalAdapter::Base
+      assert_operator Mui::TerminalAdapter::Curses, :<, Mui::TerminalAdapter::Base
     end
   end
 
@@ -143,7 +143,10 @@ class TestTerminalAdapterCurses < Minitest::Test
 
     def test_method_exists
       adapter = Mui::TerminalAdapter::Curses.allocate
-      assert adapter.respond_to?(:read_utf8_char, true)
+
+      result = adapter.respond_to?(:read_utf8_char, true)
+
+      assert result
     end
   end
 end

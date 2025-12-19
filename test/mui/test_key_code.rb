@@ -51,25 +51,26 @@ class TestKeyCode < Minitest::Test
   class TestConstantUsage < Minitest::Test
     def test_escape_can_detect_escape_key
       key = 27
+
       assert_equal key, Mui::KeyCode::ESCAPE
     end
 
     def test_printable_range_includes_ascii_letters
-      assert "a".ord >= Mui::KeyCode::PRINTABLE_MIN
-      assert "a".ord <= Mui::KeyCode::PRINTABLE_MAX
-      assert "Z".ord >= Mui::KeyCode::PRINTABLE_MIN
-      assert "Z".ord <= Mui::KeyCode::PRINTABLE_MAX
+      assert_operator "a".ord, :>=, Mui::KeyCode::PRINTABLE_MIN
+      assert_operator "a".ord, :<=, Mui::KeyCode::PRINTABLE_MAX
+      assert_operator "Z".ord, :>=, Mui::KeyCode::PRINTABLE_MIN
+      assert_operator "Z".ord, :<=, Mui::KeyCode::PRINTABLE_MAX
     end
 
     def test_printable_range_includes_unicode
       # Japanese hiragana "あ"
-      assert "あ".ord >= Mui::KeyCode::PRINTABLE_MIN
-      assert "あ".ord <= Mui::KeyCode::PRINTABLE_MAX
+      assert_operator "あ".ord, :>=, Mui::KeyCode::PRINTABLE_MIN
+      assert_operator "あ".ord, :<=, Mui::KeyCode::PRINTABLE_MAX
     end
 
     def test_printable_range_excludes_control_characters
-      assert "\t".ord < Mui::KeyCode::PRINTABLE_MIN
-      assert "\n".ord < Mui::KeyCode::PRINTABLE_MIN
+      assert_operator "\t".ord, :<, Mui::KeyCode::PRINTABLE_MIN
+      assert_operator "\n".ord, :<, Mui::KeyCode::PRINTABLE_MIN
     end
   end
 end

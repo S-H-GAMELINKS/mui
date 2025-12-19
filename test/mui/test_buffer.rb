@@ -159,18 +159,22 @@ class TestBuffer
 
     def test_insert_char
       @buffer.insert_char(0, 0, "a")
+
       assert_equal "a", @buffer.line(0)
       assert @buffer.modified
 
       @buffer.insert_char(0, 1, "b")
+
       assert_equal "ab", @buffer.line(0)
       assert @buffer.modified
 
       @buffer.insert_char(0, 1, "X")
+
       assert_equal "aXb", @buffer.line(0)
       assert @buffer.modified
 
       @buffer.insert_char(0, 1, "")
+
       assert_equal "aXb", @buffer.line(0)
       assert @buffer.modified
     end
@@ -186,6 +190,7 @@ class TestBuffer
 
     def test_insert_char_creates_line_if_nil
       @buffer.insert_char(5, 0, "x")
+
       assert_equal "x", @buffer.lines[5]
       assert @buffer.modified
     end
@@ -206,6 +211,7 @@ class TestBuffer
       @buffer.insert_char(0, 2, "c")
 
       @buffer.delete_char(0, 1)
+
       assert_equal "ac", @buffer.line(0)
     end
 
@@ -213,9 +219,11 @@ class TestBuffer
       @buffer.insert_char(0, 0, "a")
 
       @buffer.delete_char(0, -1)
+
       assert_equal "a", @buffer.line(0)
 
       @buffer.delete_char(0, 10)
+
       assert_equal "a", @buffer.line(0)
     end
   end
@@ -231,19 +239,23 @@ class TestBuffer
 
     def test_insert_line
       @buffer.insert_line(0, "first")
+
       assert_equal "first", @buffer.line(0)
       assert_equal "", @buffer.line(1)
 
       @buffer.insert_line(1, "second")
+
       assert_equal "first", @buffer.line(0)
       assert_equal "second", @buffer.line(1)
     end
 
     def test_insert_line_with_nil_creates_empty_string
       @buffer.insert_line(0)
+
       assert_equal "", @buffer.line(0)
       # Verify the string is mutable
       @buffer.lines[0].insert(0, "x")
+
       assert_equal "x", @buffer.line(0)
     end
   end
@@ -262,11 +274,13 @@ class TestBuffer
       @buffer.insert_line(1, "second")
 
       @buffer.delete_line(0)
+
       assert_equal "second", @buffer.line(0)
     end
 
     def test_delete_line_keeps_one_empty_line
       @buffer.delete_line(0)
+
       assert_equal 1, @buffer.line_count
       assert_equal "", @buffer.line(0)
     end
@@ -474,6 +488,7 @@ class TestBuffer
       @buffer.add_custom_highlighter(:second, h2)
 
       highlighters = @buffer.custom_highlighters(nil)
+
       assert_equal 2, highlighters.length
       assert_includes highlighters, h1
       assert_includes highlighters, h2
@@ -487,6 +502,7 @@ class TestBuffer
       @buffer.add_custom_highlighter(:test, h2)
 
       highlighters = @buffer.custom_highlighters(nil)
+
       assert_equal 1, highlighters.length
       assert_includes highlighters, h2
       refute_includes highlighters, h1

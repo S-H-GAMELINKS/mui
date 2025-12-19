@@ -9,7 +9,7 @@ class TestCompletionState < Minitest::Test
 
   class TestInitialize < TestCompletionState
     def test_initially_inactive
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_initially_empty_candidates
@@ -33,7 +33,7 @@ class TestCompletionState < Minitest::Test
     def test_start_activates_with_candidates
       @state.start(%w[foo bar], "f", :command)
 
-      assert @state.active?
+      assert_predicate @state, :active?
     end
 
     def test_start_sets_candidates
@@ -79,7 +79,7 @@ class TestCompletionState < Minitest::Test
 
       @state.reset
 
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_reset_clears_original_input
@@ -181,32 +181,32 @@ class TestCompletionState < Minitest::Test
 
   class TestActive < TestCompletionState
     def test_active_false_with_empty_candidates
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_active_true_with_candidates
       @state.start(%w[foo], "f", :command)
 
-      assert @state.active?
+      assert_predicate @state, :active?
     end
 
     def test_active_false_after_reset
       @state.start(%w[foo], "f", :command)
       @state.reset
 
-      refute @state.active?
+      refute_predicate @state, :active?
     end
   end
 
   class TestConfirmed < TestCompletionState
     def test_initially_not_confirmed
-      refute @state.confirmed?
+      refute_predicate @state, :confirmed?
     end
 
     def test_not_confirmed_after_start
       @state.start(%w[foo bar], "f", :command)
 
-      refute @state.confirmed?
+      refute_predicate @state, :confirmed?
     end
 
     def test_confirmed_after_confirm
@@ -214,7 +214,7 @@ class TestCompletionState < Minitest::Test
 
       @state.confirm
 
-      assert @state.confirmed?
+      assert_predicate @state, :confirmed?
     end
 
     def test_reset_clears_confirmed
@@ -223,7 +223,7 @@ class TestCompletionState < Minitest::Test
 
       @state.reset
 
-      refute @state.confirmed?
+      refute_predicate @state, :confirmed?
     end
 
     def test_start_clears_confirmed
@@ -232,7 +232,7 @@ class TestCompletionState < Minitest::Test
 
       @state.start(%w[baz qux], "b", :file)
 
-      refute @state.confirmed?
+      refute_predicate @state, :confirmed?
     end
   end
 end

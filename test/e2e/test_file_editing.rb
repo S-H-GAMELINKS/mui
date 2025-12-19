@@ -63,7 +63,7 @@ class TestE2EFileEditing < Minitest::Test
         .assert_running(false)
 
       # Verify file was created
-      assert File.exist?(path)
+      assert_path_exists path
       assert_equal "Line 1\nLine 2\n", File.read(path)
     end
   end
@@ -139,6 +139,7 @@ class TestE2EFileEditing < Minitest::Test
         .assert_modified(false)
 
       content = File.read(f.path)
+
       assert_includes content, "MODIFIED"
     end
   end
@@ -217,7 +218,7 @@ class TestE2EFileEditing < Minitest::Test
         .type(":w<Enter>")
         .assert_message_contains("written")
 
-      assert File.exist?(new_file_path)
+      assert_path_exists new_file_path
       assert_equal "New content\n", File.read(new_file_path)
     end
   end

@@ -21,6 +21,7 @@ class TestCommandHistory < Minitest::Test
       runner.type(":<Up>")
 
       runner.assert_mode(Mui::Mode::COMMAND)
+
       assert_equal "e test.txt", runner.editor.instance_variable_get(:@command_line).buffer
     end
 
@@ -31,6 +32,7 @@ class TestCommandHistory < Minitest::Test
       runner.type("<Down>")
 
       runner.assert_mode(Mui::Mode::COMMAND)
+
       assert_empty runner.editor.instance_variable_get(:@command_line).buffer
     end
 
@@ -41,12 +43,15 @@ class TestCommandHistory < Minitest::Test
       runner.type(":e file2.txt<Enter>")
 
       runner.type(":<Up>")
+
       assert_equal "e file2.txt", runner.editor.instance_variable_get(:@command_line).buffer
 
       runner.type("<Up>")
+
       assert_equal "w", runner.editor.instance_variable_get(:@command_line).buffer
 
       runner.type("<Up>")
+
       assert_equal "e file1.txt", runner.editor.instance_variable_get(:@command_line).buffer
     end
 
@@ -57,12 +62,15 @@ class TestCommandHistory < Minitest::Test
       runner.type(":third<Enter>")
 
       runner.type(":<Up><Up><Up>")
+
       assert_equal "first", runner.editor.instance_variable_get(:@command_line).buffer
 
       runner.type("<Down>")
+
       assert_equal "second", runner.editor.instance_variable_get(:@command_line).buffer
 
       runner.type("<Down>")
+
       assert_equal "third", runner.editor.instance_variable_get(:@command_line).buffer
     end
   end
@@ -76,9 +84,11 @@ class TestCommandHistory < Minitest::Test
       runner.type(":new_")
 
       runner.type("<Up>")
+
       assert_equal "old_cmd", runner.editor.instance_variable_get(:@command_line).buffer
 
       runner.type("<Down>")
+
       assert_equal "new_", runner.editor.instance_variable_get(:@command_line).buffer
     end
   end
@@ -91,6 +101,7 @@ class TestCommandHistory < Minitest::Test
       runner.type(":<Up>")
 
       runner.assert_mode(Mui::Mode::COMMAND)
+
       assert_empty runner.editor.instance_variable_get(:@command_line).buffer
     end
 
@@ -100,6 +111,7 @@ class TestCommandHistory < Minitest::Test
       runner.type(":<Down>")
 
       runner.assert_mode(Mui::Mode::COMMAND)
+
       assert_empty runner.editor.instance_variable_get(:@command_line).buffer
     end
 
@@ -113,6 +125,7 @@ class TestCommandHistory < Minitest::Test
 
       # Start new command and browse history again
       runner.type(":<Up>")
+
       assert_equal "old", runner.editor.instance_variable_get(:@command_line).buffer
     end
 
@@ -122,6 +135,7 @@ class TestCommandHistory < Minitest::Test
       runner.type(":<Enter>") # Empty command
 
       runner.type(":<Up>")
+
       assert_equal "valid", runner.editor.instance_variable_get(:@command_line).buffer
     end
   end
@@ -136,9 +150,11 @@ class TestCommandHistory < Minitest::Test
       runner.type(":first<Enter>") # Duplicate
 
       runner.type(":<Up>")
+
       assert_equal "first", runner.editor.instance_variable_get(:@command_line).buffer
 
       runner.type("<Up>")
+
       assert_equal "second", runner.editor.instance_variable_get(:@command_line).buffer
 
       # "first" should not appear again
@@ -162,7 +178,7 @@ class TestCommandHistory < Minitest::Test
 
       runner.type("<Up>")
       # After history navigation, completion should be reset
-      refute handler.completion_state.active?
+      refute_predicate handler.completion_state, :active?
     end
   end
 

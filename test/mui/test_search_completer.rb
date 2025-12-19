@@ -52,7 +52,7 @@ class TestSearchCompleter < Minitest::Test
     hello_index = candidates.index("hello")
     hello_world_index = candidates.index("hello_world")
 
-    assert hello_index < hello_world_index, "Shorter words should come first"
+    assert_operator hello_index, :<, hello_world_index, "Shorter words should come first"
   end
 
   def test_complete_extracts_words_with_underscores
@@ -84,7 +84,7 @@ class TestSearchCompleter < Minitest::Test
 
     candidates = @completer.complete(@buffer, "test")
 
-    assert candidates.length <= Mui::SearchCompleter::MAX_CANDIDATES
+    assert_operator candidates.length, :<=, Mui::SearchCompleter::MAX_CANDIDATES
   end
 
   def test_complete_uses_cache_for_same_buffer
@@ -100,6 +100,7 @@ class TestSearchCompleter < Minitest::Test
 
   def test_complete_invalidates_cache_on_buffer_change
     candidates1 = @completer.complete(@buffer, "hel")
+
     assert_includes candidates1, "hello"
 
     # Modify buffer

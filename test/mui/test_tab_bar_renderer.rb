@@ -12,6 +12,7 @@ class TestTabBarRenderer < Minitest::Test
   class TestHeight < TestTabBarRenderer
     def test_returns_zero_when_single_tab
       @tab_manager.add
+
       assert_equal 0, @renderer.height
     end
 

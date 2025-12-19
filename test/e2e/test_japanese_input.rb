@@ -213,6 +213,7 @@ class TestE2EJapaneseInput < Minitest::Test
 
       # Verify file content
       content = File.read(f.path)
+
       assert_equal "日本語テスト\n保存確認\n", content
 
       # Load and verify
@@ -301,6 +302,7 @@ class TestE2EJapaneseInput < Minitest::Test
     # cursor_col is 2 (at last char "う")
     # Display width should be 2 * 2 = 4 for "あい" before cursor
     window = runner.editor.window
+
     assert_equal 2, window.cursor_col
     # screen_cursor_x considers display width
     assert_equal 4, window.screen_cursor_x

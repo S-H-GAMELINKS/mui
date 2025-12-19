@@ -21,6 +21,7 @@ class TestJobManager < Minitest::Test
     @manager.run_async { executed = true }
 
     sleep 0.05 # Wait for thread
+
     assert executed
   end
 
@@ -43,7 +44,7 @@ class TestJobManager < Minitest::Test
     @manager.poll
 
     refute_nil received_job
-    assert received_job.completed?
+    assert_predicate received_job, :completed?
     assert_equal "result", received_job.result
   end
 
@@ -53,7 +54,7 @@ class TestJobManager < Minitest::Test
     sleep 0.1
     @manager.poll
 
-    assert job.completed?
+    assert_predicate job, :completed?
     assert_equal "hello\n", job.result[:stdout]
     assert job.result[:success]
     assert_equal 0, job.result[:exit_status]
@@ -65,7 +66,7 @@ class TestJobManager < Minitest::Test
     sleep 0.1
     @manager.poll
 
-    assert job.completed?
+    assert_predicate job, :completed?
   end
 
   def test_run_command_with_array_argument
@@ -74,7 +75,7 @@ class TestJobManager < Minitest::Test
     sleep 0.1
     @manager.poll
 
-    assert job.completed?
+    assert_predicate job, :completed?
     assert_equal "hello world\n", job.result[:stdout]
   end
 
@@ -92,14 +93,16 @@ class TestJobManager < Minitest::Test
   end
 
   def test_busy_when_jobs_running
-    refute @manager.busy?
+    refute_predicate @manager, :busy?
 
     @manager.run_async { sleep 0.1 }
-    assert @manager.busy?
+
+    assert_predicate @manager, :busy?
 
     sleep 0.15
     @manager.poll
-    refute @manager.busy?
+
+    refute_predicate @manager, :busy?
   end
 
   def test_active_count
@@ -110,10 +113,12 @@ class TestJobManager < Minitest::Test
 
     # Give threads time to start
     sleep 0.01
+
     assert_equal 2, @manager.active_count
 
     sleep 0.15
     @manager.poll
+
     assert_equal 0, @manager.active_count
   end
 

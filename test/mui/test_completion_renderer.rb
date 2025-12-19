@@ -105,6 +105,7 @@ class TestCompletionRenderer < Minitest::Test
 
       # All outputs should have same length (padded)
       widths = @screen.output.map(&:length).uniq
+
       assert_equal 1, widths.length
     end
   end
@@ -119,7 +120,8 @@ class TestCompletionRenderer < Minitest::Test
 
       # Should clamp column to fit within screen
       col = @screen.positions.first[1]
-      assert col < 70, "Column should be clamped to fit popup"
+
+      assert_operator col, :<, 70, "Column should be clamped to fit popup"
     end
 
     def test_clamps_row_to_screen_bounds

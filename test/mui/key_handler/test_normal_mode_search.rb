@@ -17,21 +17,25 @@ class TestNormalModeSearch < Minitest::Test
 
   def test_slash_enters_search_forward_mode
     result = @handler.handle("/")
+
     assert_equal Mui::Mode::SEARCH_FORWARD, result.mode
   end
 
   def test_question_mark_enters_search_backward_mode
     result = @handler.handle("?")
+
     assert_equal Mui::Mode::SEARCH_BACKWARD, result.mode
   end
 
   def test_n_without_previous_search
     result = @handler.handle("n")
+
     assert_includes result.message, "No previous search pattern"
   end
 
   def test_N_without_previous_search
     result = @handler.handle("N")
+
     assert_includes result.message, "No previous search pattern"
   end
 
@@ -115,7 +119,7 @@ class TestNormalModeSearch < Minitest::Test
     # Should find next "hello" at 0,12
     assert_equal 0, @window.cursor_row
     assert_equal 12, @window.cursor_col
-    assert @search_state.has_pattern?
+    assert_predicate @search_state, :has_pattern?
   end
 
   def test_hash_searches_word_under_cursor_backward
@@ -160,7 +164,7 @@ class TestNormalModeSearch < Minitest::Test
     @handler.handle("*")
 
     # Should still find the word "hello" and search for it
-    assert @search_state.has_pattern?
+    assert_predicate @search_state, :has_pattern?
   end
 
   def test_star_sets_search_state_for_n_N

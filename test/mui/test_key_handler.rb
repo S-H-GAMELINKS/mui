@@ -59,45 +59,45 @@ class TestKeyHandler < Minitest::Test
 
   class TestModeInheritance < Minitest::Test
     def test_normal_mode_inherits_from_base
-      assert Mui::KeyHandler::NormalMode < Mui::KeyHandler::Base
+      assert_operator Mui::KeyHandler::NormalMode, :<, Mui::KeyHandler::Base
     end
 
     def test_insert_mode_inherits_from_base
-      assert Mui::KeyHandler::InsertMode < Mui::KeyHandler::Base
+      assert_operator Mui::KeyHandler::InsertMode, :<, Mui::KeyHandler::Base
     end
 
     def test_command_mode_inherits_from_base
-      assert Mui::KeyHandler::CommandMode < Mui::KeyHandler::Base
+      assert_operator Mui::KeyHandler::CommandMode, :<, Mui::KeyHandler::Base
     end
 
     def test_visual_mode_inherits_from_base
-      assert Mui::KeyHandler::VisualMode < Mui::KeyHandler::Base
+      assert_operator Mui::KeyHandler::VisualMode, :<, Mui::KeyHandler::Base
     end
 
     def test_visual_line_mode_inherits_from_base
-      assert Mui::KeyHandler::VisualLineMode < Mui::KeyHandler::Base
+      assert_operator Mui::KeyHandler::VisualLineMode, :<, Mui::KeyHandler::Base
     end
 
     def test_search_mode_inherits_from_base
-      assert Mui::KeyHandler::SearchMode < Mui::KeyHandler::Base
+      assert_operator Mui::KeyHandler::SearchMode, :<, Mui::KeyHandler::Base
     end
   end
 
   class TestOperatorInheritance < Minitest::Test
     def test_delete_operator_inherits_from_base
-      assert Mui::KeyHandler::Operators::DeleteOperator < Mui::KeyHandler::Operators::BaseOperator
+      assert_operator Mui::KeyHandler::Operators::DeleteOperator, :<, Mui::KeyHandler::Operators::BaseOperator
     end
 
     def test_change_operator_inherits_from_base
-      assert Mui::KeyHandler::Operators::ChangeOperator < Mui::KeyHandler::Operators::BaseOperator
+      assert_operator Mui::KeyHandler::Operators::ChangeOperator, :<, Mui::KeyHandler::Operators::BaseOperator
     end
 
     def test_yank_operator_inherits_from_base
-      assert Mui::KeyHandler::Operators::YankOperator < Mui::KeyHandler::Operators::BaseOperator
+      assert_operator Mui::KeyHandler::Operators::YankOperator, :<, Mui::KeyHandler::Operators::BaseOperator
     end
 
     def test_paste_operator_inherits_from_base
-      assert Mui::KeyHandler::Operators::PasteOperator < Mui::KeyHandler::Operators::BaseOperator
+      assert_operator Mui::KeyHandler::Operators::PasteOperator, :<, Mui::KeyHandler::Operators::BaseOperator
     end
   end
 end

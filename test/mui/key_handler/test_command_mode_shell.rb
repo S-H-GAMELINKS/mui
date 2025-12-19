@@ -78,7 +78,7 @@ class TestCommandModeShell < Minitest::Test
 
       @handler.handle(13)
 
-      assert @editor.job_manager.busy?
+      assert_predicate @editor.job_manager, :busy?
     end
 
     def test_shell_command_creates_scratch_buffer_on_complete
@@ -91,7 +91,7 @@ class TestCommandModeShell < Minitest::Test
 
       # Should have created a new window with scratch buffer
       assert_equal 2, @editor.window_manager.window_count
-      assert @editor.buffer.readonly?
+      assert_predicate @editor.buffer, :readonly?
       assert_equal "[Shell Output]", @editor.buffer.name
     end
 
@@ -113,6 +113,7 @@ class TestCommandModeShell < Minitest::Test
       @editor.job_manager.poll
 
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("hello_world") })
     end
 
@@ -124,6 +125,7 @@ class TestCommandModeShell < Minitest::Test
       @editor.job_manager.poll
 
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("foo bar baz") })
     end
 
@@ -135,6 +137,7 @@ class TestCommandModeShell < Minitest::Test
       @editor.job_manager.poll
 
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("pipe_test") })
     end
   end
@@ -160,6 +163,7 @@ class TestCommandModeShell < Minitest::Test
 
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "42"
       assert_includes output, "Exit status"
     end
@@ -174,6 +178,7 @@ class TestCommandModeShell < Minitest::Test
 
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "error_output"
       assert_includes output, "[stderr]"
     end
@@ -187,6 +192,7 @@ class TestCommandModeShell < Minitest::Test
 
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
       output = lines.join("\n")
+
       refute_includes output, "Exit status"
     end
   end
@@ -224,6 +230,7 @@ class TestCommandModeShell < Minitest::Test
       # Content should be updated to second command's output
       lines = (0...@editor.buffer.line_count).map { |i| @editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "second"
     end
   end

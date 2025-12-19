@@ -10,27 +10,32 @@ class TestLeafNode < Minitest::Test
 
   def test_leaf_returns_true
     node = Mui::Layout::LeafNode.new(@window)
-    assert node.leaf?
+
+    assert_predicate node, :leaf?
   end
 
   def test_split_returns_false
     node = Mui::Layout::LeafNode.new(@window)
-    refute node.split?
+
+    refute_predicate node, :split?
   end
 
   def test_windows_returns_single_window
     node = Mui::Layout::LeafNode.new(@window)
+
     assert_equal [@window], node.windows
   end
 
   def test_find_window_node_returns_self_when_window_matches
     node = Mui::Layout::LeafNode.new(@window)
+
     assert_equal node, node.find_window_node(@window)
   end
 
   def test_find_window_node_returns_nil_when_window_does_not_match
     node = Mui::Layout::LeafNode.new(@window)
     other_window = Mui::Window.new(Mui::Buffer.new)
+
     assert_nil node.find_window_node(other_window)
   end
 
@@ -51,6 +56,7 @@ class TestLeafNode < Minitest::Test
 
   def test_stores_window_reference
     node = Mui::Layout::LeafNode.new(@window)
+
     assert_equal @window, node.window
   end
 
@@ -58,6 +64,7 @@ class TestLeafNode < Minitest::Test
     node = Mui::Layout::LeafNode.new(@window)
     new_window = Mui::Window.new(Mui::Buffer.new)
     node.window = new_window
+
     assert_equal new_window, node.window
   end
 end

@@ -102,7 +102,7 @@ class TestCommandCompleter < Minitest::Test
     end
 
     def test_commands_is_frozen
-      assert Mui::CommandCompleter::COMMANDS.frozen?
+      assert_predicate Mui::CommandCompleter::COMMANDS, :frozen?
     end
   end
 

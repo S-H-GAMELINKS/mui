@@ -10,11 +10,11 @@ module Mui
 
         assert_nil result.mode
         assert_nil result.message
-        refute result.quit?
-        refute result.start_selection?
-        refute result.line_mode?
-        refute result.clear_selection?
-        refute result.toggle_line_mode?
+        refute_predicate result, :quit?
+        refute_predicate result, :start_selection?
+        refute_predicate result, :line_mode?
+        refute_predicate result, :clear_selection?
+        refute_predicate result, :toggle_line_mode?
       end
 
       def test_with_mode
@@ -32,13 +32,13 @@ module Mui
       def test_with_quit
         result = Base.new(quit: true)
 
-        assert result.quit?
+        assert_predicate result, :quit?
       end
 
       def test_is_frozen
         result = Base.new
 
-        assert result.frozen?
+        assert_predicate result, :frozen?
       end
     end
 
@@ -46,35 +46,35 @@ module Mui
       def test_default_values
         result = NormalModeResult.new
 
-        refute result.start_selection?
-        refute result.line_mode?
+        refute_predicate result, :start_selection?
+        refute_predicate result, :line_mode?
       end
 
       def test_with_start_selection
         result = NormalModeResult.new(mode: Mode::VISUAL, start_selection: true)
 
-        assert result.start_selection?
+        assert_predicate result, :start_selection?
         assert_equal Mode::VISUAL, result.mode
       end
 
       def test_with_line_mode
         result = NormalModeResult.new(mode: Mode::VISUAL_LINE, start_selection: true, line_mode: true)
 
-        assert result.start_selection?
-        assert result.line_mode?
+        assert_predicate result, :start_selection?
+        assert_predicate result, :line_mode?
       end
 
       def test_inherits_base_defaults
         result = NormalModeResult.new
 
-        refute result.clear_selection?
-        refute result.toggle_line_mode?
+        refute_predicate result, :clear_selection?
+        refute_predicate result, :toggle_line_mode?
       end
 
       def test_is_frozen
         result = NormalModeResult.new
 
-        assert result.frozen?
+        assert_predicate result, :frozen?
       end
     end
 
@@ -82,34 +82,34 @@ module Mui
       def test_default_values
         result = VisualModeResult.new
 
-        refute result.clear_selection?
-        refute result.toggle_line_mode?
+        refute_predicate result, :clear_selection?
+        refute_predicate result, :toggle_line_mode?
       end
 
       def test_with_clear_selection
         result = VisualModeResult.new(mode: Mode::NORMAL, clear_selection: true)
 
-        assert result.clear_selection?
+        assert_predicate result, :clear_selection?
         assert_equal Mode::NORMAL, result.mode
       end
 
       def test_with_toggle_line_mode
         result = VisualModeResult.new(mode: Mode::VISUAL_LINE, toggle_line_mode: true)
 
-        assert result.toggle_line_mode?
+        assert_predicate result, :toggle_line_mode?
       end
 
       def test_inherits_base_defaults
         result = VisualModeResult.new
 
-        refute result.start_selection?
-        refute result.line_mode?
+        refute_predicate result, :start_selection?
+        refute_predicate result, :line_mode?
       end
 
       def test_is_frozen
         result = VisualModeResult.new
 
-        assert result.frozen?
+        assert_predicate result, :frozen?
       end
     end
 
@@ -118,13 +118,13 @@ module Mui
         result = InsertModeResult.new(mode: Mode::NORMAL)
 
         assert_equal Mode::NORMAL, result.mode
-        refute result.quit?
+        refute_predicate result, :quit?
       end
 
       def test_is_frozen
         result = InsertModeResult.new
 
-        assert result.frozen?
+        assert_predicate result, :frozen?
       end
     end
 
@@ -139,13 +139,13 @@ module Mui
       def test_with_quit
         result = CommandModeResult.new(quit: true)
 
-        assert result.quit?
+        assert_predicate result, :quit?
       end
 
       def test_is_frozen
         result = CommandModeResult.new
 
-        assert result.frozen?
+        assert_predicate result, :frozen?
       end
     end
   end

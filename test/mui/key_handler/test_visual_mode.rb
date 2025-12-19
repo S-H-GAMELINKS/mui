@@ -210,21 +210,21 @@ class TestKeyHandlerVisualMode < Minitest::Test
       result = @handler.handle(27) # Escape
 
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_v_in_char_mode_clears_selection
       result = @handler.handle("v")
 
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_upper_v_in_char_mode_toggles_to_line_mode
       result = @handler.handle("V")
 
       assert_equal Mui::Mode::VISUAL_LINE, result.mode
-      assert result.toggle_line_mode?
+      assert_predicate result, :toggle_line_mode?
     end
   end
 
@@ -272,7 +272,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
 
       assert_equal "heorld", @buffer.line(0)
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_d_deletes_multi_line_selection
@@ -382,7 +382,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
 
       assert_equal "heorld", @buffer.line(0)
       assert_equal Mui::Mode::INSERT, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_c_changes_multi_line_selection
@@ -484,9 +484,9 @@ class TestKeyHandlerVisualMode < Minitest::Test
       result = @handler.handle("y")
 
       assert_equal "llo w", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_y_yanks_multi_line_selection
@@ -498,7 +498,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       result = @handler.handle("y")
 
       assert_equal "world\nsecond ", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
       assert_equal Mui::Mode::NORMAL, result.mode
     end
 
@@ -512,7 +512,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @handler.handle("y")
 
       assert_equal "llo w", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
 
     def test_y_moves_cursor_to_selection_start
@@ -559,7 +559,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       result = @handler.handle("y")
 
       assert_equal "second line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
       assert_equal Mui::Mode::NORMAL, result.mode
     end
 
@@ -572,7 +572,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       @handler.handle("y")
 
       assert_equal "hello world\nsecond line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_y_moves_cursor_to_first_yanked_line
@@ -691,7 +691,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       assert_equal "  hello", @buffer.line(0)
       assert_equal "world", @buffer.line(1)
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_indent_right_multiple_lines
@@ -717,7 +717,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
 
       assert_equal "hello", @buffer.line(0)
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
     end
 
     def test_indent_left_multiple_lines
@@ -820,7 +820,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
       result = @handler.handle("*")
 
       assert_equal Mui::Mode::NORMAL, result.mode
-      assert result.clear_selection?
+      assert_predicate result, :clear_selection?
       # Should find next "hello" at row 2
       assert_equal 2, @window.cursor_row
       assert_equal 0, @window.cursor_col
@@ -864,7 +864,7 @@ class TestKeyHandlerVisualMode < Minitest::Test
 
       @handler.handle("*")
 
-      assert @search_state.has_pattern?
+      assert_predicate @search_state, :has_pattern?
       assert_equal 2, @search_state.find_all_matches(@buffer).length # Two "hello" matches
     end
 

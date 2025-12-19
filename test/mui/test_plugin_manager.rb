@@ -34,15 +34,15 @@ class TestPluginManager < Minitest::Test
     Mui.plugin_manager.install_and_load
     Mui.plugin_manager.install_and_load
 
-    assert Mui.plugin_manager.installed?
+    assert_predicate Mui.plugin_manager, :installed?
   end
 
   def test_install_and_load_sets_installed_flag
-    refute Mui.plugin_manager.installed?
+    refute_predicate Mui.plugin_manager, :installed?
 
     Mui.plugin_manager.install_and_load
 
-    assert Mui.plugin_manager.installed?
+    assert_predicate Mui.plugin_manager, :installed?
   end
 
   def test_define_plugin_registers_block
@@ -55,6 +55,7 @@ class TestPluginManager < Minitest::Test
 
     # Manually load the plugin to trigger the block
     Mui.plugin_manager.send(:load_plugin, :my_plugin)
+
     assert called
   end
 

@@ -73,7 +73,7 @@ class TestSelectionHighlighter < Minitest::Test
       assert_equal 1, highlights.size
       assert_equal 5, highlights[0].start_col
       # End col should be end of line
-      assert highlights[0].end_col >= 5
+      assert_operator highlights[0].end_col, :>=, 5
     end
 
     def test_returns_highlight_for_middle_row_of_multiline

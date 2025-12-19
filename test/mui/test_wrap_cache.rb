@@ -9,6 +9,7 @@ class TestWrapCache < Minitest::Test
 
   def test_get_returns_nil_for_empty_cache
     line = "test"
+
     assert_nil @cache.get(line, 80)
   end
 
@@ -99,13 +100,16 @@ class TestWrapCache < Minitest::Test
     assert_equal 0, @cache.size
 
     @cache.set(line1, 80, [])
+
     assert_equal 1, @cache.size
 
     # Same line, different width - separate cache entry
     @cache.set(line1, 40, [])
+
     assert_equal 2, @cache.size
 
     @cache.set(line2, 80, [])
+
     assert_equal 3, @cache.size
   end
 
@@ -125,6 +129,7 @@ class TestWrapCache < Minitest::Test
     result_hello = [{ text: "hello", start_col: 0, end_col: 5 }]
 
     @cache.set(line, 80, result_hello)
+
     assert_equal result_hello, @cache.get(line, 80)
 
     # Mutate the string

@@ -18,16 +18,19 @@ class TestMuiApi < Minitest::Test
   def test_config_is_memoized
     config1 = Mui.config
     config2 = Mui.config
+
     assert_same config1, config2
   end
 
   def test_set_delegates_to_config
     Mui.set :colorscheme, "mui"
+
     assert_equal "mui", Mui.config.get(:colorscheme)
   end
 
   def test_use_adds_gem_to_plugin_manager
     Mui.use "mui-lsp", "~> 0.1"
+
     assert_equal 1, Mui.plugin_manager.pending_gems.length
     assert_equal "mui-lsp", Mui.plugin_manager.pending_gems.first[:gem]
     assert_equal "~> 0.1", Mui.plugin_manager.pending_gems.first[:version]
@@ -36,12 +39,14 @@ class TestMuiApi < Minitest::Test
   def test_keymap_delegates_to_config
     block = proc { puts "hover" }
     Mui.keymap(:normal, "K", &block)
+
     assert_equal block, Mui.config.keymaps[:normal]["K"]
   end
 
   def test_reset_config_clears_config
     Mui.set :colorscheme, "custom"
     Mui.reset_config!
+
     assert_equal "mui", Mui.config.get(:colorscheme)
   end
 
@@ -60,6 +65,7 @@ class TestMuiApi < Minitest::Test
   def test_lsp_is_memoized
     lsp1 = Mui.lsp
     lsp2 = Mui.lsp
+
     assert_same lsp1, lsp2
   end
 
@@ -68,6 +74,7 @@ class TestMuiApi < Minitest::Test
       use :ruby_lsp
     end
     configs = Mui.lsp_server_configs
+
     assert_equal 1, configs.length
     assert_equal :preset, configs.first[:type]
     assert_equal :ruby_lsp, configs.first[:name]
@@ -78,6 +85,7 @@ class TestMuiApi < Minitest::Test
       use :ruby_lsp, sync_on_change: true
     end
     configs = Mui.lsp_server_configs
+
     assert_equal({ sync_on_change: true }, configs.first[:options])
   end
 
@@ -91,14 +99,15 @@ class TestMuiApi < Minitest::Test
       )
     end
     configs = Mui.lsp_server_configs
+
     assert_equal 1, configs.length
     assert_equal :custom, configs.first[:type]
     assert_equal "custom-lsp", configs.first[:name]
     assert_equal "custom-lsp --stdio", configs.first[:command]
     assert_equal ["custom"], configs.first[:language_ids]
     assert_equal ["*.custom"], configs.first[:file_patterns]
-    assert_equal true, configs.first[:auto_start]
-    assert_equal true, configs.first[:sync_on_change]
+    assert configs.first[:auto_start]
+    assert configs.first[:sync_on_change]
   end
 
   def test_lsp_server_configs_empty_by_default
@@ -110,6 +119,7 @@ class TestMuiApi < Minitest::Test
       use :ruby_lsp
     end
     Mui.reset_config!
+
     assert_empty Mui.lsp_server_configs
   end
 end

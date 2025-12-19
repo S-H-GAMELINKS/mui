@@ -5,12 +5,14 @@ require "test_helper"
 class TestNode < Minitest::Test
   def test_leaf_returns_false
     node = Mui::Layout::Node.new
-    refute node.leaf?
+
+    refute_predicate node, :leaf?
   end
 
   def test_split_returns_false
     node = Mui::Layout::Node.new
-    refute node.split?
+
+    refute_predicate node, :split?
   end
 
   def test_windows_raises_method_not_overridden_error

@@ -89,14 +89,14 @@ class TestFloatingWindow < Minitest::Test
     def test_show_respects_max_width
       @floating.show("This is a very long line of text", row: 0, col: 0, max_width: 20)
 
-      assert @floating.width <= 20
+      assert_operator @floating.width, :<=, 20
     end
 
     def test_show_respects_max_height
       content = (1..20).map { |i| "Line #{i}" }
       @floating.show(content, row: 0, col: 0, max_height: 10)
 
-      assert @floating.height <= 10
+      assert_operator @floating.height, :<=, 10
     end
   end
 
@@ -211,7 +211,7 @@ class TestFloatingWindow < Minitest::Test
       @floating.show("Hello", row: 5, col: 10)
       @floating.hide
 
-      assert @floating.needs_clear?
+      assert_predicate @floating, :needs_clear?
     end
 
     def test_hide_records_last_bounds
@@ -227,7 +227,7 @@ class TestFloatingWindow < Minitest::Test
     def test_needs_clear_returns_false_when_not_hidden
       @floating.show("Hello", row: 5, col: 10)
 
-      refute @floating.needs_clear?
+      refute_predicate @floating, :needs_clear?
     end
 
     def test_needs_clear_returns_false_after_clearing
@@ -236,7 +236,7 @@ class TestFloatingWindow < Minitest::Test
       @floating.hide
       @floating.clear_last_bounds(screen)
 
-      refute @floating.needs_clear?
+      refute_predicate @floating, :needs_clear?
     end
 
     def test_clear_last_bounds_resets_last_bounds
@@ -261,7 +261,7 @@ class TestFloatingWindow < Minitest::Test
     def test_hide_when_not_visible_does_nothing
       @floating.hide
 
-      refute @floating.needs_clear?
+      refute_predicate @floating, :needs_clear?
       assert_nil @floating.last_bounds
     end
 
@@ -270,7 +270,7 @@ class TestFloatingWindow < Minitest::Test
       @floating.hide
       @floating.show("World", row: 10, col: 20)
 
-      refute @floating.needs_clear?
+      refute_predicate @floating, :needs_clear?
     end
 
     def test_clear_last_bounds_adjusts_position_for_screen_edge

@@ -33,18 +33,22 @@ class TestEditorIntegration < Minitest::Test
 
     # Normal -> Insert
     editor.handle_key("i")
+
     assert_equal Mui::Mode::INSERT, editor.mode
 
     # Insert -> Normal
     editor.handle_key(27)
+
     assert_equal Mui::Mode::NORMAL, editor.mode
 
     # Normal -> Command
     editor.handle_key(":")
+
     assert_equal Mui::Mode::COMMAND, editor.mode
 
     # Command -> Normal (via Escape)
     editor.handle_key(27)
+
     assert_equal Mui::Mode::NORMAL, editor.mode
   end
 
@@ -60,13 +64,16 @@ class TestEditorIntegration < Minitest::Test
 
     # Return to Normal mode
     editor.handle_key(27)
+
     assert_equal 4, editor.window.cursor_col # Moves back one
 
     # Navigate with hjkl
     editor.handle_key("h")
+
     assert_equal 3, editor.window.cursor_col
 
     editor.handle_key("l")
+
     assert_equal 4, editor.window.cursor_col
   end
 
@@ -124,9 +131,11 @@ class TestEditorIntegration < Minitest::Test
 
     # Move up
     editor.handle_key("k")
+
     assert_equal 1, editor.window.cursor_row
 
     editor.handle_key("k")
+
     assert_equal 0, editor.window.cursor_row
   end
 
@@ -147,14 +156,17 @@ class TestEditorIntegration < Minitest::Test
     # After Esc, cursor is at col 1 ("D" position)
     # 'i' enters Insert mode before "D" (col 1)
     editor.handle_key("i")
+
     assert_equal 1, editor.window.cursor_col
 
     # Delete "C" (Backspace deletes character before cursor)
     editor.handle_key(127)
+
     assert_equal "D", editor.buffer.line(1)
 
     # Backspace at line start -> join lines
     editor.handle_key(127)
+
     assert_equal 1, editor.buffer.line_count
     assert_equal "ABD", editor.buffer.line(0)
   end

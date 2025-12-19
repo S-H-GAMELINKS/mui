@@ -384,11 +384,13 @@ class TestE2ETabPage < Minitest::Test
 
     # Check content in each tab
     tab2_buffer = tab_manager.current_tab.active_window.buffer
+
     assert_equal "Tab 2 content", tab2_buffer.line(0)
 
     runner.type(":tabfirst<Enter>")
 
     tab1_buffer = tab_manager.current_tab.active_window.buffer
+
     assert_equal "Tab 1 content", tab1_buffer.line(0)
   end
 
@@ -422,6 +424,7 @@ class TestE2ETabPage < Minitest::Test
 
     # Get current window count and active window
     new_tab = tab_manager.current_tab
+
     assert_equal 2, new_tab.window_manager.window_count
 
     first_window = runner.editor.window

@@ -16,7 +16,7 @@ class TestShellCommand < Minitest::Test
       runner = ScriptRunner.new
       runner.type(":!echo hello<Enter>")
 
-      assert runner.editor.job_manager.busy?
+      assert_predicate runner.editor.job_manager, :busy?
     end
 
     def test_shell_command_creates_scratch_buffer
@@ -28,7 +28,8 @@ class TestShellCommand < Minitest::Test
       runner.editor.job_manager.poll
 
       runner.assert_window_count(2)
-      assert runner.editor.buffer.readonly?
+
+      assert_predicate runner.editor.buffer, :readonly?
       assert_equal "[Shell Output]", runner.editor.buffer.name
     end
 
@@ -40,6 +41,7 @@ class TestShellCommand < Minitest::Test
       runner.editor.job_manager.poll
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("echo test_output") })
     end
 
@@ -51,6 +53,7 @@ class TestShellCommand < Minitest::Test
       runner.editor.job_manager.poll
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("test_output") })
     end
   end
@@ -64,6 +67,7 @@ class TestShellCommand < Minitest::Test
       runner.editor.job_manager.poll
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("foo bar baz") })
     end
 
@@ -75,6 +79,7 @@ class TestShellCommand < Minitest::Test
       runner.editor.job_manager.poll
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("pipe_test") })
     end
 
@@ -86,6 +91,7 @@ class TestShellCommand < Minitest::Test
       runner.editor.job_manager.poll
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
+
       assert(lines.any? { |l| l.include?("no_newline") })
     end
   end
@@ -117,6 +123,7 @@ class TestShellCommand < Minitest::Test
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "42"
       assert_includes output, "Exit status"
     end
@@ -130,6 +137,7 @@ class TestShellCommand < Minitest::Test
 
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "error_msg"
       assert_includes output, "[stderr]"
     end
@@ -202,6 +210,7 @@ class TestShellCommand < Minitest::Test
       # Content should be updated to second command's output
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "second"
     end
 
@@ -226,6 +235,7 @@ class TestShellCommand < Minitest::Test
       runner.assert_window_count(2)
       lines = (0...runner.editor.buffer.line_count).map { |i| runner.editor.buffer.line(i) }
       output = lines.join("\n")
+
       assert_includes output, "second"
     end
   end

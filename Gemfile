@@ -15,3 +15,5 @@ gem "rubocop", "~> 1.21"
 gem "ruby-lsp", "~> 0.26.4"
 
 gem "rubocop-rake", "~> 0.7.1"
+
+gem "rubocop-minitest", "~> 0.38.2"

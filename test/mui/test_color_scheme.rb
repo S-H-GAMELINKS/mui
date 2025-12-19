@@ -15,32 +15,36 @@ class TestColorScheme < Minitest::Test
     @scheme.define :normal, fg: :white, bg: :black
 
     color = @scheme[:normal]
+
     assert_equal :white, color[:fg]
     assert_equal :black, color[:bg]
-    assert_equal false, color[:bold]
-    assert_equal false, color[:underline]
+    refute color[:bold]
+    refute color[:underline]
   end
 
   def test_define_with_bold
     @scheme.define :status_line, fg: :black, bg: :white, bold: true
 
     color = @scheme[:status_line]
-    assert_equal true, color[:bold]
+
+    assert color[:bold]
   end
 
   def test_define_with_underline
     @scheme.define :message_error, fg: :red, bg: nil, underline: true
 
     color = @scheme[:message_error]
-    assert_equal true, color[:underline]
+
+    assert color[:underline]
   end
 
   def test_default_color_for_undefined_element
     color = @scheme[:undefined]
+
     assert_equal :white, color[:fg]
     assert_nil color[:bg]
-    assert_equal false, color[:bold]
-    assert_equal false, color[:underline]
+    refute color[:bold]
+    refute color[:underline]
   end
 
   def test_elements_constant
@@ -76,6 +80,7 @@ class TestColorScheme < Minitest::Test
       diff_hunk
       diff_header
     ]
+
     assert_equal expected_elements, Mui::ColorScheme::ELEMENTS
   end
 end

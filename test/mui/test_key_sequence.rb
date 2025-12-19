@@ -5,22 +5,26 @@ require "test_helper"
 class TestKeySequence < Minitest::Test
   def test_parse_simple_notation
     seq = Mui::KeySequence.new("abc")
+
     assert_equal %w[a b c], seq.keys
     assert_equal "abc", seq.notation
   end
 
   def test_parse_leader_notation
     seq = Mui::KeySequence.new("<Leader>gd")
+
     assert_equal [:leader, "g", "d"], seq.keys
   end
 
   def test_parse_ctrl_notation
     seq = Mui::KeySequence.new("<C-x><C-s>")
+
     assert_equal ["\x18", "\x13"], seq.keys
   end
 
   def test_parse_space_notation
     seq = Mui::KeySequence.new("<Space>w")
+
     assert_equal [" ", "w"], seq.keys
   end
 
@@ -36,6 +40,7 @@ class TestKeySequence < Minitest::Test
 
   def test_normalize_without_leader
     seq = Mui::KeySequence.new("abc")
+
     assert_equal %w[a b c], seq.normalize("\\")
   end
 
@@ -47,16 +52,16 @@ class TestKeySequence < Minitest::Test
   end
 
   def test_leader
-    assert Mui::KeySequence.new("<Leader>gd").leader?
-    refute Mui::KeySequence.new("abc").leader?
-    refute Mui::KeySequence.new("<C-x>").leader?
+    assert_predicate Mui::KeySequence.new("<Leader>gd"), :leader?
+    refute_predicate Mui::KeySequence.new("abc"), :leader?
+    refute_predicate Mui::KeySequence.new("<C-x>"), :leader?
   end
 
   def test_single_key
-    assert Mui::KeySequence.new("a").single_key?
-    assert Mui::KeySequence.new("<Space>").single_key?
-    refute Mui::KeySequence.new("ab").single_key?
-    refute Mui::KeySequence.new("<Leader>g").single_key?
+    assert_predicate Mui::KeySequence.new("a"), :single_key?
+    assert_predicate Mui::KeySequence.new("<Space>"), :single_key?
+    refute_predicate Mui::KeySequence.new("ab"), :single_key?
+    refute_predicate Mui::KeySequence.new("<Leader>g"), :single_key?
   end
 
   def test_equality
@@ -84,22 +89,26 @@ class TestKeySequence < Minitest::Test
 
     # Can be used as hash key
     hash = { seq1 => :handler }
+
     assert_equal :handler, hash[seq2]
   end
 
   def test_to_s
     seq = Mui::KeySequence.new("<Leader>gd")
+
     assert_equal "<Leader>gd", seq.to_s
   end
 
   def test_inspect
     seq = Mui::KeySequence.new("<Leader>gd")
+
     assert_includes seq.inspect, "Mui::KeySequence"
     assert_includes seq.inspect, "<Leader>gd"
   end
 
   def test_equality_with_non_key_sequence
     seq = Mui::KeySequence.new("abc")
+
     refute_equal seq, "abc"
     refute_equal seq, %w[a b c]
     refute_equal seq, nil

@@ -9,7 +9,7 @@ class TestInsertCompletionState < Minitest::Test
 
   class TestInitialize < TestInsertCompletionState
     def test_initially_inactive
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_initially_empty_items
@@ -29,7 +29,7 @@ class TestInsertCompletionState < Minitest::Test
     def test_start_activates_with_items
       @state.start([{ label: "foo" }], prefix: "f")
 
-      assert @state.active?
+      assert_predicate @state, :active?
     end
 
     def test_start_sets_items
@@ -70,7 +70,7 @@ class TestInsertCompletionState < Minitest::Test
 
       @state.reset
 
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_reset_clears_prefix
@@ -184,20 +184,20 @@ class TestInsertCompletionState < Minitest::Test
 
   class TestActive < TestInsertCompletionState
     def test_active_false_with_empty_items
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_active_true_with_items
       @state.start([{ label: "foo" }], prefix: "f")
 
-      assert @state.active?
+      assert_predicate @state, :active?
     end
 
     def test_active_false_after_reset
       @state.start([{ label: "foo" }], prefix: "f")
       @state.reset
 
-      refute @state.active?
+      refute_predicate @state, :active?
     end
   end
 
@@ -281,7 +281,7 @@ class TestInsertCompletionState < Minitest::Test
 
       @state.update_prefix("xyz")
 
-      refute @state.active?
+      refute_predicate @state, :active?
     end
 
     def test_update_prefix_uses_insert_text_for_matching
@@ -300,7 +300,7 @@ class TestInsertCompletionState < Minitest::Test
 
   class TestNeedsClear < TestInsertCompletionState
     def test_initially_not_needs_clear
-      refute @state.needs_clear?
+      refute_predicate @state, :needs_clear?
     end
 
     def test_reset_sets_needs_clear_when_had_items
@@ -308,13 +308,13 @@ class TestInsertCompletionState < Minitest::Test
 
       @state.reset
 
-      assert @state.needs_clear?
+      assert_predicate @state, :needs_clear?
     end
 
     def test_reset_does_not_set_needs_clear_when_empty
       @state.reset
 
-      refute @state.needs_clear?
+      refute_predicate @state, :needs_clear?
     end
 
     def test_clear_needs_clear_resets_flag
@@ -323,13 +323,13 @@ class TestInsertCompletionState < Minitest::Test
 
       @state.clear_needs_clear
 
-      refute @state.needs_clear?
+      refute_predicate @state, :needs_clear?
     end
 
     def test_start_does_not_affect_needs_clear
       @state.start([{ label: "foo" }], prefix: "f")
 
-      refute @state.needs_clear?
+      refute_predicate @state, :needs_clear?
     end
 
     def test_multiple_reset_calls_maintain_needs_clear
@@ -339,7 +339,7 @@ class TestInsertCompletionState < Minitest::Test
       # Second reset when already empty should not change needs_clear
       @state.reset
 
-      assert @state.needs_clear?
+      assert_predicate @state, :needs_clear?
     end
   end
 end

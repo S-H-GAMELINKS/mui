@@ -116,6 +116,7 @@ class TestBufferWordCache < Minitest::Test
 
       # Complete with cursor on different line - both words included
       candidates = cache.complete("tes", 1, 0)
+
       assert_includes candidates, "test"
       assert_includes candidates, "testing"
 
@@ -182,6 +183,7 @@ class TestBufferWordCache < Minitest::Test
 
       # Verify initial state (cursor on different line)
       candidates = cache.complete("ori", 1, 0)
+
       assert_includes candidates, "original"
 
       # Modify buffer by adding text
@@ -190,10 +192,12 @@ class TestBufferWordCache < Minitest::Test
 
       # After marking dirty and completing, new word should be found
       candidates = cache.complete("mod", 1, 0)
+
       assert_includes candidates, "modified"
 
       # Old word should still be in cache
       candidates = cache.complete("ori", 1, 0)
+
       assert_includes candidates, "original"
     end
   end
@@ -207,6 +211,7 @@ class TestBufferWordCache < Minitest::Test
 
       # Cursor on second line to not exclude anything
       candidates = cache.complete("hel", 1, 0)
+
       assert_includes candidates, "hello"
       assert_includes candidates, "helper"
     end
@@ -218,6 +223,7 @@ class TestBufferWordCache < Minitest::Test
       cache.add_word("a")
 
       candidates = cache.complete("a", 1, 0)
+
       refute_includes candidates, "a"
     end
 
@@ -228,6 +234,7 @@ class TestBufferWordCache < Minitest::Test
       cache.add_word("ab")
 
       candidates = cache.complete("a", 1, 0)
+
       assert_includes candidates, "ab"
     end
   end

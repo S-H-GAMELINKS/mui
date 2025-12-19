@@ -21,7 +21,7 @@ class TestYankOperator < Minitest::Test
 
       assert_equal :done, result
       assert_equal "hello world", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_yank_line_does_not_modify_buffer
@@ -46,7 +46,7 @@ class TestYankOperator < Minitest::Test
 
       assert_equal :done, result
       assert_equal "hello", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
 
     def test_yank_word_end
@@ -84,7 +84,7 @@ class TestYankOperator < Minitest::Test
 
       assert_equal :done, result
       assert_equal "hello ", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
 
     def test_yank_to_line_start_at_column_zero_does_nothing
@@ -93,7 +93,7 @@ class TestYankOperator < Minitest::Test
       result = @operator.handle_pending("0")
 
       assert_equal :done, result
-      assert @register.empty?
+      assert_empty @register
     end
 
     def test_yank_to_line_end
@@ -111,7 +111,7 @@ class TestYankOperator < Minitest::Test
       result = @operator.handle_pending("$")
 
       assert_equal :done, result
-      assert @register.empty?
+      assert_empty @register
     end
 
     def test_yank_does_not_modify_buffer
@@ -137,7 +137,7 @@ class TestYankOperator < Minitest::Test
 
       assert_equal :done, result
       assert_equal "second line\nthird line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_yank_to_file_start_returns_pending
@@ -153,7 +153,7 @@ class TestYankOperator < Minitest::Test
 
       assert_equal :done, result
       assert_equal "hello world\nsecond line\nthird line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_yank_does_not_modify_buffer
@@ -234,7 +234,7 @@ class TestYankOperator < Minitest::Test
       result = @operator.handle_find_char("z", :yf)
 
       assert_equal :cancel, result
-      assert @register.empty?
+      assert_empty @register
     end
 
     def test_yank_find_char_does_not_modify_buffer
@@ -251,7 +251,7 @@ class TestYankOperator < Minitest::Test
       result = @operator.handle_pending("z")
 
       assert_equal :cancel, result
-      assert @register.empty?
+      assert_empty @register
     end
   end
 end

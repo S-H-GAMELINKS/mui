@@ -240,6 +240,7 @@ class TestE2EVisualMode < Minitest::Test
 
     # Start position should not change
     selection = runner.editor.selection
+
     assert_equal 0, selection.start_row
     assert_equal 2, selection.start_col
   end

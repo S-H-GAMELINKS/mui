@@ -20,6 +20,7 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
 
     # Show floating window
     runner.editor.show_floating("Test content", max_width: 20, max_height: 5)
+
     assert runner.editor.floating_window.visible
 
     # Press any key to close
@@ -27,7 +28,7 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
 
     # Verify needs_clear flag is set
     refute runner.editor.floating_window.visible
-    assert runner.editor.floating_window.needs_clear?
+    assert_predicate runner.editor.floating_window, :needs_clear?
   end
 
   def test_floating_window_clears_after_render
@@ -41,7 +42,7 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
     runner.editor.send(:render)
 
     # Verify clear flag is reset
-    refute runner.editor.floating_window.needs_clear?
+    refute_predicate runner.editor.floating_window, :needs_clear?
     assert_nil runner.editor.floating_window.last_bounds
   end
 
@@ -60,6 +61,7 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
 
     # Verify last_bounds is recorded correctly
     bounds = runner.editor.floating_window.last_bounds
+
     assert_equal width, bounds[:width]
     assert_equal height, bounds[:height]
   end
@@ -78,11 +80,12 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
     runner.type("j")
 
     # Verify needs_clear before render
-    assert runner.editor.floating_window.needs_clear?
+    assert_predicate runner.editor.floating_window, :needs_clear?
 
     # Verify cleared after render (private method, use send)
     runner.editor.send(:render)
-    refute runner.editor.floating_window.needs_clear?
+
+    refute_predicate runner.editor.floating_window, :needs_clear?
   end
 
   def test_hide_when_not_visible_does_nothing
@@ -92,7 +95,7 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
     runner.editor.floating_window.hide
 
     # Verify no needs_clear flag
-    refute runner.editor.floating_window.needs_clear?
+    refute_predicate runner.editor.floating_window, :needs_clear?
     assert_nil runner.editor.floating_window.last_bounds
   end
 
@@ -104,13 +107,13 @@ class TestE2EFloatingWindowRedraw < TestE2EPopupRedraw
     runner.type("j")
 
     # Should have needs_clear flag
-    assert runner.editor.floating_window.needs_clear?
+    assert_predicate runner.editor.floating_window, :needs_clear?
 
     # Show again
     runner.editor.show_floating("Second", max_width: 20, max_height: 5)
 
     # needs_clear should be reset
-    refute runner.editor.floating_window.needs_clear?
+    refute_predicate runner.editor.floating_window, :needs_clear?
   end
 end
 
@@ -127,13 +130,13 @@ class TestE2EInsertCompletionRedraw < TestE2EPopupRedraw
       .type("hel")
 
     # Completion should be active
-    assert runner.editor.insert_completion_active?
+    assert_predicate runner.editor, :insert_completion_active?
 
     # Confirm completion with Tab
     runner.type("<Tab>")
 
     # Verify needs_clear flag is set after completion closes
-    assert runner.editor.insert_completion_state.needs_clear?
+    assert_predicate runner.editor.insert_completion_state, :needs_clear?
   end
 
   def test_insert_completion_clears_after_render
@@ -154,7 +157,7 @@ class TestE2EInsertCompletionRedraw < TestE2EPopupRedraw
     runner.editor.send(:render)
 
     # Verify clear flag is reset
-    refute runner.editor.insert_completion_state.needs_clear?
+    refute_predicate runner.editor.insert_completion_state, :needs_clear?
   end
 
   def test_insert_completion_needs_clear_on_escape
@@ -168,13 +171,13 @@ class TestE2EInsertCompletionRedraw < TestE2EPopupRedraw
       .type("o")
       .type("hel")
 
-    assert runner.editor.insert_completion_active?
+    assert_predicate runner.editor, :insert_completion_active?
 
     # Cancel completion with Escape
     runner.type("<Esc>")
 
     # Verify needs_clear flag is set
-    assert runner.editor.insert_completion_state.needs_clear?
+    assert_predicate runner.editor.insert_completion_state, :needs_clear?
   end
 
   def test_insert_completion_no_needs_clear_when_not_active
@@ -187,6 +190,6 @@ class TestE2EInsertCompletionRedraw < TestE2EPopupRedraw
       .type("<Esc>")
 
     # No completion was active, so needs_clear should be false
-    refute runner.editor.insert_completion_state.needs_clear?
+    refute_predicate runner.editor.insert_completion_state, :needs_clear?
   end
 end

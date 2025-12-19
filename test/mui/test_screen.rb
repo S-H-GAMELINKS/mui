@@ -15,22 +15,27 @@ class TestScreen < Minitest::Test
 
   def test_put_returns_early_for_negative_y
     result = @screen.put(-1, 0, "test")
+
     refute result
   end
 
   def test_put_returns_early_for_y_beyond_height
     result = @screen.put(24, 0, "test")
+
     refute result
 
     result = @screen.put(100, 0, "test")
+
     refute result
   end
 
   def test_put_returns_early_for_x_beyond_width
     result = @screen.put(80, 0, "test")
+
     refute result
 
     result = @screen.put(100, 0, "test")
+
     refute result
   end
 

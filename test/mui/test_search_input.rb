@@ -15,6 +15,7 @@ class TestSearchInput < Minitest::Test
 
   def test_custom_prompt
     input = Mui::SearchInput.new("?")
+
     assert_equal "?", input.prompt
     assert_equal "?", input.to_s
   end
@@ -39,6 +40,7 @@ class TestSearchInput < Minitest::Test
 
   def test_backspace_empty
     @search_input.backspace
+
     assert_equal "", @search_input.buffer
   end
 
@@ -47,19 +49,21 @@ class TestSearchInput < Minitest::Test
     @search_input.clear
 
     assert_equal "", @search_input.buffer
-    assert @search_input.empty?
+    assert_empty @search_input
   end
 
   def test_set_prompt
     @search_input.set_prompt("?")
+
     assert_equal "?", @search_input.prompt
     assert_equal "?", @search_input.to_s
   end
 
   def test_empty
-    assert @search_input.empty?
+    assert_empty @search_input
 
     @search_input.input("a")
-    refute @search_input.empty?
+
+    refute_empty @search_input
   end
 end

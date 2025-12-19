@@ -29,7 +29,7 @@ class TestChangeOperator < Minitest::Test
       @operator.handle_pending("c")
 
       assert_equal "hello world", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_change_line_sets_cursor_to_zero
@@ -82,7 +82,7 @@ class TestChangeOperator < Minitest::Test
       @operator.handle_pending("e")
 
       assert_equal "hello", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
   end
 
@@ -149,7 +149,7 @@ class TestChangeOperator < Minitest::Test
       @operator.handle_pending("G")
 
       assert_equal "second line\nthird line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_change_to_file_start_returns_pending

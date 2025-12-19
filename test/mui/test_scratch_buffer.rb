@@ -6,14 +6,14 @@ class TestScratchBuffer < Minitest::Test
   def test_buffer_default_not_readonly
     buffer = Mui::Buffer.new
 
-    refute buffer.readonly?
+    refute_predicate buffer, :readonly?
   end
 
   def test_buffer_readonly_flag
     buffer = Mui::Buffer.new
     buffer.readonly = true
 
-    assert buffer.readonly?
+    assert_predicate buffer, :readonly?
   end
 
   def test_content_assignment_single_line
@@ -66,9 +66,11 @@ class TestScratchBuffer < Minitest::Test
   def test_content_assignment_resets_modified_flag
     buffer = Mui::Buffer.new
     buffer.insert_char(0, 0, "x")
+
     assert buffer.modified
 
     buffer.content = "new content"
+
     refute buffer.modified
   end
 
@@ -79,7 +81,7 @@ class TestScratchBuffer < Minitest::Test
     buffer.readonly = true
 
     assert_equal "[Test Results]", buffer.name
-    assert buffer.readonly?
+    assert_predicate buffer, :readonly?
     assert_equal 3, buffer.line_count
     refute buffer.modified
   end

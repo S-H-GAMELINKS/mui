@@ -14,12 +14,14 @@ class TestSplitNode < Minitest::Test
 
   def test_split_returns_true
     node = Mui::Layout::SplitNode.new(direction: :horizontal)
-    assert node.split?
+
+    assert_predicate node, :split?
   end
 
   def test_leaf_returns_false
     node = Mui::Layout::SplitNode.new(direction: :horizontal)
-    refute node.leaf?
+
+    refute_predicate node, :leaf?
   end
 
   def test_windows_returns_all_windows
@@ -27,6 +29,7 @@ class TestSplitNode < Minitest::Test
       direction: :horizontal,
       children: [@leaf1, @leaf2]
     )
+
     assert_equal [@window1, @window2], node.windows
   end
 
@@ -35,6 +38,7 @@ class TestSplitNode < Minitest::Test
       direction: :horizontal,
       children: [@leaf1, @leaf2]
     )
+
     assert_equal node, @leaf1.parent
     assert_equal node, @leaf2.parent
   end
@@ -44,6 +48,7 @@ class TestSplitNode < Minitest::Test
       direction: :horizontal,
       children: [@leaf1, @leaf2]
     )
+
     assert_equal @leaf1, node.find_window_node(@window1)
     assert_equal @leaf2, node.find_window_node(@window2)
   end
@@ -54,6 +59,7 @@ class TestSplitNode < Minitest::Test
       children: [@leaf1, @leaf2]
     )
     other_window = Mui::Window.new(Mui::Buffer.new)
+
     assert_nil node.find_window_node(other_window)
   end
 
@@ -243,6 +249,7 @@ class TestSplitNode < Minitest::Test
     node.apply_geometry
 
     seps = node.separators
+
     assert_equal 1, seps.size
     assert_equal :horizontal, seps[0][:type]
     assert_equal 0, seps[0][:x]
@@ -263,6 +270,7 @@ class TestSplitNode < Minitest::Test
     node.apply_geometry
 
     seps = node.separators
+
     assert_equal 1, seps.size
     assert_equal :vertical, seps[0][:type]
     assert_equal 39, seps[0][:x]  # After first window's width
@@ -295,6 +303,7 @@ class TestSplitNode < Minitest::Test
     root.apply_geometry
 
     seps = root.separators
+
     assert_equal 2, seps.size
     # First separator: vertical (between left and right, at x=39)
     assert_equal :vertical, seps[0][:type]

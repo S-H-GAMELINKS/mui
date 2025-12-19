@@ -8,7 +8,7 @@ class TestKeySequenceBuffer < Minitest::Test
   end
 
   def test_initial_state
-    assert @buffer.empty?
+    assert_empty @buffer
     assert_equal 0, @buffer.length
     assert_nil @buffer.first
     assert_nil @buffer.last_input_time
@@ -17,7 +17,7 @@ class TestKeySequenceBuffer < Minitest::Test
   def test_push_string_key
     assert @buffer.push("a")
     assert_equal ["a"], @buffer.to_a
-    refute @buffer.empty?
+    refute_empty @buffer
     assert_equal 1, @buffer.length
   end
 
@@ -44,16 +44,18 @@ class TestKeySequenceBuffer < Minitest::Test
 
   def test_push_invalid_key_returns_false
     refute @buffer.push(nil)
-    assert @buffer.empty?
+    assert_empty @buffer
   end
 
   def test_clear
     @buffer.push("a")
     @buffer.push("b")
-    refute @buffer.empty?
+
+    refute_empty @buffer
 
     @buffer.clear
-    assert @buffer.empty?
+
+    assert_empty @buffer
     assert_nil @buffer.last_input_time
   end
 
@@ -74,7 +76,7 @@ class TestKeySequenceBuffer < Minitest::Test
     assert_equal ["b"], @buffer.to_a
 
     assert_equal "b", @buffer.shift
-    assert @buffer.empty?
+    assert_empty @buffer
     assert_nil @buffer.last_input_time
   end
 
@@ -92,6 +94,7 @@ class TestKeySequenceBuffer < Minitest::Test
 
   def test_size_alias
     @buffer.push("a")
+
     assert_equal @buffer.length, @buffer.size
   end
 
@@ -100,13 +103,14 @@ class TestKeySequenceBuffer < Minitest::Test
 
     @buffer.push("a")
     time1 = @buffer.last_input_time
+
     refute_nil time1
 
     sleep 0.01
     @buffer.push("b")
     time2 = @buffer.last_input_time
 
-    assert time2 > time1
+    assert_operator time2, :>, time1
   end
 
   def test_timeout_when_empty
@@ -115,6 +119,7 @@ class TestKeySequenceBuffer < Minitest::Test
 
   def test_timeout_immediately_after_push
     @buffer.push("a")
+
     refute @buffer.timeout?(1000) # 1 second
   end
 
@@ -145,7 +150,7 @@ class TestKeySequenceBuffer < Minitest::Test
     elapsed = @buffer.elapsed_ms
 
     refute_nil elapsed
-    assert elapsed >= 0
-    assert elapsed < 100 # Should be very small
+    assert_operator elapsed, :>=, 0
+    assert_operator elapsed, :<, 100 # Should be very small
   end
 end

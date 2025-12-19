@@ -152,7 +152,7 @@ class TestInteractiveCommand < Minitest::Test
 
       adapter.suspend
 
-      assert adapter.suspended?
+      assert_predicate adapter, :suspended?
     end
 
     def test_test_adapter_resume_clears_suspended_flag
@@ -161,13 +161,13 @@ class TestInteractiveCommand < Minitest::Test
 
       adapter.resume
 
-      refute adapter.suspended?
+      refute_predicate adapter, :suspended?
     end
 
     def test_test_adapter_suspended_default_is_false
       adapter = Mui::TerminalAdapter::Test.new
 
-      refute adapter.suspended?
+      refute_predicate adapter, :suspended?
     end
   end
 end

@@ -68,6 +68,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix that matches multiple words
     runner.type("b")
+
     assert_completion_active(runner, true)
 
     # Initial completion should have 3 items (buffer_one, buffer_two, banana)
@@ -76,6 +77,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type more to filter
     runner.type("uf")
+
     assert_completion_active(runner, true)
 
     # Should now only match buffer_one, buffer_two
@@ -94,10 +96,12 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix that matches
     runner.type("ap")
+
     assert_completion_active(runner, true)
 
     # Type something that won't match anything
     runner.type("xyz")
+
     assert_completion_active(runner, false)
   end
 
@@ -112,10 +116,12 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Trigger completion
     runner.type("hel")
+
     assert_completion_active(runner, true)
 
     # Press Escape - should cancel completion AND return to normal mode
     runner.type("<Esc>")
+
     assert_completion_active(runner, false)
     runner.assert_mode(Mui::Mode::NORMAL)
   end
@@ -131,10 +137,12 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix and trigger completion
     runner.type("com")
+
     assert_completion_active(runner, true)
 
     # Confirm with Tab
     runner.type("<tab>")
+
     assert_completion_active(runner, false)
 
     # Check that the word was completed
@@ -152,6 +160,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix that matches multiple words - need "a" to match alpha
     runner.type("a")
+
     assert_completion_active(runner, true)
 
     # Check initial selection
@@ -176,6 +185,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix
     runner.type("test")
+
     assert_completion_active(runner, true)
 
     # Should have 3 items
@@ -207,6 +217,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix
     runner.type("foob")
+
     assert_completion_active(runner, true)
 
     # Should have 2 matches
@@ -235,10 +246,12 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Trigger completion
     runner.type("met")
+
     assert_completion_active(runner, true)
 
     # Type space (non-word char) - should close completion
     runner.type(" ")
+
     assert_completion_active(runner, false)
   end
 
@@ -253,6 +266,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Trigger completion
     runner.type("tes")
+
     assert_completion_active(runner, true)
 
     # Enter should insert newline (not confirm completion like Tab)
@@ -273,6 +287,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Single char should trigger completion (min_prefix: 1)
     runner.type("x")
+
     assert_completion_active(runner, true)
     assert_completion_items_count(runner, 1)
   end
@@ -288,6 +303,7 @@ class TestE2EInsertCompletion < Minitest::Test
 
     # Type prefix - completion should auto-trigger
     runner.type("man")
+
     assert_completion_active(runner, true)
 
     # Ctrl+N should navigate (completion already active)

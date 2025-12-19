@@ -12,8 +12,8 @@ class TestEditorAutocmdTriggers < Minitest::Test
   end
 
   def test_trigger_autocmd_is_public_method
-    assert @editor.respond_to?(:trigger_autocmd)
-    assert @editor.public_methods.include?(:trigger_autocmd)
+    assert_respond_to @editor, :trigger_autocmd
+    assert_includes @editor.public_methods, :trigger_autocmd
   end
 
   def test_trigger_autocmd_triggers_registered_handlers
@@ -202,6 +202,7 @@ class TestBufWriteAutocmdTriggers < Minitest::Test
     # Pre should come before post
     pre_index = events.index(:pre)
     post_index = events.index(:post)
+
     assert_operator pre_index, :<, post_index
   end
 

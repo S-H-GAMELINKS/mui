@@ -19,6 +19,7 @@ class TestTabPage < Minitest::Test
 
     def test_accepts_custom_name
       tab = Mui::TabPage.new(@screen, name: "MyTab")
+
       assert_equal "MyTab", tab.name
     end
 
@@ -64,6 +65,7 @@ class TestTabPage < Minitest::Test
   class TestDisplayName < TestTabPage
     def test_returns_custom_name_if_set
       @tab_page.name = "MyTab"
+
       assert_equal "MyTab", @tab_page.display_name
     end
 

@@ -69,6 +69,7 @@ class TestWindowManager < Minitest::Test
 
       # height 24 - command line 1 = 23, - separator 1 = 22 available, split 50% = 11 + 11
       windows = @window_manager.windows
+
       assert_equal 11, windows[0].height
       assert_equal 11, windows[1].height
     end
@@ -78,6 +79,7 @@ class TestWindowManager < Minitest::Test
       @window_manager.split_horizontal
 
       windows = @window_manager.windows
+
       assert_equal 80, windows[0].width
       assert_equal 80, windows[1].width
     end
@@ -88,6 +90,7 @@ class TestWindowManager < Minitest::Test
 
       # window[1] starts after window[0] + separator
       windows = @window_manager.windows
+
       assert_equal 0, windows[0].y
       assert_equal 12, windows[1].y # 11 + 1 (separator)
     end
@@ -104,6 +107,7 @@ class TestWindowManager < Minitest::Test
       @window_manager.split_horizontal
 
       windows = @window_manager.windows
+
       assert_same windows[0].buffer, windows[1].buffer
     end
 
@@ -113,6 +117,7 @@ class TestWindowManager < Minitest::Test
       @window_manager.split_horizontal(new_buffer)
 
       windows = @window_manager.windows
+
       refute_same windows[0].buffer, windows[1].buffer
     end
 
@@ -140,6 +145,7 @@ class TestWindowManager < Minitest::Test
 
       # width 80 - separator 1 = 79 available, split 50% = 39 + 40
       windows = @window_manager.windows
+
       assert_equal 39, windows[0].width
       assert_equal 40, windows[1].width
     end
@@ -150,6 +156,7 @@ class TestWindowManager < Minitest::Test
 
       # height 24 - command line 1 = 23 available for windows
       windows = @window_manager.windows
+
       assert_equal 23, windows[0].height
       assert_equal 23, windows[1].height
     end
@@ -160,6 +167,7 @@ class TestWindowManager < Minitest::Test
 
       # window[1] starts after window[0] + separator
       windows = @window_manager.windows
+
       assert_equal 0, windows[0].x
       assert_equal 40, windows[1].x # 39 + 1 (separator)
     end
@@ -405,20 +413,20 @@ class TestWindowManager < Minitest::Test
   class TestSingleWindow < TestWindowManager
     def test_returns_true_when_empty
       # Empty is considered single (or less)
-      assert @window_manager.single_window?
+      assert_predicate @window_manager, :single_window?
     end
 
     def test_returns_true_with_one_window
       @window_manager.add_window(@buffer)
 
-      assert @window_manager.single_window?
+      assert_predicate @window_manager, :single_window?
     end
 
     def test_returns_false_with_multiple_windows
       @window_manager.add_window(@buffer)
       @window_manager.split_horizontal
 
-      refute @window_manager.single_window?
+      refute_predicate @window_manager, :single_window?
     end
   end
 
@@ -446,6 +454,7 @@ class TestWindowManager < Minitest::Test
 
       # height 40 - command line 1 = 39, - separator 1 = 38 available, split 50% = 19 + 19
       windows = @window_manager.windows
+
       assert_equal 120, windows[0].width
       assert_equal 19, windows[0].height
       assert_equal 120, windows[1].width
@@ -474,7 +483,7 @@ class TestWindowManager < Minitest::Test
 
   class TestWindows < TestWindowManager
     def test_returns_empty_array_when_no_layout
-      assert_equal [], @window_manager.windows
+      assert_empty @window_manager.windows
     end
 
     def test_returns_all_windows_from_layout

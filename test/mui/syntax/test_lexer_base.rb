@@ -22,12 +22,14 @@ class TestLexerBase < Minitest::Test
 
   def test_tokenize_empty_line
     tokens, state = @lexer.tokenize("")
+
     assert_empty tokens
     assert_nil state
   end
 
   def test_tokenize_single_keyword
     tokens, state = @lexer.tokenize("if")
+
     assert_equal 1, tokens.length
     assert_equal :keyword, tokens[0].type
     assert_equal "if", tokens[0].text
@@ -38,6 +40,7 @@ class TestLexerBase < Minitest::Test
 
   def test_tokenize_single_number
     tokens, _state = @lexer.tokenize("42")
+
     assert_equal 1, tokens.length
     assert_equal :number, tokens[0].type
     assert_equal "42", tokens[0].text
@@ -45,6 +48,7 @@ class TestLexerBase < Minitest::Test
 
   def test_tokenize_single_identifier
     tokens, _state = @lexer.tokenize("foo")
+
     assert_equal 1, tokens.length
     assert_equal :identifier, tokens[0].type
     assert_equal "foo", tokens[0].text
@@ -69,12 +73,14 @@ class TestLexerBase < Minitest::Test
 
   def test_tokenize_with_leading_whitespace
     tokens, _state = @lexer.tokenize("  if")
+
     assert_equal 1, tokens.length
     assert_equal 2, tokens[0].start_col
   end
 
   def test_tokenize_skips_unrecognized_chars
     tokens, _state = @lexer.tokenize("if + else")
+
     assert_equal 2, tokens.length
     assert_equal "if", tokens[0].text
     assert_equal "else", tokens[1].text

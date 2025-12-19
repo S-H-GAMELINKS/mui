@@ -98,46 +98,55 @@ class TestLanguageDetector < Minitest::Test
   # Lexer creation
   def test_lexer_for_ruby
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:ruby)
+
     assert_instance_of Mui::Syntax::Lexers::RubyLexer, lexer
   end
 
   def test_lexer_for_c
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:c)
+
     assert_instance_of Mui::Syntax::Lexers::CLexer, lexer
   end
 
   def test_lexer_for_go
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:go)
+
     assert_instance_of Mui::Syntax::Lexers::GoLexer, lexer
   end
 
   def test_lexer_for_rust
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:rust)
+
     assert_instance_of Mui::Syntax::Lexers::RustLexer, lexer
   end
 
   def test_lexer_for_javascript
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:javascript)
+
     assert_instance_of Mui::Syntax::Lexers::JavaScriptLexer, lexer
   end
 
   def test_lexer_for_typescript
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:typescript)
+
     assert_instance_of Mui::Syntax::Lexers::TypeScriptLexer, lexer
   end
 
   def test_lexer_for_markdown
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:markdown)
+
     assert_instance_of Mui::Syntax::Lexers::MarkdownLexer, lexer
   end
 
   def test_lexer_for_html
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:html)
+
     assert_instance_of Mui::Syntax::Lexers::HtmlLexer, lexer
   end
 
   def test_lexer_for_css
     lexer = Mui::Syntax::LanguageDetector.lexer_for(:css)
+
     assert_instance_of Mui::Syntax::Lexers::CssLexer, lexer
   end
 
@@ -148,11 +157,13 @@ class TestLanguageDetector < Minitest::Test
 
   def test_lexer_for_file
     lexer = Mui::Syntax::LanguageDetector.lexer_for_file("foo.rb")
+
     assert_instance_of Mui::Syntax::Lexers::RubyLexer, lexer
   end
 
   def test_lexer_for_file_c
     lexer = Mui::Syntax::LanguageDetector.lexer_for_file("main.c")
+
     assert_instance_of Mui::Syntax::Lexers::CLexer, lexer
   end
 
@@ -164,12 +175,14 @@ class TestLanguageDetector < Minitest::Test
   # Utility methods
   def test_supported_languages
     languages = Mui::Syntax::LanguageDetector.supported_languages
+
     assert_includes languages, :ruby
     assert_includes languages, :c
   end
 
   def test_supported_extensions
     extensions = Mui::Syntax::LanguageDetector.supported_extensions
+
     assert_includes extensions, ".rb"
     assert_includes extensions, ".c"
     assert_includes extensions, ".h"

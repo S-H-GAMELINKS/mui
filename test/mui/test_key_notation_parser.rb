@@ -12,8 +12,8 @@ class TestKeyNotationParser < Minitest::Test
   end
 
   def test_parse_empty_string
-    assert_equal [], Mui::KeyNotationParser.parse("")
-    assert_equal [], Mui::KeyNotationParser.parse(nil)
+    assert_empty Mui::KeyNotationParser.parse("")
+    assert_empty Mui::KeyNotationParser.parse(nil)
   end
 
   def test_parse_space

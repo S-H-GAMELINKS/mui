@@ -16,43 +16,51 @@ class TestSyntaxHighlighter < Minitest::Test
   # Initialization
   def test_initialize_without_buffer
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme)
-    refute highlighter.active?
+
+    refute_predicate highlighter, :active?
   end
 
   def test_initialize_with_ruby_buffer
     buffer = create_buffer("test.rb", ["def foo"])
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme, buffer:)
-    assert highlighter.active?
+
+    assert_predicate highlighter, :active?
   end
 
   def test_initialize_with_unknown_extension
     buffer = create_buffer("test.txt", ["hello"])
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme, buffer:)
-    refute highlighter.active?
+
+    refute_predicate highlighter, :active?
   end
 
   # Buffer assignment
   def test_buffer_assignment_updates_lexer
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme)
-    refute highlighter.active?
+
+    refute_predicate highlighter, :active?
 
     buffer = create_buffer("test.rb", ["def foo"])
     highlighter.buffer = buffer
-    assert highlighter.active?
+
+    assert_predicate highlighter, :active?
   end
 
   def test_buffer_assignment_to_nil
     buffer = create_buffer("test.rb", ["def foo"])
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme, buffer:)
-    assert highlighter.active?
+
+    assert_predicate highlighter, :active?
 
     highlighter.buffer = nil
-    refute highlighter.active?
+
+    refute_predicate highlighter, :active?
   end
 
   # Priority
   def test_priority
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme)
+
     assert_equal Mui::Highlighters::Base::PRIORITY_SYNTAX, highlighter.priority
   end
 
@@ -64,6 +72,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, "def foo", buffer:)
 
     keyword_highlights = highlights.select { |h| h.style == :syntax_keyword }
+
     assert_equal 1, keyword_highlights.length
     assert_equal 0, keyword_highlights[0].start_col
     assert_equal 2, keyword_highlights[0].end_col
@@ -76,6 +85,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, '"hello"', buffer:)
 
     string_highlights = highlights.select { |h| h.style == :syntax_string }
+
     assert_equal 1, string_highlights.length
   end
 
@@ -86,6 +96,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, "# comment", buffer:)
 
     comment_highlights = highlights.select { |h| h.style == :syntax_comment }
+
     assert_equal 1, comment_highlights.length
   end
 
@@ -96,6 +107,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, "x = 42", buffer:)
 
     number_highlights = highlights.select { |h| h.style == :syntax_number }
+
     assert_equal 1, number_highlights.length
   end
 
@@ -106,6 +118,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, ":foo", buffer:)
 
     symbol_highlights = highlights.select { |h| h.style == :syntax_symbol }
+
     assert_equal 1, symbol_highlights.length
   end
 
@@ -116,6 +129,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, "MyClass", buffer:)
 
     constant_highlights = highlights.select { |h| h.style == :syntax_constant }
+
     assert_equal 1, constant_highlights.length
   end
 
@@ -127,6 +141,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, "int main()", buffer:)
 
     type_highlights = highlights.select { |h| h.style == :syntax_type }
+
     assert_equal 1, type_highlights.length
   end
 
@@ -137,6 +152,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlights = highlighter.highlights_for(0, "#include <stdio.h>", buffer:)
 
     preprocessor_highlights = highlights.select { |h| h.style == :syntax_preprocessor }
+
     assert_equal 1, preprocessor_highlights.length
   end
 
@@ -144,6 +160,7 @@ class TestSyntaxHighlighter < Minitest::Test
   def test_highlights_for_inactive_highlighter
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme)
     highlights = highlighter.highlights_for(0, "def foo", {})
+
     assert_empty highlights
   end
 
@@ -152,6 +169,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme, buffer:)
 
     highlights = highlighter.highlights_for(0, "hello world", buffer:)
+
     assert_empty highlights
   end
 
@@ -217,6 +235,7 @@ class TestSyntaxHighlighter < Minitest::Test
     highlighter = Mui::Highlighters::SyntaxHighlighter.new(@color_scheme, buffer:)
 
     highlights = highlighter.highlights_for(0, "", buffer:)
+
     assert_empty highlights
   end
 end

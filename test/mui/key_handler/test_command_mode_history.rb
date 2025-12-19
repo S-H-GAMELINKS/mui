@@ -41,12 +41,15 @@ class TestCommandModeHistory < Minitest::Test
       @history.add("third")
 
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "third", @command_line.buffer
 
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "second", @command_line.buffer
 
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "first", @command_line.buffer
     end
 
@@ -54,12 +57,12 @@ class TestCommandModeHistory < Minitest::Test
       @history.add("cmd")
 
       # Mock completion state
-      assert @handler.completion_state.respond_to?(:reset)
+      assert_respond_to @handler.completion_state, :reset
 
       @handler.handle(Curses::KEY_UP)
 
       # Completion should be reset (not active)
-      refute @handler.completion_state.active?
+      refute_predicate @handler.completion_state, :active?
     end
   end
 
@@ -82,13 +85,16 @@ class TestCommandModeHistory < Minitest::Test
       @handler.handle(Curses::KEY_UP)
       @handler.handle(Curses::KEY_UP)
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "first", @command_line.buffer
 
       # Go forward
       @handler.handle(Curses::KEY_DOWN)
+
       assert_equal "second", @command_line.buffer
 
       @handler.handle(Curses::KEY_DOWN)
+
       assert_equal "third", @command_line.buffer
     end
 
@@ -97,9 +103,11 @@ class TestCommandModeHistory < Minitest::Test
       @command_line.input("my_")
 
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "history_cmd", @command_line.buffer
 
       @handler.handle(Curses::KEY_DOWN)
+
       assert_equal "my_", @command_line.buffer
     end
 
@@ -109,7 +117,7 @@ class TestCommandModeHistory < Minitest::Test
 
       @handler.handle(Curses::KEY_DOWN)
 
-      refute @handler.completion_state.active?
+      refute_predicate @handler.completion_state, :active?
     end
   end
 
@@ -125,9 +133,11 @@ class TestCommandModeHistory < Minitest::Test
 
       # Now browse history
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "q", @command_line.buffer
 
       @handler.handle(Curses::KEY_UP)
+
       assert_equal "w", @command_line.buffer
     end
 

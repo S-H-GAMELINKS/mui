@@ -29,7 +29,7 @@ class TestDeleteOperator < Minitest::Test
       @operator.handle_pending("d")
 
       assert_equal "hello world", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_delete_line_with_named_register
@@ -83,7 +83,7 @@ class TestDeleteOperator < Minitest::Test
       @operator.handle_pending("e")
 
       assert_equal "hello", @register.get
-      refute @register.linewise?
+      refute_predicate @register, :linewise?
     end
   end
 
@@ -149,7 +149,7 @@ class TestDeleteOperator < Minitest::Test
       @operator.handle_pending("G")
 
       assert_equal "second line\nthird line", @register.get
-      assert @register.linewise?
+      assert_predicate @register, :linewise?
     end
 
     def test_delete_to_file_start_returns_pending

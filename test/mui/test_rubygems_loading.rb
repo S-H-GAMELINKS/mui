@@ -18,7 +18,7 @@ class TestRubygemsLoading < Minitest::Test
     # install_and_load should not raise errors
     Mui.plugin_manager.install_and_load
 
-    assert Mui.plugin_manager.installed?
+    assert_predicate Mui.plugin_manager, :installed?
   end
 
   def test_load_gem_with_version_constraint
@@ -26,7 +26,7 @@ class TestRubygemsLoading < Minitest::Test
 
     Mui.plugin_manager.install_and_load
 
-    assert Mui.plugin_manager.installed?
+    assert_predicate Mui.plugin_manager, :installed?
   end
 
   def test_load_nonexistent_gem_does_not_crash
@@ -39,6 +39,6 @@ class TestRubygemsLoading < Minitest::Test
 
     # Either a warning is shown or the gem is not found silently
     # The important thing is that it doesn't crash
-    assert Mui.plugin_manager.installed?
+    assert_predicate Mui.plugin_manager, :installed?
   end
 end

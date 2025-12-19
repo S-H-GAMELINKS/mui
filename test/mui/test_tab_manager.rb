@@ -25,17 +25,20 @@ class TestTabManager < Minitest::Test
   class TestAdd < TestTabManager
     def test_adds_new_tab
       @tab_manager.add
+
       assert_equal 1, @tab_manager.tab_count
     end
 
     def test_sets_new_tab_as_current
       @tab_manager.add
       @tab_manager.add
+
       assert_equal 1, @tab_manager.current_index
     end
 
     def test_returns_the_new_tab
       tab = @tab_manager.add
+
       assert_instance_of Mui::TabPage, tab
     end
 
@@ -110,6 +113,7 @@ class TestTabManager < Minitest::Test
   class TestNextTab < TestTabManager
     def test_does_nothing_when_empty
       @tab_manager.next_tab
+
       assert_equal 0, @tab_manager.current_index
     end
 
@@ -137,6 +141,7 @@ class TestTabManager < Minitest::Test
   class TestPrevTab < TestTabManager
     def test_does_nothing_when_empty
       @tab_manager.prev_tab
+
       assert_equal 0, @tab_manager.current_index
     end
 
@@ -164,6 +169,7 @@ class TestTabManager < Minitest::Test
   class TestFirstTab < TestTabManager
     def test_does_nothing_when_empty
       @tab_manager.first_tab
+
       assert_equal 0, @tab_manager.current_index
     end
 
@@ -182,6 +188,7 @@ class TestTabManager < Minitest::Test
   class TestLastTab < TestTabManager
     def test_does_nothing_when_empty
       @tab_manager.last_tab
+
       assert_equal 0, @tab_manager.current_index
     end
 
@@ -286,20 +293,20 @@ class TestTabManager < Minitest::Test
 
   class TestSingleTab < TestTabManager
     def test_returns_true_when_empty
-      assert @tab_manager.single_tab?
+      assert_predicate @tab_manager, :single_tab?
     end
 
     def test_returns_true_with_one_tab
       @tab_manager.add
 
-      assert @tab_manager.single_tab?
+      assert_predicate @tab_manager, :single_tab?
     end
 
     def test_returns_false_with_multiple_tabs
       @tab_manager.add
       @tab_manager.add
 
-      refute @tab_manager.single_tab?
+      refute_predicate @tab_manager, :single_tab?
     end
   end
 

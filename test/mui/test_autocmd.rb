@@ -80,7 +80,8 @@ class TestAutocmd < Minitest::Test
     Mui::Autocmd::EVENTS.each do |event|
       @autocmd.register(event) {}
     end
+
     # Should not raise
-    assert true
+    pass
   end
 end

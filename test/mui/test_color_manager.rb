@@ -9,24 +9,28 @@ class TestColorManager < Minitest::Test
 
   def test_register_pair
     pair1 = @manager.register_pair(:white, :black)
+
     assert_equal 1, pair1
   end
 
   def test_register_same_pair_returns_same_index
     pair1 = @manager.register_pair(:white, :black)
     pair2 = @manager.register_pair(:white, :black)
+
     assert_equal pair1, pair2
   end
 
   def test_register_different_pairs_returns_different_indices
     pair1 = @manager.register_pair(:white, :black)
     pair2 = @manager.register_pair(:black, :white)
+
     refute_equal pair1, pair2
   end
 
   def test_get_pair_index
     @manager.register_pair(:red, :blue)
     pair_index = @manager.get_pair_index(:red, :blue)
+
     assert_equal 1, pair_index
   end
 
@@ -127,6 +131,7 @@ class TestColorManagerColorCapability < Minitest::Test
   def test_all_extended_colors_have_fallback
     Mui::ColorManager::EXTENDED_COLOR_MAP.each_key do |color|
       fallback = Mui::ColorManager::FALLBACK_MAP[color]
+
       assert_includes Mui::ColorManager::COLOR_MAP.keys, fallback,
                       "#{color} should have a valid 8-color fallback"
     end
