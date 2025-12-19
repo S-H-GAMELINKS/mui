@@ -47,11 +47,11 @@ module Mui
       when Mode::VISUAL, Mode::VISUAL_LINE
         handle_visual_transition(result)
       when Mode::INSERT
-        handle_insert_transition(result)
+        handle_insert_transition(result, result.mode)
       when Mode::SEARCH_FORWARD
-        handle_search_forward_transition
+        handle_search_transition("/", result.mode)
       when Mode::SEARCH_BACKWARD
-        handle_search_backward_transition
+        handle_search_transition("?", result.mode)
       else
         @mode = result.mode
       end
@@ -81,11 +81,7 @@ module Mui
         @last_visual_selection[:end_row],
         @last_visual_selection[:end_col]
       )
-      @visual_handler = if line_mode
-                          KeyHandler::VisualLineMode.new(self, @buffer, @selection, @register, undo_manager: @undo_manager)
-                        else
-                          KeyHandler::VisualMode.new(self, @buffer, @selection, @register, undo_manager: @undo_manager)
-                        end
+      @visual_handler = create_visual_handler(line_mode:)
 
       # Move cursor to end of selection
       active_window.cursor_row = @last_visual_selection[:end_row]
@@ -110,10 +106,10 @@ module Mui
       KeyHandler::InsertMode.new(self, @buffer, undo_manager: @undo_manager, group_started:)
     end
 
-    def handle_insert_transition(result)
+    def handle_insert_transition(result, mode)
       group_started = result.respond_to?(:group_started?) && result.group_started?
-      @key_handlers[Mode::INSERT] = create_insert_handler(group_started:)
-      @mode = Mode::INSERT
+      @key_handlers[mode] = create_insert_handler(group_started:)
+      @mode = mode
     end
 
     def handle_visual_transition(result)
@@ -128,6 +124,7 @@ module Mui
 
     def start_visual_mode(mode, line_mode)
       @mode = mode
+      @selection = Selection.new(active_window.cursor_row, active_window.cursor_col, line_mode:)
       @visual_handler = create_visual_handler(line_mode:)
     end
 
@@ -152,16 +149,14 @@ module Mui
     def toggle_visual_line_mode(new_mode)
       return unless @selection
 
-      new_line_mode = new_mode == Mode::VISUAL_LINE
-      @selection = Selection.new(@selection.start_row, @selection.start_col, line_mode: new_line_mode)
+      line_mode = new_mode == Mode::VISUAL_LINE
+      @selection = Selection.new(@selection.start_row, @selection.start_col, line_mode:)
       @selection.update_end(active_window.cursor_row, active_window.cursor_col)
-      @visual_handler = create_visual_handler(line_mode: new_line_mode)
+      @visual_handler = create_visual_handler(line_mode:)
       @mode = new_mode
     end
 
     def create_visual_handler(line_mode:)
-      @selection = Selection.new(active_window.cursor_row, active_window.cursor_col, line_mode:)
-
       if line_mode
         KeyHandler::VisualLineMode.new(self, @buffer, @selection, @register, undo_manager: @undo_manager)
       else
@@ -169,18 +164,11 @@ module Mui
       end
     end
 
-    def handle_search_forward_transition
+    def handle_search_transition(prompt, mode)
       @search_input.clear
-      @search_input.set_prompt("/")
-      @key_handlers[Mode::SEARCH_FORWARD].start_search
-      @mode = Mode::SEARCH_FORWARD
-    end
-
-    def handle_search_backward_transition
-      @search_input.clear
-      @search_input.set_prompt("?")
-      @key_handlers[Mode::SEARCH_BACKWARD].start_search
-      @mode = Mode::SEARCH_BACKWARD
+      @search_input.set_prompt(prompt)
+      @key_handlers[mode].start_search
+      @mode = mode
     end
   end
 end
