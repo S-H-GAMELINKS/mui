@@ -7,9 +7,11 @@ class TestAutocmd < Minitest::Test
     @autocmd = Mui::Autocmd.new
     @buffer = MockBuffer.new(%w[line1 line2])
     @buffer.instance_variable_set(:@file_path, "/path/to/test.rb")
+
     def @buffer.file_path
       @file_path
     end
+
     @window = MockWindow.new(@buffer)
     @editor = MockEditor.new(@buffer, @window)
     @context = Mui::CommandContext.new(editor: @editor, buffer: @buffer, window: @window)
@@ -17,6 +19,7 @@ class TestAutocmd < Minitest::Test
 
   def test_register_valid_event
     called = false
+
     @autocmd.register(:BufEnter) { called = true }
 
     @autocmd.trigger(:BufEnter, @context)
@@ -25,13 +28,18 @@ class TestAutocmd < Minitest::Test
   end
 
   def test_register_raises_for_unknown_event
+    called = false
+
     assert_raises(ArgumentError) do
-      @autocmd.register(:UnknownEvent) {}
+      @autocmd.register(:UnknownEvent) { called = true }
     end
+
+    refute called
   end
 
   def test_trigger_with_string_pattern_match
     called = false
+
     @autocmd.register(:BufEnter, pattern: "*.rb") { called = true }
 
     @autocmd.trigger(:BufEnter, @context)
@@ -41,6 +49,7 @@ class TestAutocmd < Minitest::Test
 
   def test_trigger_with_string_pattern_no_match
     called = false
+
     @autocmd.register(:BufEnter, pattern: "*.py") { called = true }
 
     @autocmd.trigger(:BufEnter, @context)
@@ -50,6 +59,7 @@ class TestAutocmd < Minitest::Test
 
   def test_trigger_with_regexp_pattern_match
     called = false
+
     @autocmd.register(:BufEnter, pattern: /\.rb$/) { called = true }
 
     @autocmd.trigger(:BufEnter, @context)
@@ -59,6 +69,7 @@ class TestAutocmd < Minitest::Test
 
   def test_trigger_with_regexp_pattern_no_match
     called = false
+
     @autocmd.register(:BufEnter, pattern: /\.py$/) { called = true }
 
     @autocmd.trigger(:BufEnter, @context)
@@ -68,6 +79,7 @@ class TestAutocmd < Minitest::Test
 
   def test_trigger_calls_multiple_handlers
     calls = []
+
     @autocmd.register(:BufEnter) { calls << 1 }
     @autocmd.register(:BufEnter) { calls << 2 }
 
@@ -77,11 +89,12 @@ class TestAutocmd < Minitest::Test
   end
 
   def test_all_events_are_supported
+    called = false
+
     Mui::Autocmd::EVENTS.each do |event|
-      @autocmd.register(event) {}
+      @autocmd.register(event) { called = true }
     end
 
-    # Should not raise
-    pass
+    refute called
   end
 end
