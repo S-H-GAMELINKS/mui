@@ -36,7 +36,7 @@ class TestCommandRegistry < Minitest::Test
   end
 
   def test_exists_returns_true_for_registered
-    @registry.register(:test) {}
+    @registry.register(:test) { :test }
 
     assert @registry.exists?(:test)
   end

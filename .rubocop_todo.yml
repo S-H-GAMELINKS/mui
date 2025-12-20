@@ -21,13 +21,6 @@ Lint/DuplicateBranch:
     - 'lib/mui/plugin_manager.rb'
     - 'lib/mui/register.rb'
 
-# Offense count: 3
-# Configuration parameters: AllowComments, AllowEmptyLambdas.
-Lint/EmptyBlock:
-  Exclude:
-    - 'test/mui/test_autocmd.rb'
-    - 'test/mui/test_command_registry.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedParentClasses.
 Lint/MissingSuper:
