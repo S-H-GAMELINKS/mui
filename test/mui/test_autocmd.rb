@@ -5,13 +5,8 @@ require "test_helper"
 class TestAutocmd < Minitest::Test
   def setup
     @autocmd = Mui::Autocmd.new
-    @buffer = MockBuffer.new(%w[line1 line2])
-    @buffer.instance_variable_set(:@file_path, "/path/to/test.rb")
-
-    def @buffer.file_path
-      @file_path
-    end
-
+    @buffer = MockBuffer.new("/path/to/test.rb")
+    @buffer.content = "line1\nline2"
     @window = MockWindow.new(@buffer)
     @editor = MockEditor.new(@buffer, @window)
     @context = Mui::CommandContext.new(editor: @editor, buffer: @buffer, window: @window)

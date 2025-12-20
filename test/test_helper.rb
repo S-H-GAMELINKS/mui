@@ -129,14 +129,19 @@ end
 
 # Mock classes for unit testing
 class MockBuffer
-  attr_accessor :lines, :cursor_x, :cursor_y, :modified, :file_path
+  attr_accessor :name, :lines, :cursor_x, :cursor_y, :modified
 
-  def initialize(lines = [""])
-    @lines = lines.map(&:dup)
+  alias file_path name
+
+  def initialize(name = ["[No name]"])
+    @name = name
     @cursor_x = 0
     @cursor_y = 0
     @modified = false
-    @file_path = nil
+  end
+
+  def content=(text)
+    @lines = text.split("\n", -1)
   end
 
   def line(index)

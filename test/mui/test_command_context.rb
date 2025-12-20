@@ -4,7 +4,8 @@ require "test_helper"
 
 class TestCommandContext < Minitest::Test
   def setup
-    @buffer = MockBuffer.new(["hello world", "second line"])
+    @buffer = MockBuffer.new
+    @buffer.content = "hello world\nsecond line"
     @window = MockWindow.new(@buffer)
     @editor = MockEditor.new(@buffer, @window)
     @context = Mui::CommandContext.new(editor: @editor, buffer: @buffer, window: @window)
