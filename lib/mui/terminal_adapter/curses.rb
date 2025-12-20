@@ -54,18 +54,6 @@ module Mui
         result
       end
 
-      private
-
-      def color_code(color)
-        return -1 if color.nil?
-        return color if color.is_a?(Integer)
-        return @color_resolver.resolve(color) if @color_resolver
-
-        -1
-      end
-
-      public
-
       def close
         ::Curses.close_screen
       end
@@ -116,40 +104,6 @@ module Mui
         end
       end
 
-      private
-
-      def read_utf8_char(first_byte)
-        bytes = [first_byte]
-
-        # Determine expected byte count from first byte
-        if (first_byte & 0xE0) == 0xC0
-          # 2-byte sequence (110xxxxx)
-          expected = 2
-        elsif (first_byte & 0xF0) == 0xE0
-          # 3-byte sequence (1110xxxx) - CJK characters
-          expected = 3
-        elsif (first_byte & 0xF8) == 0xF0
-          # 4-byte sequence (11110xxx) - emoji, etc.
-          expected = 4
-        else
-          # Invalid or continuation byte, return as-is
-          return first_byte
-        end
-
-        # Read remaining bytes
-        (expected - 1).times do
-          next_byte = ::Curses.getch
-          break unless next_byte.is_a?(Integer) && (next_byte & 0xC0) == 0x80
-
-          bytes << next_byte
-        end
-
-        # Convert to UTF-8 string
-        bytes.pack("C*").force_encoding(Encoding::UTF_8)
-      end
-
-      public
-
       def getch_nonblock
         ::Curses.stdscr.timeout = 0
 
@@ -182,6 +136,46 @@ module Mui
       def touchwin
         ::Curses.stdscr.redraw
         ::Curses.refresh
+      end
+
+      private
+
+      def color_code(color)
+        return -1 if color.nil?
+        return color if color.is_a?(Integer)
+        return @color_resolver.resolve(color) if @color_resolver
+
+        -1
+      end
+
+      def read_utf8_char(first_byte)
+        bytes = [first_byte]
+
+        # Determine expected byte count from first byte
+        if (first_byte & 0xE0) == 0xC0
+          # 2-byte sequence (110xxxxx)
+          expected = 2
+        elsif (first_byte & 0xF0) == 0xE0
+          # 3-byte sequence (1110xxxx) - CJK characters
+          expected = 3
+        elsif (first_byte & 0xF8) == 0xF0
+          # 4-byte sequence (11110xxx) - emoji, etc.
+          expected = 4
+        else
+          # Invalid or continuation byte, return as-is
+          return first_byte
+        end
+
+        # Read remaining bytes
+        (expected - 1).times do
+          next_byte = ::Curses.getch
+          break unless next_byte.is_a?(Integer) && (next_byte & 0xC0) == 0x80
+
+          bytes << next_byte
+        end
+
+        # Convert to UTF-8 string
+        bytes.pack("C*").force_encoding(Encoding::UTF_8)
       end
     end
   end
