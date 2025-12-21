@@ -240,7 +240,7 @@ module Mui
     end
 
     def empty_line
-      String.new
+      +""
     end
 
     def capture_range(start_row, start_col, end_row, end_col)

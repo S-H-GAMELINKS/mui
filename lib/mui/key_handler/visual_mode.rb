@@ -6,6 +6,8 @@ module Mui
     class VisualMode < Base
       include Motions::MotionHandler
 
+      INDENT_PATTERN = [" ", "\t"].freeze
+
       attr_reader :selection
 
       def initialize(mode_manager, buffer, selection, register = nil, undo_manager: nil)
@@ -310,7 +312,7 @@ module Mui
 
         while removed < width && !line.empty?
           char = line[0]
-          break unless [" ", "\t"].include?(char)
+          break unless INDENT_PATTERN.include?(char)
 
           char_width = char == "\t" ? Mui.config.get(:tabstop) : 1
           break if removed + char_width > width && char == "\t"

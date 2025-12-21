@@ -92,7 +92,7 @@ module Mui
           # Process rest of line with inline patterns
           while pos < line.length
             # Skip whitespace
-            if line[pos] =~ /\s/
+            if /\s/.match?(line[pos])
               pos += 1
               next
             end

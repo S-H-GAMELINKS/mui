@@ -115,7 +115,7 @@ class TestWrapCache < Minitest::Test
 
   def test_same_content_different_string_objects_share_cache
     line1 = "test content"
-    line2 = "test content".dup # Different String object, same content
+    line2 = +"test content" # Different String object, same content
     result = [{ text: "test content", start_col: 0, end_col: 12 }]
 
     @cache.set(line1, 80, result)
@@ -125,7 +125,7 @@ class TestWrapCache < Minitest::Test
   end
 
   def test_mutated_string_does_not_use_stale_cache
-    line = String.new("hello")
+    line = +"hello"
     result_hello = [{ text: "hello", start_col: 0, end_col: 5 }]
 
     @cache.set(line, 80, result_hello)

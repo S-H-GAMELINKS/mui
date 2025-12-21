@@ -93,7 +93,7 @@ module Mui
       return text if max_width <= 0
 
       current_width = 0
-      result = String.new
+      result = +""
 
       text.each_char do |char|
         char_w = UnicodeWidth.char_width(char)

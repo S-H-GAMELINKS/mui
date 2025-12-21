@@ -208,8 +208,8 @@ class TestCommandCompleter < Minitest::Test
 
       candidates = @completer.complete("lsp")
 
-      assert(candidates.any? { |c| c == "LspHover" })
-      assert(candidates.any? { |c| c == "LspDefinition" })
+      assert(candidates.any?("LspHover"))
+      assert(candidates.any?("LspDefinition"))
     end
 
     def test_case_insensitive_with_partial_match

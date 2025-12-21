@@ -53,7 +53,7 @@ module Mui
       def compute_wrap(line, width)
         result = []
         chars = line.chars
-        current_text = String.new
+        current_text = +""
         current_width = 0
         start_col = 0
         col = 0
@@ -64,7 +64,7 @@ module Mui
           # Check if adding this character would exceed width
           if current_width + char_w > width && !current_text.empty?
             result << { text: current_text, start_col:, end_col: col }
-            current_text = String.new
+            current_text = +""
             current_width = 0
             start_col = col
           end
@@ -77,7 +77,7 @@ module Mui
         # Add remaining text
         result << { text: current_text, start_col:, end_col: col } unless current_text.empty?
 
-        result.empty? ? [{ text: String.new, start_col: 0, end_col: 0 }] : result
+        result.empty? ? [{ text: +"", start_col: 0, end_col: 0 }] : result
       end
     end
   end

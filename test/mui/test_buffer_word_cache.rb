@@ -302,7 +302,7 @@ class TestBufferWordCache < Minitest::Test
   class TestMaxCandidates < TestBufferWordCache
     def test_limits_candidates_for_performance
       # Create buffer with many matching words
-      words = 100.times.map { |i| "test#{i}" }.join(" ")
+      words = Array.new(100) { |i| "test#{i}" }.join(" ")
       @buffer.content = words
       cache = Mui::BufferWordCache.new(@buffer)
 

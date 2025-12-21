@@ -38,7 +38,7 @@ module Mui
       def width_to_col(str, col)
         return 0 if str.nil? || col <= 0
 
-        str.chars.take(col).sum { |c| char_width(c) }
+        str[0...col].chars.sum { |c| char_width(c) }
       end
 
       # Returns the character index for a given display width position
