@@ -28,7 +28,7 @@ module Mui
           handle_enter
         when KeyCode::TAB
           handle_tab
-        when Curses::KEY_BTAB
+        when KeyCode::SHIFT_TAB
           handle_shift_tab
         when Curses::KEY_LEFT
           handle_cursor_left

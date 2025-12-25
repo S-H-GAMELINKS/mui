@@ -112,6 +112,8 @@ module Mui
           "\e"
         when KeyCode::TAB
           "\t"
+        when KeyCode::SHIFT_TAB
+          "\T"
         when KeyCode::BACKSPACE
           "\x7f"
         else

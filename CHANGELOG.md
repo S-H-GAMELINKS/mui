@@ -11,6 +11,13 @@
   - Works in both Normal mode and Insert mode
   - Boundary behavior: does nothing at first/last line
 
+### Fixed
+- Fixed Shift+Tab handling causing `NoMethodError` in command mode completion:
+  - `:shift_tab` symbol was passed to `convert_key_to_string` which called `chr` on it
+  - Unified key representation: `KeyCode::SHIFT_TAB = 353` (same as `Curses::KEY_BTAB`)
+  - Added `SHIFT_CHARS` mapping similar to `CTRL_CHARS` for Shift key combinations
+  - All Shift+Tab representations now use `"\T"` string consistently
+
 ### Changed
 - FileCompleter now includes hidden files (dotfiles) in completion candidates
   - Previously, files starting with `.` were excluded from file path completion

@@ -10,8 +10,8 @@ module Mui
     SPECIAL_KEYS = {
       "space" => " ",
       "tab" => "\t",
-      "s-tab" => :shift_tab,
-      "btab" => :shift_tab,
+      "s-tab" => "\T",  # Shift+Tab (SHIFT_CHARS["tab"])
+      "btab" => "\T",   # Back Tab = Shift+Tab
       "cr" => "\r",
       "enter" => "\r",
       "return" => "\r",
@@ -62,6 +62,11 @@ module Mui
       "]" => 29,
       "^" => 30,
       "_" => 31
+    }.freeze
+
+    # Shift key mappings for special keys
+    SHIFT_CHARS = {
+      "tab" => "\T" # Shift+Tab
     }.freeze
 
     class << self
@@ -129,6 +134,10 @@ module Mui
       end
 
       def parse_shift_key(char)
+        char_lower = char.downcase
+        # Check SHIFT_CHARS for special key mappings (e.g., Shift+Tab)
+        return SHIFT_CHARS[char_lower] if SHIFT_CHARS.key?(char_lower)
+
         # Shift typically produces uppercase for letters
         char.length == 1 ? char.upcase : char
       end
@@ -141,8 +150,8 @@ module Mui
           "\e"
         when KeyCode::TAB
           "\t"
-        when 353 # Curses::KEY_BTAB (Shift+Tab)
-          :shift_tab
+        when KeyCode::SHIFT_TAB
+          "\T"
         when KeyCode::BACKSPACE
           "\x7f"
         when 0..31

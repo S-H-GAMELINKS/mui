@@ -30,5 +30,6 @@ module Mui
     # Shift key codes (Shift+letter)
     SHIFT_LEFT = 393
     SHIFT_RIGHT = 402
+    SHIFT_TAB = 353
   end
 end

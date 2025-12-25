@@ -135,14 +135,14 @@ class TestKeyNotationParser < Minitest::Test
   # Shift+Tab tests
 
   def test_parse_shift_tab
-    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<S-Tab>")
-    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<s-tab>")
-    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<btab>")
-    assert_equal [:shift_tab], Mui::KeyNotationParser.parse("<BTab>")
+    assert_equal ["\T"], Mui::KeyNotationParser.parse("<S-Tab>")
+    assert_equal ["\T"], Mui::KeyNotationParser.parse("<s-tab>")
+    assert_equal ["\T"], Mui::KeyNotationParser.parse("<btab>")
+    assert_equal ["\T"], Mui::KeyNotationParser.parse("<BTab>")
   end
 
   def test_normalize_input_key_shift_tab
     # Curses::KEY_BTAB = 353
-    assert_equal :shift_tab, Mui::KeyNotationParser.normalize_input_key(353)
+    assert_equal "\T", Mui::KeyNotationParser.normalize_input_key(Mui::KeyCode::SHIFT_TAB)
   end
 end
