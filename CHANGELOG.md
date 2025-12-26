@@ -10,24 +10,6 @@
   - Linewise detection: trailing newline indicates line-wise content
   - Named registers (`"a`-`"z`) and black hole register (`"_`) do not sync to clipboard
   - Requires `clipboard` gem (automatically installed as dependency)
-
-### Removed
-- Dropped Ruby 3.2 support (EOL: 2025-03-31)
-  - Minimum required Ruby version is now 3.3.0
-
-### Changed
-- Performance improvements across multiple modules:
-  - String concatenation: Use `<<` instead of `+` for buffer operations (`command_line.rb`, `search_input.rb`)
-  - Status line rendering: Use `ljust` instead of manual padding (`status_line_renderer.rb`)
-  - Text truncation: Add `ascii_only?` early return and index-based slicing (`screen.rb`)
-  - Method chains: Use `filter_map` instead of `select.map.map` (`file_completer.rb`)
-  - Max width calculation: Use `reduce` instead of `map.max` (`completion_renderer.rb`, `insert_completion_renderer.rb`)
-  - Regex caching: Cache compiled regex when pattern unchanged (`search_state.rb`)
-  - Regex optimization: Add `/o` option for static patterns (`search_completer.rb`)
-  - Distance calculation: Remove unnecessary `Math.sqrt` (`window_manager.rb`)
-  - Command list: Memoize `all_commands` array (`command_completer.rb`)
-
-### Added
 - YJIT support (Ruby 3.3+):
   - `use_yjit` configuration option (default: `true`)
   - Automatically enables YJIT at editor startup when available
@@ -49,6 +31,20 @@
 - FileCompleter now includes hidden files (dotfiles) in completion candidates
   - Previously, files starting with `.` were excluded from file path completion
   - Now returns all entries including `.`, `..`, and hidden files like `.gitignore`
+- Performance improvements across multiple modules:
+  - String concatenation: Use `<<` instead of `+` for buffer operations (`command_line.rb`, `search_input.rb`)
+  - Status line rendering: Use `ljust` instead of manual padding (`status_line_renderer.rb`)
+  - Text truncation: Add `ascii_only?` early return and index-based slicing (`screen.rb`)
+  - Method chains: Use `filter_map` instead of `select.map.map` (`file_completer.rb`)
+  - Max width calculation: Use `reduce` instead of `map.max` (`completion_renderer.rb`, `insert_completion_renderer.rb`)
+  - Regex caching: Cache compiled regex when pattern unchanged (`search_state.rb`)
+  - Regex optimization: Add `/o` option for static patterns (`search_completer.rb`)
+  - Distance calculation: Remove unnecessary `Math.sqrt` (`window_manager.rb`)
+  - Command list: Memoize `all_commands` array (`command_completer.rb`)
+
+### Removed
+- Dropped Ruby 3.2 support (EOL: 2025-03-31)
+  - Minimum required Ruby version is now 3.3.0
 
 ## [0.4.1] 2025-12-20
 
