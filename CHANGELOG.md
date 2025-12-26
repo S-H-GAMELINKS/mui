@@ -2,6 +2,14 @@
 
 ### Added
 - Ruby 4.0 support in CI matrix
+- System clipboard integration:
+  - `clipboard` setting (`:unnamed` or `:unnamedplus`) to enable
+  - Yank operations (`yy`, `yw`, `y` in Visual mode) sync to system clipboard
+  - Delete operations (`dd`, `dw`, `d` in Visual mode) sync to system clipboard
+  - Paste operations (`p`, `P`) sync from system clipboard
+  - Linewise detection: trailing newline indicates line-wise content
+  - Named registers (`"a`-`"z`) and black hole register (`"_`) do not sync to clipboard
+  - Requires `clipboard` gem (automatically installed as dependency)
 
 ### Removed
 - Dropped Ruby 3.2 support (EOL: 2025-03-31)

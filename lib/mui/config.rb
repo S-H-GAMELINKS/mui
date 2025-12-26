@@ -14,7 +14,8 @@ module Mui
         reselect_after_indent: false, # Keep selection after > / < in visual mode
         leader: "\\", # Leader key for key mappings (default: backslash)
         timeoutlen: 1000, # Timeout for multi-key sequences in milliseconds
-        use_yjit: true # Enable YJIT
+        use_yjit: true, # Enable YJIT
+        clipboard: nil # Clipboard integration (:unnamed or :unnamedplus to enable)
       }
       @plugins = []
       @keymaps = {}

@@ -72,6 +72,20 @@ Supports 9 languages:
 - Delete history: `"1` - `"9`
 - Black hole register: `"_`
 
+### Clipboard Integration
+
+System clipboard integration (Vim's `clipboard` option):
+
+```ruby
+# Enable clipboard integration in ~/.muirc
+Mui.set :clipboard, :unnamedplus
+```
+
+- Yank/delete operations sync to system clipboard
+- Paste operations sync from system clipboard
+- Named registers (`"a`-`"z`) are not affected
+- Supports WSL, macOS, and Linux (X11/Wayland)
+
 ### Completion
 
 - Command-line completion with popup

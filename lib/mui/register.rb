@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "clipboard"
+
 module Mui
   # Manages yank/delete registers for copy/paste operations
   # Supports Vim-compatible registers:
@@ -24,6 +26,7 @@ module Mui
 
     # Store text from yank operation
     # Saves to unnamed register and "0 (yank register)
+    # Also syncs to system clipboard if enabled
     def yank(text, linewise: false, name: nil)
       return if name == BLACK_HOLE_REGISTER
 
@@ -32,11 +35,13 @@ module Mui
       else
         @unnamed = { content: text, linewise: }
         @yank_register = { content: text, linewise: }
+        sync_to_clipboard(text, linewise:)
       end
     end
 
     # Store text from delete operation
     # Saves to unnamed register and shifts delete history ("1-"9)
+    # Also syncs to system clipboard if enabled
     def delete(text, linewise: false, name: nil)
       return if name == BLACK_HOLE_REGISTER
 
@@ -45,6 +50,7 @@ module Mui
       else
         @unnamed = { content: text, linewise: }
         shift_delete_history(text, linewise)
+        sync_to_clipboard(text, linewise:)
       end
     end
 
@@ -60,6 +66,7 @@ module Mui
     def get(name: nil)
       case name
       when nil, UNNAMED_REGISTER
+        sync_from_clipboard
         @unnamed[:content]
       when YANK_REGISTER
         @yank_register[:content]
@@ -76,6 +83,7 @@ module Mui
     def linewise?(name: nil)
       case name
       when nil, UNNAMED_REGISTER
+        sync_from_clipboard
         @unnamed[:linewise]
       when YANK_REGISTER
         @yank_register[:linewise]
@@ -105,6 +113,34 @@ module Mui
     def shift_delete_history(text, linewise)
       @delete_history.unshift({ content: text, linewise: })
       @delete_history = @delete_history.first(9)
+    end
+
+    def sync_to_clipboard(text, linewise:)
+      return unless clipboard_enabled?
+
+      clipboard_text = linewise ? "#{text}\n" : text
+      Clipboard.copy(clipboard_text)
+    rescue StandardError
+      # Silently ignore clipboard errors
+    end
+
+    def sync_from_clipboard
+      return unless clipboard_enabled?
+
+      content = Clipboard.paste
+      return if content.nil? || content.empty?
+      return if content == @unnamed[:content]
+
+      # Determine linewise based on trailing newline (Vim heuristic)
+      linewise = content.end_with?("\n")
+      @unnamed = { content: linewise ? content.chomp : content, linewise: }
+    rescue StandardError
+      # Silently ignore clipboard errors
+    end
+
+    def clipboard_enabled?
+      setting = Mui.config.get(:clipboard)
+      %i[unnamed unnamedplus].include?(setting)
     end
   end
 end

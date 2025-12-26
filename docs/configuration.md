@@ -101,6 +101,31 @@ Mui.set :use_yjit, true
 
 YJIT is Ruby's Just-In-Time compiler that improves performance. When enabled, Mui automatically activates YJIT at startup if your Ruby version supports it (Ruby 3.3+). On older Ruby versions, this setting is safely ignored.
 
+### Clipboard
+
+```ruby
+# Enable system clipboard integration
+Mui.set :clipboard, :unnamedplus
+```
+
+| Value | Description |
+|-------|-------------|
+| `nil` | Disabled (default) |
+| `:unnamed` | Sync with system clipboard |
+| `:unnamedplus` | Sync with system clipboard (same as `:unnamed`) |
+
+When enabled:
+- **Yank** (`yy`, `yw`, `y` in Visual mode) copies to system clipboard
+- **Delete** (`dd`, `dw`, `d` in Visual mode) copies to system clipboard
+- **Paste** (`p`, `P`) reads from system clipboard
+- **Named registers** (`"a`-`"z`) are not affected by clipboard sync
+- **Black hole register** (`"_`) discards without clipboard sync
+
+Platform support (via `clipboard` gem):
+- **macOS**: Uses `pbcopy`/`pbpaste`
+- **Linux**: Uses `xclip` or `xsel` (X11) / `wl-copy`/`wl-paste` (Wayland)
+- **WSL**: Uses `clip.exe` and PowerShell
+
 ---
 
 ## Custom Key Mappings
@@ -290,6 +315,9 @@ Mui.set :leader, " "
 
 # YJIT (Ruby 3.3+)
 Mui.set :use_yjit, true
+
+# Clipboard integration
+Mui.set :clipboard, :unnamedplus
 
 # Plugins
 Mui.use "mui-lsp"
