@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.5.0] - 2025-12-26
+
 ### Added
 - Ruby 4.0 support in CI matrix
 - System clipboard integration:
