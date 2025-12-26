@@ -1,0 +1,26 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/lexers/go_lexer.rb
+module Mui
+  module Mui::Syntax
+    module Mui::Syntax::Lexers
+      class Mui::Syntax::Lexers::GoLexer # failed to identify its superclass
+        Mui::Syntax::Lexers::GoLexer::KEYWORDS: Array[String]
+        Mui::Syntax::Lexers::GoLexer::TYPES: Array[String]
+        Mui::Syntax::Lexers::GoLexer::CONSTANTS: Array[String]
+        Mui::Syntax::Lexers::GoLexer::COMPILED_PATTERNS: Array[[:char, Regexp] | [:comment, Regexp] | [:constant, Regexp] | [:function_definition, Regexp] | [:identifier, Regexp] | [:keyword, Regexp] | [:number, Regexp] | [:operator, Regexp] | [:string, Regexp] | [:type, Regexp]]
+        Mui::Syntax::Lexers::GoLexer::BLOCK_COMMENT_END: Regexp
+        Mui::Syntax::Lexers::GoLexer::BLOCK_COMMENT_START: Regexp
+        Mui::Syntax::Lexers::GoLexer::BLOCK_COMMENT_START_ANCHOR: Regexp
+        Mui::Syntax::Lexers::GoLexer::RAW_STRING_START: Regexp
+        Mui::Syntax::Lexers::GoLexer::RAW_STRING_END: Regexp
+        def compiled_patterns: -> Array[[:char, Regexp] | [:comment, Regexp] | [:constant, Regexp] | [:function_definition, Regexp] | [:identifier, Regexp] | [:keyword, Regexp] | [:number, Regexp] | [:operator, Regexp] | [:string, Regexp] | [:type, Regexp]]
+        def handle_multiline_state: (untyped, untyped, untyped) -> ([nil, :block_comment, untyped] | [nil, :raw_string, untyped] | [nil, nil, untyped] | [untyped, nil, untyped])
+        def check_multiline_start: (untyped, untyped) -> ([:block_comment, untyped, untyped] | [:raw_string, untyped, untyped] | [nil, nil, untyped])
+        def handle_block_comment: (untyped, untyped) -> ([nil, :block_comment, untyped] | [untyped, nil, untyped])
+        def handle_raw_string: (untyped, untyped) -> ([nil, :raw_string, untyped] | [untyped, nil, untyped])
+        def match_token: (untyped, untyped) -> nil
+      end
+    end
+  end
+end

@@ -1,0 +1,29 @@
+# TypeProf 0.31.1
+
+# lib/mui/layout/split_node.rb
+module Mui
+  module Mui::Layout
+    class Mui::Layout::SplitNode # failed to identify its superclass
+      Mui::Layout::SplitNode::SEPARATOR_SIZE: Integer
+      def direction: -> untyped
+      def direction=: (untyped) -> untyped
+      def children: -> []
+      def children=: (untyped) -> []
+      def ratio: -> Float
+      def ratio=: (untyped) -> Float
+      def initialize: (direction: untyped, ?children: [], ?ratio: Float) -> void
+      def separators: -> []
+      def split?: -> true
+      def windows: -> Array[untyped]
+      def find_window_node: (untyped) -> nil
+      def apply_geometry: -> Array[untyped]?
+      def replace_child: (untyped, untyped) -> nil
+      def remove_child: (untyped) -> nil
+      def apply_single_child: -> untyped
+      def apply_split_children: -> nil
+      def apply_horizontal_split: -> untyped
+      def apply_vertical_split: -> untyped
+      def collect_separators: ([]) -> Array[untyped]?
+    end
+  end
+end

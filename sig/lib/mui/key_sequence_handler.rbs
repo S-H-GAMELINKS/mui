@@ -1,0 +1,24 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_sequence_handler.rb
+module Mui
+  class Mui::KeySequenceHandler
+    Mui::KeySequenceHandler::DEFAULT_TIMEOUT_MS: Integer
+    Mui::KeySequenceHandler::RESULT_HANDLED: :handled
+    Mui::KeySequenceHandler::RESULT_PENDING: :pending
+    Mui::KeySequenceHandler::RESULT_PASSTHROUGH: :passthrough
+    def buffer: -> untyped
+    def initialize: (untyped) -> void
+    def leader_key: -> String
+    def timeout_ms: -> Integer
+    def register: (untyped, untyped, untyped) -> untyped
+    def process: (untyped, untyped) -> ([:handled, untyped] | [:passthrough, untyped] | [:pending, nil])
+    def check_timeout: (untyped) -> ([:handled, untyped] | [:passthrough, untyped])?
+    def pending?: -> untyped
+    def clear: -> nil
+    def pending_keys_display: -> nil
+    def rebuild_keymaps: -> untyped
+    def handle_timeout: (untyped) -> ([:handled, untyped] | [:passthrough, untyped])
+    def handle_no_match: -> [:passthrough, untyped]
+  end
+end

@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/job_manager.rb
+module Mui
+  class Mui::JobManager
+    def initialize: (?autocmd: nil) -> void
+    def run_async: (?on_complete: nil) -> untyped
+    def run_command: (untyped, ?on_complete: nil) -> untyped
+    def poll: -> []
+    def job: (untyped) -> untyped
+    def cancel: (untyped) -> false
+    def active_count: -> untyped
+    def busy?: -> untyped
+    def create_job: -> untyped
+    def generate_id: -> untyped
+    def remove_job: (untyped) -> untyped
+    def invoke_callback: (untyped) -> nil
+    def trigger_autocmd_event: (untyped) -> nil
+  end
+end

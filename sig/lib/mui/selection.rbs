@@ -1,0 +1,21 @@
+# TypeProf 0.31.1
+
+# lib/mui/selection.rb
+module Mui
+  class Mui::Selection
+    def start_row: -> untyped
+    def start_row=: (untyped) -> untyped
+    def start_col: -> untyped
+    def start_col=: (untyped) -> untyped
+    def end_row: -> untyped
+    def end_row=: (untyped) -> untyped
+    def end_col: -> untyped
+    def end_col=: (untyped) -> untyped
+    def line_mode: -> false
+    def initialize: (untyped, untyped, ?line_mode: false) -> void
+    def update_end: (untyped, untyped) -> untyped
+    def normalized_range: -> Hash[:end_col | :end_row | :start_col | :start_row, untyped]
+    def covers_position?: (untyped, untyped, untyped) -> bool
+    def covers_character_position?: (untyped, untyped, Hash[:end_col | :end_row | :start_col | :start_row, untyped], untyped) -> bool
+  end
+end

@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/completion_state.rb
+module Mui
+  class Mui::CompletionState
+    def candidates: -> []
+    def selected_index: -> (Integer | Numeric)
+    def original_input: -> nil
+    def completion_type: -> nil
+    def initialize: -> void
+    def reset: -> false
+    def active?: -> bool
+    def start: (untyped, untyped, untyped) -> false
+    def confirm: -> true
+    def confirmed?: -> bool
+    def select_next: -> (Integer | Numeric)?
+    def select_previous: -> (Integer | Numeric)?
+    def current_candidate: -> nil
+  end
+end

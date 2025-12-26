@@ -1,0 +1,12 @@
+# TypeProf 0.31.1
+
+# lib/mui/autocmd.rb
+module Mui
+  class Mui::Autocmd
+    Mui::Autocmd::EVENTS: Array[:BufEnter | :BufLeave | :BufWrite | :BufWritePost | :BufWritePre | :CursorMoved | :InsertCompletion | :InsertEnter | :InsertLeave | :JobCancelled | :JobCompleted | :JobFailed | :JobStarted | :ModeChanged | :TextChanged]
+    def initialize: -> void
+    def register: (untyped, ?pattern: nil) { (untyped) -> untyped } -> []
+    def trigger: (untyped, ?nil, **untyped) -> Array[Hash[:handler | :pattern, <Proc>?]]?
+    def match_pattern?: (untyped, nil) -> bool
+  end
+end

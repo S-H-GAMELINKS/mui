@@ -1,0 +1,21 @@
+# TypeProf 0.31.1
+
+# lib/mui/screen.rb
+module Mui
+  class Mui::Screen
+    def width: -> untyped
+    def height: -> untyped
+    def initialize: (adapter: untyped, ?color_manager: nil) -> void
+    def refresh: -> untyped
+    def close: -> untyped
+    def clear: -> untyped
+    def touchwin: -> untyped
+    def put: (untyped, untyped, untyped) -> nil
+    def put_with_highlight: (untyped, untyped, untyped) -> nil
+    def put_with_style: (untyped, untyped, untyped, untyped) -> nil
+    def move_cursor: (untyped, untyped) -> untyped
+    def ensure_color_pair: (untyped, untyped) -> untyped
+    def update_size: -> untyped
+    def truncate_to_width: (untyped, untyped) -> untyped
+  end
+end

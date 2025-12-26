@@ -1,0 +1,42 @@
+# TypeProf 0.31.1
+
+# lib/mui.rb
+module Mui
+  VERSION: String
+  def self.config: -> untyped
+  def self.plugin_manager: -> untyped
+  def self.register: -> untyped
+  def self.set: (untyped, untyped) -> untyped
+  def self.use: (untyped, ?nil) -> untyped
+  def self.keymap: (untyped, untyped) -> untyped
+  def self.command: (untyped) -> untyped
+  def self.autocmd: (untyped, ?pattern: nil) -> untyped
+  def self.define_plugin: (untyped, ?dependencies: []) -> untyped
+  def self.load_config: -> untyped
+  def self.lsp: { (Mui::LspConfigStub?) -> untyped } -> Mui::LspConfigStub?
+  def self.lsp_server_configs: -> []
+  class Mui::LspConfigStub
+    def server_configs: -> []
+    def initialize: -> void
+    def use: (untyped, **untyped) -> []
+    def server: (name: untyped, command: untyped, language_ids: untyped, file_patterns: untyped, ?auto_start: true, ?sync_on_change: true) -> []
+  end
+  def self.reset_config!: -> nil
+
+
+  class Mui::Config
+    def options: -> Hash[:colorscheme | :expandtab | :leader | :reselect_after_indent | :shiftwidth | :syntax | :tabstop | :timeoutlen | :use_yjit, Integer | String | bool]
+    def plugins: -> []
+    def keymaps: -> Hash[untyped, Hash[untyped, untyped]]
+    def commands: -> Hash[untyped, untyped]
+    def autocmds: -> Hash[untyped, []]
+    def initialize: -> void
+    def set: (untyped, untyped) -> untyped
+    def get: (untyped) -> (Integer | String | bool)
+    def load_file: (untyped) -> nil
+    def use_plugin: (untyped, ?nil) -> []
+    def add_keymap: (untyped, untyped, untyped) -> untyped
+    def add_command: (untyped, untyped) -> untyped
+    def add_autocmd: (untyped, untyped, untyped) -> []
+  end
+end

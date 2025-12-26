@@ -1,0 +1,55 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/normal_mode.rb
+module Mui
+  module Mui::KeyHandler
+    class Mui::KeyHandler::NormalMode # failed to identify its superclass
+      def initialize: (untyped, untyped, ?nil, ?undo_manager: nil, ?search_state: nil) -> void
+      def handle: (untyped) -> untyped
+      def pending_sequence?: -> untyped
+      def builtin_operator_key?: (untyped) -> bool
+      def initialize_operators: -> Hash[:change | :delete | :paste | :yank, untyped]
+      def sync_operators: -> Hash[:change | :delete | :paste | :yank, untyped]
+      def handle_normal_key: (untyped) -> untyped
+      def handle_pending_motion: (untyped) -> untyped
+      def clear_pending: -> untyped
+      def handle_register_select: (untyped) -> untyped
+      def valid_register_name?: (untyped) -> bool
+      def handle_move_left: -> untyped
+      def handle_move_down: -> untyped
+      def handle_move_up: -> untyped
+      def handle_move_right: -> untyped
+      def handle_shift_left: -> untyped
+      def handle_shift_right: -> untyped
+      def handle_append: -> untyped
+      def handle_open_below: -> untyped
+      def handle_open_above: -> untyped
+      def handle_delete_char: -> untyped
+      def dispatch_delete_operator: (untyped) -> untyped
+      def dispatch_delete_to_file_start: (untyped) -> untyped
+      def dispatch_delete_find_char: (untyped) -> untyped
+      def dispatch_change_operator: (untyped) -> untyped
+      def dispatch_change_to_file_start: (untyped) -> untyped
+      def dispatch_change_find_char: (untyped) -> untyped
+      def dispatch_yank_operator: (untyped) -> untyped
+      def dispatch_yank_to_file_start: (untyped) -> untyped
+      def dispatch_yank_find_char: (untyped) -> untyped
+      def handle_paste_after: -> untyped
+      def handle_paste_before: -> untyped
+      def handle_operator_result: (untyped) -> untyped
+      def result: (?mode: String?, ?message: (String | true)?, ?quit: String | bool, ?start_selection: String | bool, ?line_mode: String | bool, ?group_started: String | bool) -> untyped
+      def readonly_error: -> untyped
+      def handle_undo: -> untyped
+      def handle_redo: -> untyped
+      def dispatch_window_command: (untyped) -> untyped
+      def dispatch_g_command: (untyped) -> untyped
+      def handle_restore_visual: -> untyped
+      def handle_tab_next: -> untyped
+      def handle_tab_prev: -> untyped
+      def handle_search_next: -> untyped
+      def handle_search_previous: -> untyped
+      def handle_search_word: (:backward | :forward) -> untyped
+      def word_under_cursor: -> nil
+    end
+  end
+end

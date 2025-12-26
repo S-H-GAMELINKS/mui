@@ -1,0 +1,13 @@
+# TypeProf 0.31.1
+
+# lib/mui/highlighters/selection_highlighter.rb
+module Mui
+  module Mui::Highlighters
+    class Mui::Highlighters::SelectionHighlighter # failed to identify its superclass
+      def highlights_for: (untyped, untyped, ?Hash[untyped, untyped]) -> ([] | [untyped])
+      def priority: -> untyped
+      def line_mode_highlights: (untyped) -> [untyped]
+      def char_mode_highlights: (untyped, untyped, untyped) -> [untyped]
+    end
+  end
+end

@@ -1,0 +1,37 @@
+# TypeProf 0.31.1
+
+# lib/mui/window_manager.rb
+module Mui
+  class Mui::WindowManager
+    Mui::WindowManager::DIRECTION_PREDICATES: Hash[:down | :left | :right | :up, Proc]
+    def active_window: -> nil
+    def layout_root: -> nil
+    def initialize: (untyped, ?color_scheme: nil) -> void
+    def add_window: (untyped) -> untyped
+    def remove_window: (untyped) -> bool
+    def split_horizontal: (?nil) -> nil
+    def split_vertical: (?nil) -> nil
+    def close_current_window: -> bool
+    def close_all_except_current: -> nil
+    def render_all: (untyped, ?selection: nil, ?search_state: nil) -> Array[untyped]
+    def separators: -> []
+    def update_sizes: -> nil
+    def focus_next: -> nil
+    def focus_previous: -> nil
+    def focus_direction: (untyped) -> nil
+    def focus_window: (untyped) -> bool
+    def windows: -> []
+    def window_count: -> Integer
+    def single_window?: -> bool
+    def update_layout: (?y_offset: Integer) -> nil
+    def focus_cycle: (Integer) -> nil
+    def split: (:horizontal | :vertical, nil) -> nil
+    def remove_node: (untyped) -> bool
+    def find_window_in_direction: (untyped) -> nil
+    def create_window: (untyped) -> untyped
+    def render_separators: (untyped) -> Array[untyped]
+    def render_horizontal_separator: (untyped, untyped, nil) -> untyped
+    def render_vertical_separator: (untyped, untyped, nil) -> untyped
+    def separator_style: -> nil
+  end
+end

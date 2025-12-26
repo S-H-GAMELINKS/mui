@@ -1,0 +1,11 @@
+# TypeProf 0.31.1
+
+# lib/mui/search_completer.rb
+module Mui
+  class Mui::SearchCompleter
+    Mui::SearchCompleter::MAX_CANDIDATES: Integer
+    def initialize: -> void
+    def complete: (untyped, untyped) -> (Array[untyped] | [])
+    def extract_words: (untyped) -> Array[untyped]
+  end
+end

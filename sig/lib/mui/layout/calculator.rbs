@@ -1,0 +1,10 @@
+# TypeProf 0.31.1
+
+# lib/mui/layout/calculator.rb
+module Mui
+  module Mui::Layout
+    class Mui::Layout::Calculator
+      def calculate: (untyped, untyped, untyped, untyped, untyped) -> untyped
+    end
+  end
+end

@@ -1,0 +1,14 @@
+# TypeProf 0.31.1
+
+# lib/mui/command_registry.rb
+module Mui
+  class Mui::CommandRegistry
+    def initialize: -> void
+    def register: (untyped) { (untyped, Array[untyped]) -> untyped } -> <Proc>
+    def execute: (untyped, untyped, *untyped) -> untyped
+    def exists?: (untyped) -> bool
+    def find: (untyped) -> <Proc>
+    def plugin_command_exists?: (untyped) -> untyped
+    def plugin_commands: -> untyped
+  end
+end

@@ -1,0 +1,23 @@
+# TypeProf 0.31.1
+
+# lib/mui/tab_bar_renderer.rb
+module Mui
+  class Mui::TabBarRenderer
+    Mui::TabBarRenderer::TAB_BAR_HEIGHT: Integer
+    Mui::TabBarRenderer::SEPARATOR_HEIGHT: Integer
+    Mui::TabBarRenderer::TAB_SEPARATOR: String
+    Mui::TabBarRenderer::SEPARATOR_CHAR: String
+    def initialize: (untyped, ?color_scheme: nil) -> void
+    def render: (untyped, ?Integer) -> nil
+    def height: -> Integer
+    def should_render?: -> untyped
+    def render_tabs: (untyped, Integer) -> nil
+    def render_separator_line: (untyped, Integer) -> untyped
+    def build_tab_text: (untyped, untyped) -> String
+    def truncate_name: (untyped, Integer) -> String
+    def tab_bar_style: -> Hash[:bg | :bold | :fg | :underline, :blue | :white | false]
+    def tab_bar_active_style: -> Hash[:bg | :bold | :fg | :underline, :blue | :white | false]
+    def separator_style: -> Hash[:bg | :bold | :fg | :underline, :blue | :white | false]
+    def default_style: -> Hash[:bg | :bold | :fg | :underline, :blue | :white | false]
+  end
+end

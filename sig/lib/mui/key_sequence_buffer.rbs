@@ -1,0 +1,18 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_sequence_buffer.rb
+module Mui
+  class Mui::KeySequenceBuffer
+    def last_input_time: -> Time?
+    def initialize: -> void
+    def push: (untyped) -> bool
+    def clear: -> nil
+    def empty?: -> bool
+    def length: -> Integer
+    def to_a: -> Array[untyped]
+    def first: -> untyped
+    def shift: -> untyped
+    def timeout?: (untyped) -> bool
+    def elapsed_ms: -> Float?
+  end
+end

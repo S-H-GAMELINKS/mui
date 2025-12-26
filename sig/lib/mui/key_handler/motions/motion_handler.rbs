@@ -1,0 +1,19 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/motions/motion_handler.rb
+module Mui
+  module Mui::KeyHandler
+    module Mui::KeyHandler::Motions
+      module Mui::KeyHandler::Motions::MotionHandler
+        def handle_word_forward: -> untyped
+        def handle_word_backward: -> untyped
+        def handle_word_end: -> untyped
+        def handle_line_start: -> untyped
+        def handle_first_non_blank: -> untyped
+        def handle_line_end: -> untyped
+        def handle_file_end: -> untyped
+        def apply_motion: (untyped) -> nil
+      end
+    end
+  end
+end

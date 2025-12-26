@@ -1,0 +1,31 @@
+# TypeProf 0.31.1
+
+# lib/mui/terminal_adapter/curses.rb
+module Mui
+  module Mui::TerminalAdapter
+    class Mui::TerminalAdapter::Curses # failed to identify its superclass
+      def init: -> Integer?
+      def init_colors: -> Integer?
+      def has_colors?: -> bool
+      def colors: -> Integer
+      def color_pairs: -> Integer
+      def init_color_pair: (untyped, untyped, untyped) -> untyped
+      def with_color: (untyped, ?bold: false, ?underline: false) { () -> untyped } -> untyped
+      def close: -> untyped
+      def clear: -> untyped
+      def refresh: -> untyped
+      def width: -> untyped
+      def height: -> untyped
+      def setpos: (untyped, untyped) -> untyped
+      def addstr: (untyped) -> untyped
+      def with_highlight: { () -> untyped } -> untyped
+      def getch: -> String
+      def getch_nonblock: -> String?
+      def suspend: -> untyped
+      def resume: -> untyped
+      def touchwin: -> untyped
+      def color_code: (untyped) -> Integer
+      def read_utf8_char: (untyped) -> String
+    end
+  end
+end

@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/plugin_manager.rb
+module Mui
+  class Mui::PluginManager
+    def plugins: -> Hash[untyped, Hash[:dependencies | :handler, Array[untyped]]]
+    def loaded_plugins: -> []
+    def pending_gems: -> []
+    def initialize: -> void
+    def add_gem: (untyped, ?nil) -> []
+    def register: (untyped, untyped, ?dependencies: []) -> Hash[:dependencies | :handler, Array[untyped]]
+    def install_and_load: -> true?
+    def installed?: -> bool
+    def install_gems: -> nil
+    def load_all_plugins: -> Array[untyped]
+    def load_plugin: (untyped) -> []?
+    def instantiate_plugin: (untyped) -> nil
+    def topological_sort: (Hash[untyped, Hash[:dependencies | :handler, Array[untyped]]]) -> []?
+  end
+end

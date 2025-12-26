@@ -1,0 +1,13 @@
+# TypeProf 0.31.1
+
+# lib/mui/file_completer.rb
+module Mui
+  class Mui::FileCompleter
+    def complete: (untyped) -> (Array[String?] | Array[String])
+    def split_path: (untyped) -> ([String, String] | [untyped, String])
+    def list_directory: (String) -> (Array[String] | [])
+    def list_current_directory: -> Array[String]
+    def format_path: (String) -> String
+    def format_entry_to_path: (String, String) -> String
+  end
+end

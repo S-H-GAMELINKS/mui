@@ -1,0 +1,10 @@
+# TypeProf 0.31.1
+
+# lib/mui/input.rb
+module Mui
+  class Mui::Input
+    def initialize: (adapter: untyped) -> void
+    def read: -> untyped
+    def read_nonblock: -> untyped
+  end
+end

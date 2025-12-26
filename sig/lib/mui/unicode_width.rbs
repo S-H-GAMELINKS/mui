@@ -1,0 +1,12 @@
+# TypeProf 0.31.1
+
+# lib/mui/unicode_width.rb
+module Mui
+  module Mui::UnicodeWidth
+    def self.char_width: (untyped) -> Integer
+    def self.string_width: (untyped) -> Integer
+    def self.width_to_col: (untyped, untyped) -> Integer
+    def self.col_at_width: (untyped, untyped) -> Integer
+    def self.wide_char?: (untyped) -> bool
+  end
+end

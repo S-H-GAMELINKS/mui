@@ -1,0 +1,17 @@
+# TypeProf 0.31.1
+
+# lib/mui/plugin.rb
+module Mui
+  class Mui::Plugin
+    def plugin_name: -> untyped
+    def plugin_name=: (untyped) -> untyped
+    def plugin_dependencies: -> untyped
+    def plugin_dependencies=: (untyped) -> untyped
+    def self.name: (untyped) -> untyped
+    def self.depends_on: (*untyped) -> Array[untyped]
+    def setup: -> nil
+    def command: (untyped) -> untyped
+    def keymap: (untyped, untyped) -> untyped
+    def autocmd: (untyped, ?pattern: nil) -> untyped
+  end
+end

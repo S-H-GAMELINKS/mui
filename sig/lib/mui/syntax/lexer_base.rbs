@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/lexer_base.rb
+module Mui
+  module Mui::Syntax
+    class Mui::Syntax::LexerBase
+      def tokenize: (untyped, ?nil) -> [[], nil]
+      def continuing_state?: (untyped) -> untyped
+      def token_patterns: -> []
+      def handle_multiline_state: (untyped, Integer, untyped) -> [nil, nil, Integer]
+      def check_multiline_start: (untyped, Integer) -> [nil, nil, Integer]
+      def compiled_patterns: -> Array[[untyped, Regexp]]
+      def match_token: (untyped, Integer) -> nil
+    end
+  end
+end

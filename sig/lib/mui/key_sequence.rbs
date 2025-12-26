@@ -1,0 +1,18 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_sequence.rb
+module Mui
+  class Mui::KeySequence
+    def keys: -> untyped
+    def notation: -> untyped
+    def initialize: (untyped) -> void
+    def normalize: (untyped) -> untyped
+    def length: -> untyped
+    def leader?: -> untyped
+    def single_key?: -> untyped
+    def ==: (untyped) -> false
+    def hash: -> untyped
+    def to_s: -> untyped
+    def inspect: -> String
+  end
+end

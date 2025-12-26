@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/language_detector.rb
+module Mui
+  module Mui::Syntax
+    class Mui::Syntax::LanguageDetector
+      Mui::Syntax::LanguageDetector::EXTENSION_MAP: Hash[String, :c | :css | :go | :html | :javascript | :markdown | :ruby | :rust | :typescript]
+      Mui::Syntax::LanguageDetector::BASENAME_MAP: Hash[String, :ruby]
+      def self.detect: (untyped) -> (:c | :css | :go | :html | :javascript | :markdown | :ruby | :rust | :typescript)?
+      def self.lexer_for: ((:c | :css | :go | :html | :javascript | :markdown | :ruby | :rust | :typescript)?) -> nil
+      def self.lexer_for_file: (untyped) -> nil
+      def self.supported_languages: -> Array[:c | :css | :go | :html | :javascript | :markdown | :ruby | :rust | :typescript]
+      def self.supported_extensions: -> Array[String]
+    end
+  end
+end

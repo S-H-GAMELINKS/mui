@@ -1,0 +1,23 @@
+# TypeProf 0.31.1
+
+# lib/mui/insert_completion_state.rb
+module Mui
+  class Mui::InsertCompletionState
+    def items: -> (Array[untyped] | [])
+    def selected_index: -> (Integer | Numeric)
+    def prefix: -> String
+    def original_items: -> []
+    def initialize: -> void
+    def reset: (?set_needs_clear: bool) -> String
+    def needs_clear?: -> bool
+    def clear_needs_clear: -> false
+    def active?: -> bool
+    def start: (untyped, ?prefix: String) -> String
+    def update_prefix: (untyped) -> Integer?
+    def select_next: -> (Integer | Numeric)?
+    def select_previous: -> (Integer | Numeric)?
+    def current_item: -> nil
+    def insert_text: -> String?
+    def text_edit_range: -> nil
+  end
+end

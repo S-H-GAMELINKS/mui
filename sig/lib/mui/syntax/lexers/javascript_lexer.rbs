@@ -1,0 +1,26 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/lexers/javascript_lexer.rb
+module Mui
+  module Mui::Syntax
+    module Mui::Syntax::Lexers
+      class Mui::Syntax::Lexers::JavaScriptLexer # failed to identify its superclass
+        Mui::Syntax::Lexers::JavaScriptLexer::KEYWORDS: Array[String]
+        Mui::Syntax::Lexers::JavaScriptLexer::CONSTANTS: Array[String]
+        Mui::Syntax::Lexers::JavaScriptLexer::COMPILED_PATTERNS: Array[[:comment, Regexp] | [:constant, Regexp] | [:identifier, Regexp] | [:keyword, Regexp] | [:number, Regexp] | [:operator, Regexp] | [:regex, Regexp] | [:string, Regexp]]
+        Mui::Syntax::Lexers::JavaScriptLexer::BLOCK_COMMENT_END: Regexp
+        Mui::Syntax::Lexers::JavaScriptLexer::BLOCK_COMMENT_START: Regexp
+        Mui::Syntax::Lexers::JavaScriptLexer::BLOCK_COMMENT_START_ANCHOR: Regexp
+        Mui::Syntax::Lexers::JavaScriptLexer::TEMPLATE_LITERAL_START: Regexp
+        Mui::Syntax::Lexers::JavaScriptLexer::TEMPLATE_LITERAL_END: Regexp
+        def tokenize: (untyped, ?nil) -> [untyped, untyped]
+        def compiled_patterns: -> Array[[:comment, Regexp] | [:constant, Regexp] | [:identifier, Regexp] | [:keyword, Regexp] | [:number, Regexp] | [:operator, Regexp] | [:regex, Regexp] | [:string, Regexp]]
+        def handle_multiline_state: (untyped, untyped, untyped) -> ([nil, :block_comment, untyped] | [nil, :template_literal, untyped] | [nil, nil, untyped] | [untyped, nil, untyped])
+        def check_multiline_start: (untyped, untyped) -> ([:block_comment, untyped, untyped] | [:template_literal, untyped, untyped] | [nil, nil, untyped])
+        def handle_block_comment: (untyped, untyped) -> ([nil, :block_comment, untyped] | [untyped, nil, untyped])
+        def handle_template_literal: (untyped, untyped) -> ([nil, :template_literal, untyped] | [untyped, nil, untyped])
+        def match_token: (untyped, untyped) -> nil
+      end
+    end
+  end
+end

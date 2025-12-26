@@ -1,0 +1,23 @@
+# TypeProf 0.31.1
+
+# lib/mui/tab_manager.rb
+module Mui
+  class Mui::TabManager
+    def tabs: -> []
+    def current_index: -> (Integer | Numeric)
+    def initialize: (untyped, ?color_scheme: nil) -> void
+    def current_tab: -> untyped
+    def add: (?nil) -> untyped
+    def close_current: -> bool
+    def next_tab: -> (Integer | Numeric)?
+    def prev_tab: -> (Integer | Numeric)?
+    def first_tab: -> Integer?
+    def last_tab: -> Integer?
+    def go_to: (untyped) -> bool
+    def move_tab: (untyped) -> bool
+    def tab_count: -> Integer
+    def single_tab?: -> bool
+    def window_manager: -> untyped
+    def active_window: -> untyped
+  end
+end

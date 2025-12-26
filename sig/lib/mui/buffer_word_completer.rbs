@@ -1,0 +1,15 @@
+# TypeProf 0.31.1
+
+# lib/mui/buffer_word_completer.rb
+module Mui
+  class Mui::BufferWordCompleter
+    Mui::BufferWordCompleter::MIN_WORD_LENGTH: Integer
+    Mui::BufferWordCompleter::MAX_CANDIDATES: Integer
+    def initialize: (untyped) -> void
+    def complete: (untyped, untyped, untyped) -> (Array[String] | [])
+    def prefix_at: (untyped, untyped) -> String
+    def extract_matching_words: (untyped, untyped, untyped, untyped, untyped, untyped, Set[String]) -> Set[String]?
+    def check_and_add_word: (String, Integer, untyped, untyped, untyped, untyped, untyped, untyped, Set[String]) -> Set[String]?
+    def word_char?: (untyped) -> untyped
+  end
+end

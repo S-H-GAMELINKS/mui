@@ -1,0 +1,19 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/lexers/css_lexer.rb
+module Mui
+  module Mui::Syntax
+    module Mui::Syntax::Lexers
+      class Mui::Syntax::Lexers::CssLexer # failed to identify its superclass
+        Mui::Syntax::Lexers::CssLexer::COMPILED_PATTERNS: Array[[:comment, Regexp] | [:constant, Regexp] | [:identifier, Regexp] | [:keyword, Regexp] | [:number, Regexp] | [:operator, Regexp] | [:preprocessor, Regexp] | [:string, Regexp] | [:type, Regexp]]
+        Mui::Syntax::Lexers::CssLexer::BLOCK_COMMENT_END: Regexp
+        Mui::Syntax::Lexers::CssLexer::BLOCK_COMMENT_START: Regexp
+        Mui::Syntax::Lexers::CssLexer::BLOCK_COMMENT_START_ANCHOR: Regexp
+        def compiled_patterns: -> Array[[:comment, Regexp] | [:constant, Regexp] | [:identifier, Regexp] | [:keyword, Regexp] | [:number, Regexp] | [:operator, Regexp] | [:preprocessor, Regexp] | [:string, Regexp] | [:type, Regexp]]
+        def handle_multiline_state: (untyped, untyped, untyped) -> ([nil, :block_comment, untyped] | [nil, nil, untyped] | [untyped, nil, untyped])
+        def check_multiline_start: (untyped, untyped) -> ([:block_comment, untyped, untyped] | [nil, nil, untyped])
+        def match_token: (untyped, untyped) -> nil
+      end
+    end
+  end
+end

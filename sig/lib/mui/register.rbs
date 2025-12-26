@@ -1,0 +1,21 @@
+# TypeProf 0.31.1
+
+# lib/mui/register.rb
+module Mui
+  class Mui::Register
+    Mui::Register::YANK_REGISTER: String
+    Mui::Register::DELETE_HISTORY_REGISTERS: Array[String]
+    Mui::Register::BLACK_HOLE_REGISTER: String
+    Mui::Register::UNNAMED_REGISTER: String
+    Mui::Register::NAMED_REGISTERS: Array[String]
+    def initialize: -> void
+    def yank: (untyped, ?linewise: false, ?name: nil) -> Hash[:content | :linewise, false]?
+    def delete: (untyped, ?linewise: false, ?name: nil) -> (Array[Hash[:content | :linewise, false]] | Hash[:content | :linewise, false])?
+    def set: (untyped, ?linewise: false, ?name: nil) -> Hash[:content | :linewise, false]
+    def get: (?name: nil) -> false?
+    def linewise?: (?name: nil) -> false
+    def empty?: (?name: nil) -> bool
+    def linewise: -> false
+    def shift_delete_history: (untyped, false) -> Array[Hash[:content | :linewise, false]]
+  end
+end

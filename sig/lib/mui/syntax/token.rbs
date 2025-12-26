@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/token.rb
+module Mui
+  module Mui::Syntax
+    class Mui::Syntax::Token
+      def type: -> untyped
+      def start_col: -> untyped
+      def end_col: -> untyped
+      def text: -> untyped
+      def initialize: (type: untyped, start_col: untyped, end_col: untyped, text: untyped) -> void
+      def ==: (untyped) -> false
+      def length: -> untyped
+    end
+  end
+end

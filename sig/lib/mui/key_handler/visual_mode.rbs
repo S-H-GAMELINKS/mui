@@ -1,0 +1,43 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/visual_mode.rb
+module Mui
+  module Mui::KeyHandler
+    class Mui::KeyHandler::VisualMode # failed to identify its superclass
+      Mui::KeyHandler::VisualMode::INDENT_PATTERN: Array[String]
+      def selection: -> untyped
+      def initialize: (untyped, untyped, untyped, ?nil, ?undo_manager: nil) -> void
+      def handle: (untyped) -> untyped
+      def handle_visual_key: (untyped) -> untyped
+      def handle_v_key: -> untyped
+      def handle_upper_v_key: -> untyped
+      def handle_delete: -> untyped
+      def handle_change: -> untyped
+      def handle_yank: -> untyped
+      def handle_search_selection: (:backward | :forward) -> untyped
+      def yank_lines: (untyped) -> untyped
+      def yank_range: (untyped) -> untyped
+      def extract_selection_text: (untyped) -> String
+      def change_lines: (untyped) -> untyped
+      def change_range: (untyped) -> untyped
+      def delete_lines: (untyped) -> untyped
+      def delete_range: (untyped) -> untyped
+      def handle_indent: (:left | :right) -> untyped
+      def indent_lines: (untyped, untyped, :left | :right) -> untyped
+      def build_indent_string: -> String
+      def add_indent: (untyped, String) -> String?
+      def remove_indent: (untyped, untyped) -> nil
+      def handle_pending_motion: (untyped) -> untyped
+      def handle_register_select: (untyped) -> untyped
+      def valid_register_name?: (untyped) -> bool
+      def clear_pending: -> untyped
+      def handle_move_left: -> untyped
+      def handle_move_down: -> untyped
+      def handle_move_up: -> untyped
+      def handle_move_right: -> untyped
+      def apply_motion: (untyped) -> nil
+      def update_selection: -> untyped
+      def result: (?mode: nil, ?message: (String | true)?, ?quit: String | bool, ?clear_selection: bool, ?toggle_line_mode: String | bool, ?group_started: String | bool) -> untyped
+    end
+  end
+end

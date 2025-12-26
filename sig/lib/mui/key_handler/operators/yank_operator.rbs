@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/operators/yank_operator.rb
+module Mui
+  module Mui::KeyHandler
+    module Mui::KeyHandler::Operators
+      class Mui::KeyHandler::Operators::YankOperator # failed to identify its superclass
+        def handle_pending: (untyped, ?pending_register: nil) -> (:cancel | :done | :pending_yF | :pending_yT | :pending_yf | :pending_yg | :pending_yt)
+        def handle_to_file_start: (untyped) -> (:cancel | :done)
+        def handle_find_char: (untyped, untyped) -> (:cancel | :done)
+        def yank_line: -> :done
+        def yank_motion: (:word_backward | :word_end | :word_forward) -> (:cancel | :done)
+        def yank_to_line_start: -> :done
+        def yank_to_line_end: -> :done
+        def yank_to_file_end: -> :done
+        def execute_find_char_yank: (untyped, untyped) -> untyped
+      end
+    end
+  end
+end

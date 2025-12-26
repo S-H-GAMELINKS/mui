@@ -1,0 +1,30 @@
+# TypeProf 0.31.1
+
+# lib/mui/floating_window.rb
+module Mui
+  class Mui::FloatingWindow
+    def content: -> ([] | [untyped])
+    def row: -> Integer
+    def col: -> Integer
+    def width: -> Integer
+    def height: -> Integer
+    def last_bounds: -> Hash[:col | :height | :row | :width, Integer]?
+    def visible: -> bool
+    def visible=: (untyped) -> bool
+    def initialize: (untyped) -> void
+    def show: (untyped, row: untyped, col: untyped, ?max_width: nil, ?max_height: nil) -> false
+    def hide: -> []?
+    def needs_clear?: -> (Hash[:col | :height | :row | :width, Integer] | bool)?
+    def clear_last_bounds: (untyped) -> nil
+    def scroll_up: -> Integer?
+    def scroll_down: -> Integer?
+    def render: (untyped) -> Integer?
+    def normalize_content: (untyped) -> [untyped]
+    def calculate_dimensions: -> Integer?
+    def adjust_position: (untyped) -> [Integer, Integer]
+    def adjust_position_for_bounds: (untyped, Hash[:col | :height | :row | :width, Integer]?) -> [Integer, Integer]
+    def draw_border: (untyped, Integer, Integer) -> untyped
+    def draw_content: (untyped, Integer, Integer) -> Integer
+    def truncate_to_width: (String, Integer) -> String
+  end
+end

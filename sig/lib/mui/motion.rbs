@@ -1,0 +1,24 @@
+# TypeProf 0.31.1
+
+# lib/mui/motion.rb
+module Mui
+  module Mui::Motion
+    Mui::Motion::WORD_CHARS: Regexp
+    def self.left: (untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.right: (untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.up: (untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.down: (untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.word_forward: (untyped, untyped, untyped) -> (Hash[:col | :row, Integer] | Hash[:col | :row, untyped])
+    def self.word_backward: (untyped, untyped, untyped) -> Hash[:col | :row, untyped]
+    def self.word_end: (untyped, untyped, Integer) -> Hash[:col | :row, Integer]
+    def self.line_start: (untyped, untyped, untyped) -> Hash[:col | :row, Integer]
+    def self.first_non_blank: (untyped, untyped, untyped) -> Hash[:col | :row, Integer]
+    def self.line_end: (untyped, untyped, untyped) -> Hash[:col | :row, Integer]
+    def self.file_start: (untyped, untyped, untyped) -> Hash[:col | :row, Integer]
+    def self.file_end: (untyped, untyped, untyped) -> Hash[:col | :row, Integer]
+    def self.find_char_forward: (untyped, untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.find_char_backward: (untyped, untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.till_char_forward: (untyped, untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+    def self.till_char_backward: (untyped, untyped, untyped, untyped) -> Hash[:col | :row, untyped]?
+  end
+end

@@ -1,0 +1,54 @@
+# TypeProf 0.31.1
+
+# lib/mui/editor.rb
+module Mui
+  class Mui::Editor
+    def tab_manager: -> untyped
+    def undo_manager: -> untyped
+    def autocmd: -> untyped
+    def command_registry: -> untyped
+    def job_manager: -> untyped
+    def color_scheme: -> untyped
+    def floating_window: -> untyped
+    def insert_completion_state: -> untyped
+    def key_sequence_handler: -> untyped
+    def message: -> nil
+    def message=: (untyped) -> nil
+    def running: -> bool
+    def running=: (untyped) -> bool
+    def initialize: (?nil, ?adapter: untyped, ?load_config: true) -> void
+    def window_manager: -> untyped
+    def window: -> untyped
+    def buffer: -> untyped
+    def mode: -> untyped
+    def selection: -> untyped
+    def register: -> untyped
+    def run: -> nil
+    def open_scratch_buffer: (untyped, untyped) -> untyped
+    def update_or_create_scratch_buffer: (untyped, untyped) -> bool
+    def find_scratch_buffer: (untyped) -> nil
+    def focus_buffer: (untyped) -> bool
+    def suspend_ui: { () -> untyped } -> untyped
+    def handle_key: (untyped) -> nil
+    def trigger_autocmd: (:BufEnter | :TextChanged) -> untyped
+    def show_floating: (untyped, ?max_width: nil, ?max_height: nil) -> untyped
+    def hide_floating: -> untyped
+    def start_insert_completion: (untyped, ?prefix: String) -> untyped
+    def insert_completion_active?: -> untyped
+    def buffer_content_changed?: -> untyped
+    def update_window_size: -> untyped
+    def render: -> untyped
+    def tab_bar_height: -> untyped
+    def render_status_area: -> untyped
+    def render_search_completion_popup: -> nil
+    def render_completion_popup: -> nil
+    def render_insert_completion_popup: -> nil
+    def apply_result: (untyped) -> false?
+    def load_color_scheme: -> untyped
+    def load_plugin_autocmds: -> untyped
+    def process_job_results: -> untyped
+    def check_key_sequence_timeout: -> nil
+    def mode_to_symbol: (untyped) -> (:command | :insert | :normal | :search | :visual)
+    def execute_keymap_handler: (untyped) -> untyped
+  end
+end
