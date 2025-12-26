@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Ruby 4.0 support in CI matrix
+
 ### Removed
 - Dropped Ruby 3.2 support (EOL: 2025-03-31)
   - Minimum required Ruby version is now 3.3.0
