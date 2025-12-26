@@ -1,0 +1,22 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/operators/delete_operator.rb
+module Mui
+  module Mui::KeyHandler
+    module Mui::KeyHandler::Operators
+      class Mui::KeyHandler::Operators::DeleteOperator # failed to identify its superclass
+        def handle_pending: (untyped, ?pending_register: nil) -> (:cancel | :done | :pending_dF | :pending_dT | :pending_df | :pending_dg | :pending_dt)
+        def handle_to_file_start: (untyped) -> (:cancel | :done)
+        def handle_find_char: (untyped, untyped) -> (:cancel | :done)
+        def delete_line: -> :done
+        def delete_motion: (:word_backward | :word_end | :word_forward) -> (:cancel | :done)
+        def delete_to_line_start: -> :done
+        def delete_to_line_end: -> :done
+        def delete_to_file_end: -> :done
+        def delete_to_line_start_internal: -> nil
+        def delete_to_file_start_internal: -> untyped
+        def execute_find_char_delete: (untyped, untyped) -> untyped
+      end
+    end
+  end
+end

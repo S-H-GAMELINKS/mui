@@ -1,0 +1,24 @@
+# TypeProf 0.31.1
+
+# lib/mui/command_context.rb
+module Mui
+  class Mui::CommandContext
+    def buffer: -> untyped
+    def window: -> untyped
+    def editor: -> untyped
+    def initialize: (editor: untyped, buffer: untyped, window: untyped) -> void
+    def cursor: -> Hash[:col | :line, untyped]
+    def current_line: -> untyped
+    def insert: (untyped) -> untyped
+    def set_message: (untyped) -> untyped
+    def quit: -> untyped
+    def run_command: (untyped, *untyped) -> untyped
+    def run_async: (?on_complete: nil) -> untyped
+    def run_shell_command: (untyped, ?on_complete: nil) -> untyped
+    def jobs_running?: -> untyped
+    def cancel_job: (untyped) -> untyped
+    def open_scratch_buffer: (untyped, untyped) -> untyped
+    def run_interactive_command: (untyped) -> untyped
+    def command_exists?: (untyped) -> bool?
+  end
+end

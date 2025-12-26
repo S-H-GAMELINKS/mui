@@ -1,0 +1,6 @@
+# TypeProf 0.31.1
+
+# lib/mui/version.rb
+module Mui
+  Mui::VERSION: String
+end

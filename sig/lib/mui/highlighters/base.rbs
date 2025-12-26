@@ -1,0 +1,15 @@
+# TypeProf 0.31.1
+
+# lib/mui/highlighters/base.rb
+module Mui
+  module Mui::Highlighters
+    class Mui::Highlighters::Base
+      Mui::Highlighters::Base::PRIORITY_SYNTAX: Integer
+      Mui::Highlighters::Base::PRIORITY_SELECTION: Integer
+      Mui::Highlighters::Base::PRIORITY_SEARCH: Integer
+      def initialize: (untyped) -> void
+      def highlights_for: (untyped, untyped, ?Hash[untyped, untyped]) -> untyped
+      def priority: -> Integer
+    end
+  end
+end

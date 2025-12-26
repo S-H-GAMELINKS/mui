@@ -1,0 +1,14 @@
+# TypeProf 0.31.1
+
+# lib/mui/color_scheme.rb
+module Mui
+  class Mui::ColorScheme
+    Mui::ColorScheme::ELEMENTS: Array[:completion_popup | :completion_popup_selected | :diff_add | :diff_delete | :diff_header | :diff_hunk | :line_number | :message_error | :message_info | :normal | :search_highlight | :status_line | :status_line_mode | :syntax_comment | :syntax_constant | :syntax_function_definition | :syntax_global_variable | :syntax_identifier | :syntax_instance_variable | :syntax_keyword | :syntax_method_call | :syntax_number | :syntax_operator | :syntax_preprocessor | :syntax_string | :syntax_symbol | :syntax_type | :tab_bar | :tab_bar_active | :visual_selection]
+    def name: -> untyped
+    def colors: -> Hash[untyped, Hash[:bg | :bold | :fg | :underline, false?]]
+    def initialize: (untyped) -> void
+    def define: (untyped, fg: untyped, ?bg: nil, ?bold: false, ?underline: false) -> Hash[:bg | :bold | :fg | :underline, false?]
+    def []: (untyped) -> (Hash[:bg | :bold | :fg | :underline, (:white | false)?] | Hash[:bg | :bold | :fg | :underline, false?])
+    def default_color: -> Hash[:bg | :bold | :fg | :underline, (:white | false)?]
+  end
+end

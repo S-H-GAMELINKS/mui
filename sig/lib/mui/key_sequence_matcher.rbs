@@ -1,0 +1,14 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_sequence_matcher.rb
+module Mui
+  class Mui::KeySequenceMatcher
+    Mui::KeySequenceMatcher::MATCH_EXACT: :exact
+    Mui::KeySequenceMatcher::MATCH_PARTIAL: :partial
+    Mui::KeySequenceMatcher::MATCH_NONE: :none
+    def initialize: (untyped, untyped) -> void
+    def match: (untyped, untyped) -> ([:exact, untyped] | [:none, nil] | [:partial, nil])
+    def longer_sequences?: (untyped, untyped) -> false
+    def prefix_match?: (untyped, untyped) -> false
+  end
+end

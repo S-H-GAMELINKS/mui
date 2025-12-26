@@ -1,0 +1,49 @@
+# TypeProf 0.31.1
+
+# lib/mui/window.rb
+module Mui
+  class Mui::Window
+    Mui::Window::SMART_JUMP_THRESHOLD: Integer
+    def x: -> Integer
+    def x=: (untyped) -> Integer
+    def y: -> Integer
+    def y=: (untyped) -> Integer
+    def width: -> Integer
+    def width=: (untyped) -> Integer
+    def height: -> Integer
+    def height=: (untyped) -> Integer
+    def cursor_row: -> Integer
+    def cursor_row=: (untyped) -> Integer
+    def cursor_col: -> Integer
+    def cursor_col=: (untyped) -> Integer
+    def scroll_row: -> Integer
+    def scroll_row=: (untyped) -> Integer
+    def buffer: -> untyped
+    def initialize: (untyped, ?x: Integer, ?y: Integer, ?width: Integer, ?height: Integer, ?color_scheme: nil) -> void
+    def buffer=: (untyped) -> untyped
+    def visible_height: -> Integer
+    def visible_width: -> Integer
+    def ensure_cursor_visible: -> nil
+    def smart_scroll_to_cursor: -> Integer
+    def render: (untyped, ?selection: nil, ?search_state: nil) -> untyped
+    def render_wrapped_segment: (untyped, Integer, untyped, Integer, Hash[:buffer | :search_state | :selection, nil]) -> nil
+    def screen_cursor_x: -> untyped
+    def screen_cursor_y: -> untyped
+    def move_left: -> Integer?
+    def move_right: -> Integer?
+    def move_up: -> Integer?
+    def move_down: -> Integer?
+    def move_to_line_start: -> Integer
+    def move_to_line_end: -> untyped
+    def clamp_cursor_to_line: (untyped) -> Integer?
+    def refresh_highlighters: -> untyped
+    def clear_line: (untyped, Integer) -> untyped
+    def screen_rows_from_scroll_to_cursor: -> untyped
+    def resize: (untyped, untyped) -> untyped
+    def create_line_renderer: -> untyped
+    def build_render_options: (nil, nil) -> Hash[:buffer | :search_state | :selection, nil]
+    def max_cursor_col: -> Integer
+    def max_scroll_row: -> Integer
+    def clamp_cursor_col: -> Integer?
+  end
+end

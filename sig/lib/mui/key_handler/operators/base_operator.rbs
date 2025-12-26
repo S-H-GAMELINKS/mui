@@ -1,0 +1,29 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/operators/base_operator.rb
+module Mui
+  module Mui::KeyHandler
+    module Mui::KeyHandler::Operators
+      class Mui::KeyHandler::Operators::BaseOperator
+        def initialize: (buffer: untyped, window: untyped, register: untyped, ?undo_manager: nil) -> void
+        def update: (?buffer: nil, ?window: nil, ?register: nil, ?undo_manager: nil) -> nil
+        def handle_pending: (untyped, ?pending_register: nil) -> untyped
+        def buffer: -> untyped
+        def window: -> untyped
+        def register: -> untyped
+        def undo_manager: -> nil
+        def cursor_row: -> untyped
+        def cursor_col: -> untyped
+        def cursor_row=: (nil) -> untyped
+        def cursor_col=: (untyped) -> untyped
+        def extract_text: (untyped, untyped, ?inclusive: false) -> String
+        def extract_text_same_line: (untyped, untyped, ?inclusive: false) -> String
+        def extract_text_across_lines: (untyped, untyped, ?inclusive: false) -> String
+        def calculate_motion_end: (untyped) -> nil
+        def execute_delete: (untyped, untyped, ?inclusive: false, ?clamp: true) -> nil
+        def execute_delete_same_line: (untyped, untyped, ?inclusive: false, ?clamp: true) -> nil
+        def execute_delete_across_lines: (untyped, untyped, ?inclusive: false, ?clamp: true) -> nil
+      end
+    end
+  end
+end

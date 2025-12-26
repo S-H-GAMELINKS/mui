@@ -1,0 +1,14 @@
+# TypeProf 0.31.1
+
+# lib/mui/wrap_cache.rb
+module Mui
+  class Mui::WrapCache
+    def initialize: -> void
+    def get: (untyped, untyped) -> untyped
+    def set: (untyped, untyped, untyped) -> untyped
+    def invalidate: (untyped) -> Hash[String, untyped]
+    def clear: -> Hash[String, untyped]
+    def size: -> Integer
+    def cache_key: (untyped, untyped) -> String
+  end
+end

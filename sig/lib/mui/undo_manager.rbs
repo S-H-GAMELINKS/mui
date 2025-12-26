@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/undo_manager.rb
+module Mui
+  class Mui::UndoManager
+    Mui::UndoManager::MAX_STACK_SIZE: Integer
+    def initialize: -> void
+    def record: (untyped) -> Array[nil]
+    def begin_group: -> []
+    def end_group: -> nil
+    def in_group?: -> bool
+    def undo: (untyped) -> bool
+    def redo: (untyped) -> bool
+    def can_undo?: -> bool
+    def can_redo?: -> bool
+    def undo_stack_size: -> Integer
+    def redo_stack_size: -> Integer
+    def push_to_undo_stack: (untyped) -> Array[nil]
+  end
+end

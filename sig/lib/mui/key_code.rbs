@@ -1,0 +1,29 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_code.rb
+module Mui
+  module Mui::KeyCode
+    Mui::KeyCode::ESCAPE: Integer
+    Mui::KeyCode::BACKSPACE: Integer
+    Mui::KeyCode::ENTER_CR: Integer
+    Mui::KeyCode::ENTER_LF: Integer
+    Mui::KeyCode::TAB: Integer
+    Mui::KeyCode::PRINTABLE_MIN: Integer
+    Mui::KeyCode::PRINTABLE_MAX: Integer
+    Mui::KeyCode::CTRL_SPACE: Integer
+    Mui::KeyCode::CTRL_C: Integer
+    Mui::KeyCode::CTRL_H: Integer
+    Mui::KeyCode::CTRL_J: Integer
+    Mui::KeyCode::CTRL_K: Integer
+    Mui::KeyCode::CTRL_L: Integer
+    Mui::KeyCode::CTRL_N: Integer
+    Mui::KeyCode::CTRL_O: Integer
+    Mui::KeyCode::CTRL_P: Integer
+    Mui::KeyCode::CTRL_S: Integer
+    Mui::KeyCode::CTRL_V: Integer
+    Mui::KeyCode::CTRL_W: Integer
+    Mui::KeyCode::SHIFT_LEFT: Integer
+    Mui::KeyCode::SHIFT_RIGHT: Integer
+    Mui::KeyCode::SHIFT_TAB: Integer
+  end
+end

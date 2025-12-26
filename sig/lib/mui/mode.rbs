@@ -1,0 +1,14 @@
+# TypeProf 0.31.1
+
+# lib/mui/mode.rb
+module Mui
+  module Mui::Mode
+    Mui::Mode::NORMAL: :normal
+    Mui::Mode::INSERT: :insert
+    Mui::Mode::COMMAND: :command
+    Mui::Mode::VISUAL: :visual
+    Mui::Mode::VISUAL_LINE: :visual_line
+    Mui::Mode::SEARCH_FORWARD: :search_forward
+    Mui::Mode::SEARCH_BACKWARD: :search_backward
+  end
+end

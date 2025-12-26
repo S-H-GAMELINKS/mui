@@ -1,0 +1,15 @@
+# TypeProf 0.31.1
+
+# lib/mui/insert_completion_renderer.rb
+module Mui
+  class Mui::InsertCompletionRenderer
+    Mui::InsertCompletionRenderer::MAX_VISIBLE_ITEMS: Integer
+    def initialize: (untyped, untyped) -> void
+    def render: (untyped, untyped, untyped) -> nil
+    def calculate_visible_range: (untyped, untyped) -> ([Integer, Integer] | [Integer, untyped])
+    def calculate_max_width: (untyped) -> Integer
+    def item_label: (untyped) -> untyped
+    def display_width: (untyped) -> untyped
+    def render_item: (untyped, untyped, Integer, Integer, untyped) -> untyped
+  end
+end

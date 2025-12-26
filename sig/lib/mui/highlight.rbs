@@ -1,0 +1,14 @@
+# TypeProf 0.31.1
+
+# lib/mui/highlight.rb
+module Mui
+  class Mui::Highlight
+    def start_col: -> untyped
+    def end_col: -> untyped
+    def style: -> untyped
+    def priority: -> untyped
+    def initialize: (start_col: untyped, end_col: untyped, style: untyped, priority: untyped) -> void
+    def overlaps?: (untyped) -> untyped
+    def <=>: (untyped) -> Integer?
+  end
+end

@@ -1,0 +1,52 @@
+# TypeProf 0.31.1
+
+# lib/mui/buffer.rb
+module Mui
+  class Mui::Buffer
+    def lines: -> (Array[String] | [String])
+    def change_count: -> Integer
+    def name: -> String
+    def name=: (untyped) -> String
+    def modified: -> bool
+    def modified=: (untyped) -> bool
+    def undo_manager: -> nil
+    def undo_manager=: (untyped) -> nil
+    def readonly: -> false
+    def readonly=: (untyped) -> false
+    def initialize: (?String) -> void
+    def readonly?: -> false
+    def custom_highlighters: (untyped) -> Array[untyped]
+    def add_custom_highlighter: (untyped, untyped) -> untyped
+    def remove_custom_highlighter: (untyped) -> nil
+    def custom_highlighter?: (untyped) -> bool
+    def content=: (untyped) -> false
+    def reload: -> false?
+    def load: (String) -> false
+    def save: (?String) -> false
+    def line_count: -> Integer
+    def line: (untyped) -> String
+    def insert_char: (untyped, untyped, untyped) -> Integer?
+    def delete_char: (untyped, untyped) -> Integer?
+    def insert_line: (untyped, ?nil) -> Integer?
+    def delete_line: (untyped) -> Integer?
+    def split_line: (untyped, untyped) -> Integer?
+    def join_lines: (untyped) -> Integer?
+    def delete_range: (untyped, untyped, untyped, untyped) -> Integer?
+    def replace_line: (untyped, untyped) -> Integer?
+    def insert_char_without_record: (untyped, untyped, untyped) -> Integer
+    def delete_char_without_record: (untyped, untyped) -> Integer?
+    def insert_line_without_record: (untyped, ?String?) -> Integer
+    def delete_line_without_record: (untyped) -> Integer
+    def split_line_without_record: (untyped, untyped) -> Integer?
+    def join_lines_without_record: (untyped) -> Integer?
+    def delete_range_without_record: (untyped, untyped, untyped, untyped) -> Integer
+    def replace_line_without_record: (untyped, untyped) -> Integer
+    def restore_range: (untyped, untyped, untyped) -> Integer?
+    def with_undo: (untyped) { () -> Integer? } -> Integer?
+    def valid_char_position?: (untyped, untyped) -> String
+    def empty_line: -> String
+    def capture_range: (untyped, untyped, untyped, untyped) -> ([String] | [])
+    def delete_within_line: (untyped, untyped, untyped) -> untyped
+    def delete_across_lines: (untyped, untyped, untyped, untyped) -> untyped
+  end
+end

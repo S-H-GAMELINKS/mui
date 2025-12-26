@@ -1,0 +1,25 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/search_mode.rb
+module Mui
+  module Mui::KeyHandler
+    class Mui::KeyHandler::SearchMode # failed to identify its superclass
+      def completion_state: -> untyped
+      def initialize: (untyped, untyped, untyped, untyped) -> void
+      def start_search: -> untyped
+      def handle: (untyped) -> untyped
+      def handle_tab: -> untyped
+      def handle_shift_tab: -> untyped
+      def apply_current_completion: -> nil
+      def handle_escape: -> untyped
+      def restore_cursor_position: -> nil
+      def handle_backspace: -> untyped
+      def handle_enter: -> untyped
+      def handle_character_input: (untyped) -> untyped
+      def update_completion: -> nil
+      def update_incremental_search: -> nil
+      def execute_search: -> untyped
+      def result: (?mode: nil, ?message: (String | true)?, ?quit: String | bool, ?cancelled: String | bool) -> untyped
+    end
+  end
+end

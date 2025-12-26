@@ -1,0 +1,38 @@
+# TypeProf 0.31.1
+
+# lib/mui/handler_result.rb
+module Mui
+  module Mui::HandlerResult
+    class Mui::HandlerResult::Base
+      def mode: -> nil
+      def message: -> nil
+      def initialize: (?mode: nil, ?message: nil, ?quit: false, ?pending_sequence: false) -> void
+      def quit?: -> false
+      def pending_sequence?: -> false
+      def start_selection?: -> false
+      def line_mode?: -> false
+      def clear_selection?: -> false
+      def toggle_line_mode?: -> false
+    end
+    class Mui::HandlerResult::NormalModeResult < Mui::HandlerResult::Base
+      def initialize: (?mode: nil, ?message: nil, ?quit: false, ?pending_sequence: false, ?start_selection: false, ?line_mode: false, ?group_started: false) -> void
+      def start_selection?: -> false
+      def line_mode?: -> false
+      def group_started?: -> false
+    end
+    class Mui::HandlerResult::VisualModeResult < Mui::HandlerResult::Base
+      def initialize: (?mode: nil, ?message: nil, ?quit: false, ?pending_sequence: false, ?clear_selection: false, ?toggle_line_mode: false, ?group_started: false) -> void
+      def clear_selection?: -> false
+      def toggle_line_mode?: -> false
+      def group_started?: -> false
+    end
+    class Mui::HandlerResult::InsertModeResult < Mui::HandlerResult::Base
+    end
+    class Mui::HandlerResult::CommandModeResult < Mui::HandlerResult::Base
+    end
+    class Mui::HandlerResult::SearchModeResult < Mui::HandlerResult::Base
+      def initialize: (?mode: nil, ?message: nil, ?quit: false, ?pending_sequence: false, ?cancelled: false) -> void
+      def cancelled?: -> false
+    end
+  end
+end

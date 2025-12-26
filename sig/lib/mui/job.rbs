@@ -1,0 +1,27 @@
+# TypeProf 0.31.1
+
+# lib/mui/job.rb
+module Mui
+  class Mui::Job
+    module Mui::Job::Status
+      Mui::Job::Status::PENDING: :pending
+      Mui::Job::Status::RUNNING: :running
+      Mui::Job::Status::COMPLETED: :completed
+      Mui::Job::Status::FAILED: :failed
+      Mui::Job::Status::CANCELLED: :cancelled
+    end
+    def id: -> untyped
+    def status: -> (:cancelled | :completed | :failed | :pending | :running)
+    def result: -> nil
+    def error: -> StandardError?
+    def initialize: (untyped) { () -> untyped } -> void
+    def run: -> nil
+    def cancel: -> false
+    def pending?: -> bool
+    def running?: -> bool
+    def completed?: -> bool
+    def failed?: -> bool
+    def cancelled?: -> bool
+    def finished?: -> bool
+  end
+end

@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/layout/leaf_node.rb
+module Mui
+  module Mui::Layout
+    class Mui::Layout::LeafNode # failed to identify its superclass
+      def window: -> untyped
+      def window=: (untyped) -> untyped
+      def initialize: (untyped) -> void
+      def leaf?: -> true
+      def windows: -> [untyped]
+      def find_window_node: (untyped) -> Mui::Layout::LeafNode?
+      def apply_geometry: -> untyped
+    end
+  end
+end

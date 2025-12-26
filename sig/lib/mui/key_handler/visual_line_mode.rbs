@@ -1,0 +1,11 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/visual_line_mode.rb
+module Mui
+  module Mui::KeyHandler
+    class Mui::KeyHandler::VisualLineMode # failed to identify its superclass
+      def handle_v_key: -> untyped
+      def handle_upper_v_key: -> untyped
+    end
+  end
+end

@@ -1,0 +1,24 @@
+# TypeProf 0.31.1
+
+# lib/mui/command_line.rb
+module Mui
+  class Mui::CommandLine
+    Mui::CommandLine::FILE_COMMANDS: Array[String]
+    def buffer: -> String
+    def cursor_pos: -> Integer
+    def history: -> untyped
+    def initialize: (?history: untyped) -> void
+    def input: (untyped) -> untyped
+    def backspace: -> Integer?
+    def clear: -> untyped
+    def history_previous: -> bool
+    def history_next: -> bool
+    def move_cursor_left: -> Integer?
+    def move_cursor_right: -> Integer?
+    def execute: -> (Hash[:action | :command, :shell_command | String] | Hash[:action | :command, :unknown | String] | Hash[:action | :index, :tab_go | Integer] | Hash[:action | :line_number, :goto_line | Integer] | Hash[:action | :message, :shell_command_error | String] | Hash[:action | :path, (:open_as | String)?] | Hash[:action | :path, (:split_horizontal | String)?] | Hash[:action | :path, (:split_vertical | String)?] | Hash[:action | :path, (:tab_new | String)?] | Hash[:action | :path, (:write_as | String)?] | Hash[:action | :position, :tab_move | Integer] | Hash[:action, :close_window] | Hash[:action, :force_quit] | Hash[:action, :no_op] | Hash[:action, :only_window] | Hash[:action, :open] | Hash[:action, :quit] | Hash[:action, :split_horizontal] | Hash[:action, :split_vertical] | Hash[:action, :tab_close] | Hash[:action, :tab_first] | Hash[:action, :tab_last] | Hash[:action, :tab_new] | Hash[:action, :tab_next] | Hash[:action, :tab_prev] | Hash[:action, :write] | Hash[:action, :write_quit])
+    def to_s: -> String
+    def completion_context: -> (Hash[:command | :prefix | :type, :file | String] | Hash[:prefix | :type, :command | String])?
+    def apply_completion: (untyped, untyped) -> Integer
+    def parse: (String) -> (Hash[:action | :command, :shell_command | String] | Hash[:action | :command, :unknown | String] | Hash[:action | :index, :tab_go | Integer] | Hash[:action | :line_number, :goto_line | Integer] | Hash[:action | :message, :shell_command_error | String] | Hash[:action | :path, (:open_as | String)?] | Hash[:action | :path, (:split_horizontal | String)?] | Hash[:action | :path, (:split_vertical | String)?] | Hash[:action | :path, (:tab_new | String)?] | Hash[:action | :path, (:write_as | String)?] | Hash[:action | :position, :tab_move | Integer] | Hash[:action, :close_window] | Hash[:action, :force_quit] | Hash[:action, :no_op] | Hash[:action, :only_window] | Hash[:action, :open] | Hash[:action, :quit] | Hash[:action, :split_horizontal] | Hash[:action, :split_vertical] | Hash[:action, :tab_close] | Hash[:action, :tab_first] | Hash[:action, :tab_last] | Hash[:action, :tab_new] | Hash[:action, :tab_next] | Hash[:action, :tab_prev] | Hash[:action, :write] | Hash[:action, :write_quit])
+  end
+end

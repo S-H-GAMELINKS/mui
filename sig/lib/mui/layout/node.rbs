@@ -1,0 +1,24 @@
+# TypeProf 0.31.1
+
+# lib/mui/layout/node.rb
+module Mui
+  module Mui::Layout
+    class Mui::Layout::Node
+      def parent: -> untyped
+      def parent=: (untyped) -> untyped
+      def x: -> untyped
+      def x=: (untyped) -> untyped
+      def y: -> untyped
+      def y=: (untyped) -> untyped
+      def width: -> untyped
+      def width=: (untyped) -> untyped
+      def height: -> untyped
+      def height=: (untyped) -> untyped
+      def leaf?: -> false
+      def split?: -> false
+      def windows: -> untyped
+      def find_window_node: (untyped) -> untyped
+      def apply_geometry: -> untyped
+    end
+  end
+end

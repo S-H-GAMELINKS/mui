@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/color_manager.rb
+module Mui
+  class Mui::ColorManager
+    Mui::ColorManager::COLOR_MAP: Hash[:black | :blue | :cyan | :green | :magenta | :red | :white | :yellow, Integer]
+    Mui::ColorManager::EXTENDED_COLOR_MAP: Hash[:black | :blue | :cyan | :darkgray | :dracula_bg | :dracula_comment | :dracula_cyan | :dracula_fg | :dracula_green | :dracula_orange | :dracula_pink | :dracula_purple | :dracula_red | :dracula_selection | :dracula_yellow | :green | :gruvbox_aqua | :gruvbox_bg | :gruvbox_blue | :gruvbox_fg | :gruvbox_gray | :gruvbox_green | :gruvbox_orange | :gruvbox_purple | :gruvbox_red | :gruvbox_yellow | :magenta | :monokai_bg | :monokai_comment | :monokai_cyan | :monokai_fg | :monokai_green | :monokai_orange | :monokai_pink | :monokai_purple | :monokai_yellow | :mui_bg | :mui_comment | :mui_constant | :mui_error | :mui_fg | :mui_function | :mui_identifier | :mui_info | :mui_line_number | :mui_preproc | :mui_search | :mui_special | :mui_statement | :mui_status_bg | :mui_tab_active | :mui_tab_bg | :mui_type | :mui_visual | :nord_aurora_green | :nord_aurora_orange | :nord_aurora_purple | :nord_aurora_red | :nord_aurora_yellow | :nord_frost0 | :nord_frost1 | :nord_frost2 | :nord_frost3 | :nord_polar0 | :nord_polar1 | :nord_polar2 | :nord_polar3 | :nord_snow0 | :nord_snow1 | :nord_snow2 | :red | :solarized_base0 | :solarized_base00 | :solarized_base01 | :solarized_base02 | :solarized_base03 | :solarized_base1 | :solarized_base2 | :solarized_base3 | :solarized_blue | :solarized_cyan | :solarized_green | :solarized_magenta | :solarized_orange | :solarized_red | :solarized_violet | :solarized_yellow | :tokyo_bg | :tokyo_blue | :tokyo_comment | :tokyo_cyan | :tokyo_fg | :tokyo_green | :tokyo_orange | :tokyo_purple | :tokyo_red | :tokyo_yellow | :white | :yellow, Integer]
+    Mui::ColorManager::FALLBACK_MAP: Hash[:darkgray | :dracula_bg | :dracula_comment | :dracula_cyan | :dracula_fg | :dracula_green | :dracula_orange | :dracula_pink | :dracula_purple | :dracula_red | :dracula_selection | :dracula_yellow | :gruvbox_aqua | :gruvbox_bg | :gruvbox_blue | :gruvbox_fg | :gruvbox_gray | :gruvbox_green | :gruvbox_orange | :gruvbox_purple | :gruvbox_red | :gruvbox_yellow | :monokai_bg | :monokai_comment | :monokai_cyan | :monokai_fg | :monokai_green | :monokai_orange | :monokai_pink | :monokai_purple | :monokai_yellow | :mui_bg | :mui_comment | :mui_constant | :mui_error | :mui_fg | :mui_function | :mui_identifier | :mui_info | :mui_line_number | :mui_preproc | :mui_search | :mui_special | :mui_statement | :mui_status_bg | :mui_tab_active | :mui_tab_bg | :mui_type | :mui_visual | :nord_aurora_green | :nord_aurora_orange | :nord_aurora_purple | :nord_aurora_red | :nord_aurora_yellow | :nord_frost0 | :nord_frost1 | :nord_frost2 | :nord_frost3 | :nord_polar0 | :nord_polar1 | :nord_polar2 | :nord_polar3 | :nord_snow0 | :nord_snow1 | :nord_snow2 | :solarized_base0 | :solarized_base00 | :solarized_base01 | :solarized_base02 | :solarized_base03 | :solarized_base1 | :solarized_base2 | :solarized_base3 | :solarized_blue | :solarized_cyan | :solarized_green | :solarized_magenta | :solarized_orange | :solarized_red | :solarized_violet | :solarized_yellow | :tokyo_bg | :tokyo_blue | :tokyo_comment | :tokyo_cyan | :tokyo_fg | :tokyo_green | :tokyo_orange | :tokyo_purple | :tokyo_red | :tokyo_yellow, :black | :blue | :cyan | :green | :magenta | :red | :white | :yellow]
+    def pairs: -> Hash[[untyped, untyped], Integer]
+    def supports_256_colors: -> bool
+    def initialize: (?adapter: nil) -> void
+    def register_pair: (untyped, untyped) -> Integer
+    def get_pair_index: (untyped, untyped) -> Integer
+    def color_code: (untyped) -> Integer
+    def configure_color_capability: -> bool
+    def resolve_with_fallback: (untyped) -> (:black | :blue | :cyan | :green | :magenta | :red | :white | :yellow)
+    def touch_pair: ([untyped, untyped]) -> []
+    def evict_oldest_pair: -> Integer?
+  end
+end

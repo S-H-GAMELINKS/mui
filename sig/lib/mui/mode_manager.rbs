@@ -1,0 +1,33 @@
+# TypeProf 0.31.1
+
+# lib/mui/mode_manager.rb
+module Mui
+  class Mui::ModeManager
+    def mode: -> untyped
+    def selection: -> nil
+    def register: -> untyped
+    def undo_manager: -> nil
+    def search_state: -> untyped
+    def search_input: -> untyped
+    def editor: -> nil
+    def last_visual_selection: -> Hash[:end_col | :end_row | :line_mode | :start_col | :start_row, untyped]?
+    def key_sequence_handler: -> nil
+    def initialize: (window: untyped, buffer: untyped, command_line: untyped, ?undo_manager: nil, ?editor: nil, ?register: nil, ?key_sequence_handler: nil) -> void
+    def window_manager: -> nil
+    def current_handler: -> untyped
+    def transition: (untyped) -> nil
+    def visual_mode?: -> untyped
+    def active_window: -> nil
+    def restore_visual_selection: -> nil
+    def initialize_key_handlers: -> Hash[untyped, untyped]
+    def create_insert_handler: (?group_started: false) -> untyped
+    def handle_insert_transition: (untyped, untyped) -> untyped
+    def handle_visual_transition: (untyped) -> nil
+    def start_visual_mode: (untyped, untyped) -> untyped
+    def clear_visual_mode: -> nil
+    def save_visual_selection: -> Hash[:end_col | :end_row | :line_mode | :start_col | :start_row, untyped]?
+    def toggle_visual_line_mode: (untyped) -> nil
+    def create_visual_handler: (line_mode: untyped) -> untyped
+    def handle_search_transition: (String, untyped) -> untyped
+  end
+end

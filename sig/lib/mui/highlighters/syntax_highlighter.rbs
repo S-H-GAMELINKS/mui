@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/highlighters/syntax_highlighter.rb
+module Mui
+  module Mui::Highlighters
+    class Mui::Highlighters::SyntaxHighlighter # failed to identify its superclass
+      Mui::Highlighters::SyntaxHighlighter::TOKEN_STYLE_MAP: Hash[:char | :comment | :constant | :function_definition | :global_variable | :instance_variable | :keyword | :macro | :method_call | :number | :preprocessor | :regex | :string | :symbol | :type, :syntax_comment | :syntax_constant | :syntax_function_definition | :syntax_global_variable | :syntax_instance_variable | :syntax_keyword | :syntax_method_call | :syntax_number | :syntax_preprocessor | :syntax_string | :syntax_symbol | :syntax_type]
+      def initialize: (untyped, ?buffer: nil) -> void
+      def buffer=: (untyped) -> nil
+      def highlights_for: (untyped, untyped, ?Hash[untyped, untyped]) -> []
+      def priority: -> untyped
+      def invalidate_from: (untyped) -> nil
+      def clear_cache: -> nil
+      def prefetch: (untyped, untyped) -> nil
+      def active?: -> false
+      def setup_lexer: -> nil
+      def style_for_token_type: (untyped) -> (:syntax_comment | :syntax_constant | :syntax_function_definition | :syntax_global_variable | :syntax_instance_variable | :syntax_keyword | :syntax_method_call | :syntax_number | :syntax_preprocessor | :syntax_string | :syntax_symbol | :syntax_type)
+    end
+  end
+end

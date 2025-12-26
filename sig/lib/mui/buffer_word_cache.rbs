@@ -1,0 +1,21 @@
+# TypeProf 0.31.1
+
+# lib/mui/buffer_word_cache.rb
+module Mui
+  class Mui::BufferWordCache
+    Mui::BufferWordCache::MIN_WORD_LENGTH: Integer
+    Mui::BufferWordCache::MAX_CANDIDATES: Integer
+    Mui::BufferWordCache::WORD_REGEX: Regexp
+    def initialize: (untyped) -> void
+    def complete: (untyped, untyped, untyped) -> (Array[untyped] | [])
+    def word_at_position: (untyped, untyped) -> nil
+    def mark_dirty: (untyped) -> Set[untyped]
+    def add_word: (untyped) -> Set[untyped]?
+    def prefix_at: (untyped, untyped) -> String
+    def build_cache: -> untyped
+    def process_dirty_rows: (untyped, untyped) -> Set[untyped]?
+    def extract_words_fast: (untyped) -> untyped
+    def extract_words_with_exclusion: (untyped, untyped, untyped, untyped) -> untyped
+    def word_char?: (untyped) -> false
+  end
+end

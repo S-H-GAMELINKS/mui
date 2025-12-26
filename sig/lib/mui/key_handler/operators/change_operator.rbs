@@ -1,0 +1,22 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/operators/change_operator.rb
+module Mui
+  module Mui::KeyHandler
+    module Mui::KeyHandler::Operators
+      class Mui::KeyHandler::Operators::ChangeOperator # failed to identify its superclass
+        def handle_pending: (untyped, ?pending_register: nil) -> (:cancel | :insert_mode | :pending_cF | :pending_cT | :pending_cf | :pending_cg | :pending_ct)
+        def handle_to_file_start: (untyped) -> (:cancel | :insert_mode)
+        def handle_find_char: (untyped, untyped) -> (:cancel | :insert_mode)
+        def change_line: -> :insert_mode
+        def change_motion: (:word_backward | :word_end | :word_forward) -> (:cancel | :insert_mode)
+        def change_to_line_start: -> :insert_mode
+        def change_to_line_end: -> :insert_mode
+        def change_to_file_end: -> :insert_mode
+        def change_to_line_start_internal: -> nil
+        def change_to_file_start_internal: -> untyped
+        def execute_find_char_change: (untyped, untyped) -> nil
+      end
+    end
+  end
+end

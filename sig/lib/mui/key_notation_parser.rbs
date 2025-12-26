@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_notation_parser.rb
+module Mui
+  module Mui::KeyNotationParser
+    Mui::KeyNotationParser::SPECIAL_KEYS: Hash[String, :leader | String]
+    Mui::KeyNotationParser::CTRL_CHARS: Hash[String, Integer]
+    Mui::KeyNotationParser::SHIFT_CHARS: Hash[String, String]
+    def self.parse: (untyped) -> []
+    def self.parse_special: (untyped) -> (:leader | String)?
+    def self.normalize_input_key: (untyped) -> String?
+    def self.parse_ctrl_key: (String?) -> String?
+    def self.parse_shift_key: (String?) -> String?
+    def self.normalize_integer_key: (untyped) -> String?
+  end
+end

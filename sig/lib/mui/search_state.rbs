@@ -1,0 +1,22 @@
+# TypeProf 0.31.1
+
+# lib/mui/search_state.rb
+module Mui
+  class Mui::SearchState
+    def pattern: -> nil
+    def direction: -> :forward
+    def initialize: -> void
+    def set_pattern: (untyped, untyped) -> Hash[Integer, Hash[:change_count | :matches | :row_index | :version, Hash[untyped, []] | Hash[untyped, untyped] | Integer | []]]
+    def find_all_matches: (untyped) -> []
+    def find_next: (untyped, untyped, ?buffer: nil) -> Hash[:col | :end_col | :row, untyped]?
+    def find_previous: (untyped, untyped, ?buffer: nil) -> Hash[:col | :end_col | :row, untyped]?
+    def clear: -> Hash[Integer, Hash[:change_count | :matches | :row_index | :version, Hash[untyped, []] | Hash[untyped, untyped] | Integer | []]]
+    def has_pattern?: -> false
+    def matches_for_row: (untyped, ?buffer: nil) -> []
+    def get_or_calculate_matches: (untyped) -> []
+    def get_or_calculate_cache: (nil) -> Hash[:change_count | :matches | :row_index | :version, Hash[untyped, []] | Hash[untyped, untyped] | Integer | []]
+    def generate_regex: -> Regexp?
+    def calculate_matches: (nil) -> ([[], Hash[untyped, []]] | [[], Hash[untyped, untyped]])
+    def scan_line_matches: (untyped, untyped, Regexp?) -> []
+  end
+end

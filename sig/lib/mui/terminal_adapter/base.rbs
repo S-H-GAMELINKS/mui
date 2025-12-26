@@ -1,0 +1,31 @@
+# TypeProf 0.31.1
+
+# lib/mui/terminal_adapter/base.rb
+module Mui
+  module Mui::TerminalAdapter
+    class Mui::TerminalAdapter::Base
+      def color_resolver: -> untyped
+      def color_resolver=: (untyped) -> untyped
+      def init: -> untyped
+      def close: -> untyped
+      def clear: -> untyped
+      def refresh: -> untyped
+      def width: -> untyped
+      def height: -> untyped
+      def setpos: (untyped, untyped) -> untyped
+      def addstr: (untyped) -> untyped
+      def with_highlight: -> untyped
+      def init_colors: -> untyped
+      def init_color_pair: (untyped, untyped, untyped) -> untyped
+      def with_color: (untyped, ?bold: false, ?underline: false) -> untyped
+      def getch: -> untyped
+      def getch_nonblock: -> untyped
+      def suspend: -> untyped
+      def resume: -> untyped
+      def has_colors?: -> untyped
+      def colors: -> untyped
+      def color_pairs: -> untyped
+      def touchwin: -> nil
+    end
+  end
+end

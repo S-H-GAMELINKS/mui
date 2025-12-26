@@ -1,0 +1,11 @@
+# TypeProf 0.31.1
+
+# lib/mui/wrap_helper.rb
+module Mui
+  module Mui::WrapHelper
+    def self.wrap_line: (untyped, untyped, ?cache: nil) -> ([Hash[:end_col | :start_col | :text, Integer | String]] | [Hash[:end_col | :start_col | :text, Integer]] | [])
+    def self.logical_to_screen: (untyped, untyped, untyped, ?cache: nil) -> ([Integer, Integer] | [Integer, untyped])
+    def self.screen_line_count: (untyped, untyped, ?cache: nil) -> Integer
+    def self.compute_wrap: (untyped, untyped) -> ([Hash[:end_col | :start_col | :text, Integer | String]] | [])
+  end
+end

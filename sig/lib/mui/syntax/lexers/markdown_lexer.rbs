@@ -1,0 +1,24 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/lexers/markdown_lexer.rb
+module Mui
+  module Mui::Syntax
+    module Mui::Syntax::Lexers
+      class Mui::Syntax::Lexers::MarkdownLexer # failed to identify its superclass
+        Mui::Syntax::Lexers::MarkdownLexer::COMPILED_PATTERNS: Array[[:comment, Regexp] | [:constant, Regexp] | [:keyword, Regexp] | [:preprocessor, Regexp] | [:string, Regexp]]
+        Mui::Syntax::Lexers::MarkdownLexer::HEADING_PATTERN: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::BLOCKQUOTE_PATTERN: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::UNORDERED_LIST_PATTERN: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::ORDERED_LIST_PATTERN: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::HORIZONTAL_RULE_PATTERN: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::CODE_FENCE_START: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::CODE_FENCE_END: Regexp
+        Mui::Syntax::Lexers::MarkdownLexer::LINK_DEFINITION_PATTERN: Regexp
+        def tokenize: (untyped, ?nil) -> ([[] | [untyped], :code_fence] | [[], nil] | [[untyped], :code_fence] | [[untyped], nil])
+        def compiled_patterns: -> Array[[:comment, Regexp] | [:constant, Regexp] | [:keyword, Regexp] | [:preprocessor, Regexp] | [:string, Regexp]]
+        def check_line_start: (untyped) -> nil
+        def match_token: (untyped, Integer) -> nil
+      end
+    end
+  end
+end

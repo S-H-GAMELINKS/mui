@@ -1,0 +1,42 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/insert_mode.rb
+module Mui
+  module Mui::KeyHandler
+    class Mui::KeyHandler::InsertMode # failed to identify its superclass
+      def initialize: (untyped, untyped, ?undo_manager: nil, ?group_started: false) -> void
+      def handle: (untyped) -> untyped
+      def handle_escape: -> untyped
+      def strip_trailing_whitespace_if_empty_line: -> bool
+      def handle_move_left: -> untyped
+      def handle_move_right: -> untyped
+      def handle_move_up: -> untyped
+      def handle_move_down: -> untyped
+      def handle_line_start: -> untyped
+      def handle_line_end: -> untyped
+      def handle_shift_left: -> untyped
+      def handle_shift_right: -> untyped
+      def handle_backspace: -> untyped
+      def join_with_previous_line: -> untyped
+      def handle_enter: -> untyped
+      def extract_indent: (untyped) -> String
+      def handle_character_input: (untyped) -> untyped
+      def add_current_word_to_cache: -> nil
+      def update_completion_list: -> nil
+      def trigger_completion_for: (untyped) -> nil
+      def trigger_buffer_completion_if_needed: (?min_prefix: Integer) -> nil
+      def word_char?: (untyped) -> untyped
+      def previous_char: -> nil
+      def handle_buffer_completion: -> untyped
+      def handle_tab: -> untyped
+      def completion_active?: -> untyped
+      def handle_completion_next: -> untyped
+      def handle_completion_previous: -> untyped
+      def handle_completion_confirm: -> untyped
+      def apply_text_edit: (untyped, untyped) -> untyped
+      def apply_prefix_replacement: (untyped, untyped) -> untyped
+      def reset_insert_completion_state: -> nil
+      def result: (?mode: nil, ?message: nil, ?quit: false) -> untyped
+    end
+  end
+end

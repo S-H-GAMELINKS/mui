@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/syntax/token_cache.rb
+module Mui
+  module Mui::Syntax
+    class Mui::Syntax::TokenCache
+      Mui::Syntax::TokenCache::PREFETCH_LINES: Integer
+      def initialize: (untyped) -> void
+      def tokens_for: (untyped, untyped, untyped) -> untyped
+      def prefetch: (untyped, untyped, untyped) -> Range[Integer]?
+      def invalidate: (untyped) -> Hash[Integer, Hash[:line_hash | :state_after | :tokens, untyped]]
+      def clear: -> Hash[Integer, Hash[:line_hash | :state_after | :tokens, untyped]]
+      def cached?: (untyped) -> bool
+    end
+  end
+end

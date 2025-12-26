@@ -1,0 +1,15 @@
+# TypeProf 0.31.1
+
+# lib/mui/themes/default.rb
+module Mui
+  module Mui::Themes
+    def self.mui: -> untyped
+    def self.solarized_dark: -> untyped
+    def self.solarized_light: -> untyped
+    def self.monokai: -> untyped
+    def self.nord: -> untyped
+    def self.gruvbox_dark: -> untyped
+    def self.dracula: -> untyped
+    def self.tokyo_night: -> untyped
+  end
+end

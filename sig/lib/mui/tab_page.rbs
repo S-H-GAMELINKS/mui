@@ -1,0 +1,16 @@
+# TypeProf 0.31.1
+
+# lib/mui/tab_page.rb
+module Mui
+  class Mui::TabPage
+    def window_manager: -> untyped
+    def name: -> nil
+    def name=: (untyped) -> nil
+    def initialize: (untyped, ?color_scheme: nil, ?name: nil) -> void
+    def active_window: -> untyped
+    def layout_root: -> untyped
+    def windows: -> untyped
+    def window_count: -> untyped
+    def display_name: -> String
+  end
+end

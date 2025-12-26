@@ -1,0 +1,18 @@
+# TypeProf 0.31.1
+
+# lib/mui/line_renderer.rb
+module Mui
+  class Mui::LineRenderer
+    def initialize: (untyped) -> void
+    def add_highlighter: (untyped) -> []
+    def render: (untyped, untyped, untyped, untyped, untyped, ?Hash[untyped, untyped]) -> Array[Hash[:style | :text, :normal]]?
+    def render_wrapped_line: (untyped, untyped, untyped, untyped, ?Hash[untyped, untyped]) -> Array[Hash[:style | :text, :normal]]?
+    def clip_highlights_to_range: (Array[untyped], untyped, untyped) -> Array[untyped]
+    def collect_highlights: (untyped, untyped, Hash[untyped, untyped]) -> Array[untyped]
+    def render_with_highlights: (untyped, untyped, untyped, untyped, Array[untyped]) -> Array[Hash[:style | :text, :normal]]?
+    def build_segments: (untyped, Array[untyped]) -> []
+    def build_events: (Array[untyped], untyped) -> []
+    def put_text: (untyped, untyped, untyped, untyped, :normal) -> nil
+    def resolve_style: (:normal) -> untyped
+  end
+end

@@ -19,3 +19,5 @@ gem "rubocop-rake", "~> 0.7.1"
 gem "rubocop-minitest", "~> 0.38.2"
 
 gem "rubocop-performance", "~> 1.26"
+
+gem "typeprof", "~> 0.31.1"

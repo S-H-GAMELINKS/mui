@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/key_handler/window_command.rb
+module Mui
+  module Mui::KeyHandler
+    class Mui::KeyHandler::WindowCommand
+      def initialize: (untyped) -> void
+      def handle: (untyped) -> (:close_all_except_current | :close_window | :done | :focus_next | :focus_previous | :split_horizontal | :split_vertical | Symbol)
+      def handle_control_key: (untyped) -> (:close_all_except_current | :close_window | :focus_next | :split_horizontal | :split_vertical | Symbol)?
+      def key_to_char: (untyped) -> nil
+      def handle_split_horizontal: -> :split_horizontal
+      def handle_split_vertical: -> :split_vertical
+      def handle_focus_direction: (:down | :left | :right | :up) -> Symbol
+      def handle_focus_next: -> :focus_next
+      def handle_focus_previous: -> :focus_previous
+      def handle_close_window: -> :close_window
+      def handle_close_all_except_current: -> :close_all_except_current
+    end
+  end
+end

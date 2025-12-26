@@ -1,0 +1,11 @@
+# TypeProf 0.31.1
+
+# lib/mui/command_completer.rb
+module Mui
+  class Mui::CommandCompleter
+    Mui::CommandCompleter::COMMANDS: Array[String]
+    def complete: (untyped) -> Array[String]
+    def all_commands: -> Array[String]
+    def plugin_command_names: -> untyped
+  end
+end

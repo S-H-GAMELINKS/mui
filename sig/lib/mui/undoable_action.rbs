@@ -1,0 +1,56 @@
+# TypeProf 0.31.1
+
+# lib/mui/undoable_action.rb
+module Mui
+  class Mui::UndoableAction
+    def execute: (untyped) -> nil
+    def undo: (untyped) -> nil
+  end
+  class Mui::InsertCharAction < Mui::UndoableAction
+    def initialize: (untyped, untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::DeleteCharAction < Mui::UndoableAction
+    def initialize: (untyped, untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::InsertLineAction < Mui::UndoableAction
+    def initialize: (untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::DeleteLineAction < Mui::UndoableAction
+    def initialize: (untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::SplitLineAction < Mui::UndoableAction
+    def initialize: (untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::JoinLinesAction < Mui::UndoableAction
+    def initialize: (untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::DeleteRangeAction < Mui::UndoableAction
+    def initialize: (untyped, untyped, untyped, untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::ReplaceLineAction < Mui::UndoableAction
+    def initialize: (untyped, untyped, untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+  end
+  class Mui::GroupAction < Mui::UndoableAction
+    def initialize: (untyped) -> void
+    def execute: (untyped) -> untyped
+    def undo: (untyped) -> untyped
+    def empty?: -> untyped
+    def size: -> untyped
+  end
+end

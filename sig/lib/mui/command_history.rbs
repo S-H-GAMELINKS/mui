@@ -1,0 +1,20 @@
+# TypeProf 0.31.1
+
+# lib/mui/command_history.rb
+module Mui
+  class Mui::CommandHistory
+    Mui::CommandHistory::MAX_HISTORY: Integer
+    Mui::CommandHistory::HISTORY_FILE: String
+    def history: -> (Array[String] | [])
+    def initialize: (?history_file: String) -> void
+    def add: (untyped) -> Integer?
+    def previous: (untyped) -> String?
+    def next_entry: -> String?
+    def reset: -> nil
+    def browsing?: -> bool
+    def size: -> Integer
+    def empty?: -> bool
+    def load_from_file: -> (Array[String] | [])?
+    def save_to_file: -> Integer?
+  end
+end

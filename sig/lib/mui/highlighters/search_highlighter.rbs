@@ -1,0 +1,11 @@
+# TypeProf 0.31.1
+
+# lib/mui/highlighters/search_highlighter.rb
+module Mui
+  module Mui::Highlighters
+    class Mui::Highlighters::SearchHighlighter # failed to identify its superclass
+      def highlights_for: (untyped, untyped, ?Hash[untyped, untyped]) -> []
+      def priority: -> untyped
+    end
+  end
+end

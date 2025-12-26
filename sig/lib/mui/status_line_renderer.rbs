@@ -1,0 +1,12 @@
+# TypeProf 0.31.1
+
+# lib/mui/status_line_renderer.rb
+module Mui
+  class Mui::StatusLineRenderer
+    def initialize: (untyped, untyped, untyped) -> void
+    def render: (untyped, untyped) -> untyped
+    def build_status_text: -> String
+    def build_position_text: -> String
+    def format_status_line: (String, String) -> untyped
+  end
+end

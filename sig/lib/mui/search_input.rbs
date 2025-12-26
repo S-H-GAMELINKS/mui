@@ -1,0 +1,17 @@
+# TypeProf 0.31.1
+
+# lib/mui/search_input.rb
+module Mui
+  class Mui::SearchInput
+    def buffer: -> String
+    def prompt: -> String
+    def initialize: (?String) -> void
+    def input: (untyped) -> String
+    def backspace: -> String
+    def clear: -> String
+    def set_prompt: (untyped) -> untyped
+    def to_s: -> String
+    def pattern: -> String
+    def empty?: -> bool
+  end
+end
