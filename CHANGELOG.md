@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Support WIndows and Mac OS in CI
+
 ## [0.5.0] - 2025-12-26
 
 ### Added
