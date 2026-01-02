@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Additional syntax highlighting for `.muirc` and `.lmuirc`
+
 ## [0.5.0] - 2025-12-26
 
 ### Added

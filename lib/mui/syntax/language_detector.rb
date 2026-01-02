@@ -43,7 +43,9 @@ module Mui
         "Capfile" => :ruby,
         "Thorfile" => :ruby,
         "Podfile" => :ruby,
-        "Brewfile" => :ruby
+        "Brewfile" => :ruby,
+        ".muirc" => :ruby,
+        ".lmuirc" => :ruby
       }.freeze
 
       class << self
