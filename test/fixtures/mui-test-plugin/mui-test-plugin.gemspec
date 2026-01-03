@@ -8,4 +8,5 @@ Gem::Specification.new do |spec|
   spec.files         = Dir["lib/**/*"]
   spec.require_paths = ["lib"]
   spec.metadata["rubygems_mfa_required"] = "true"
+  spec.required_ruby_version = ">= 3.3.0"
 end
