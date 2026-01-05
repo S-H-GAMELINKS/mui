@@ -15,6 +15,7 @@ module Mui
                     :test_has_colors, :test_colors, :test_color_pairs
 
       def initialize(width: 80, height: 24)
+        super()
         @width = width
         @height = height
         @input_queue = []
