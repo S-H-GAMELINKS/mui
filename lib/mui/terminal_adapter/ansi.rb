@@ -8,6 +8,11 @@ module Mui
     # Terminal adapter that speaks ANSI escape sequences directly, for places
     # where curses is not available.
     #
+    # Keys come back in the shapes Curses.getch gives them, because the key
+    # handlers are written against those: a printable ASCII character as a
+    # one-character String, a control character or special key as an Integer,
+    # and a multibyte character as a String.
+    #
     # Drawing goes into a back buffer of cells, and refresh sends only the rows
     # that differ from what is already on the terminal -- the editor redraws
     # every frame, and curses would only send the difference too. Input is
@@ -63,7 +68,8 @@ module Mui
         @attr = PLAIN
         @cursor_y = 0
         @cursor_x = 0
-        @height, @width = 24, 80
+        @height = 24
+        @width = 80
         @size_checked_at = nil
       end
 
@@ -99,9 +105,9 @@ module Mui
         @pairs[pair_index] = [color_code(fg), color_code(bg)]
       end
 
-      def with_color(pair_index, bold: false, underline: false)
+      def with_color(pair_index, bold: false, underline: false, &)
         fg, bg = @pairs.fetch(pair_index, [-1, -1])
-        with_attr([fg, bg, bold || false, underline || false, @attr[4]]) { yield }
+        with_attr([fg, bg, bold || false, underline || false, @attr[4]], &)
       end
 
       def with_highlight(&)
@@ -178,7 +184,7 @@ module Mui
         return take_utf8(first) if first >= 0x80
 
         @pending = @pending.byteslice(1..)
-        first
+        printable?(first) ? first.chr : first
       end
 
       def suspend
@@ -271,6 +277,10 @@ module Mui
         -1
       end
 
+      def printable?(byte)
+        byte >= 0x20 && byte < 0x7F
+      end
+
       def fill_pending
         loop do
           @pending << @input.read_nonblock(256).b
@@ -335,6 +345,7 @@ module Mui
           elsif (first & 0xF8) == 0xF0 then 4
           end
         unless expected
+          # A stray continuation byte, or one that starts nothing valid.
           @pending = @pending.byteslice(1..)
           return first
         end

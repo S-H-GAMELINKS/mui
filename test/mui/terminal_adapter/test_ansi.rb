@@ -38,10 +38,17 @@ class TestTerminalAdapterAnsi < Minitest::Test
   class TestKeys < Minitest::Test
     include AnsiHelper
 
-    def test_plain_byte
+    def test_printable_character_is_a_string
       type("a")
 
-      assert_equal 97, @adapter.getch_nonblock
+      assert_equal "a", @adapter.getch_nonblock
+    end
+
+    def test_control_character_is_an_integer
+      type("\r\x7f")
+
+      assert_equal Mui::KeyCode::ENTER_CR, @adapter.getch_nonblock
+      assert_equal Mui::KeyCode::BACKSPACE, @adapter.getch_nonblock
     end
 
     def test_nothing_to_read
@@ -81,13 +88,13 @@ class TestTerminalAdapterAnsi < Minitest::Test
       type("\ex")
 
       assert_equal Mui::KeyCode::ESCAPE, @adapter.getch_nonblock
-      assert_equal "x".ord, @adapter.getch_nonblock
+      assert_equal "x", @adapter.getch_nonblock
     end
 
     def test_unknown_sequence_is_dropped
       type("\e[99~a")
 
-      assert_equal "a".ord, @adapter.getch_nonblock
+      assert_equal "a", @adapter.getch_nonblock
     end
 
     def test_utf8_character
@@ -102,7 +109,7 @@ class TestTerminalAdapterAnsi < Minitest::Test
         type("q")
       end
 
-      assert_equal "q".ord, @adapter.getch
+      assert_equal "q", @adapter.getch
     end
   end
 

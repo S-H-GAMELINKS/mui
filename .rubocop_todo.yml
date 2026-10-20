@@ -80,6 +80,7 @@ Naming/MethodParameterName:
     - 'lib/mui/line_renderer.rb'
     - 'lib/mui/plugin.rb'
     - 'lib/mui/screen.rb'
+    - 'lib/mui/terminal_adapter/ansi.rb'
     - 'lib/mui/terminal_adapter/base.rb'
     - 'lib/mui/terminal_adapter/curses.rb'
     - 'lib/mui/window.rb'
@@ -109,6 +110,7 @@ Naming/PredicatePrefix:
   Exclude:
     - 'spec/**/*'
     - 'lib/mui/search_state.rb'
+    - 'lib/mui/terminal_adapter/ansi.rb'
     - 'lib/mui/terminal_adapter/base.rb'
     - 'lib/mui/terminal_adapter/curses.rb'
     - 'test/test_helper.rb'
@@ -120,6 +122,7 @@ Naming/PredicatePrefix:
 Naming/VariableNumber:
   Exclude:
     - 'test/e2e/test_motion.rb'
+    - 'test/mui/terminal_adapter/test_ansi.rb'
     - 'test/mui/test_register.rb'
 
 # Offense count: 25
