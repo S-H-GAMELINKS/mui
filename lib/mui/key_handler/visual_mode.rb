@@ -43,13 +43,13 @@ module Mui
           handle_v_key
         when "V"
           handle_upper_v_key
-        when "h", Curses::KEY_LEFT
+        when "h", KeyCode::KEY_LEFT
           handle_move_left
-        when "j", Curses::KEY_DOWN
+        when "j", KeyCode::KEY_DOWN
           handle_move_down
-        when "k", Curses::KEY_UP
+        when "k", KeyCode::KEY_UP
           handle_move_up
-        when "l", Curses::KEY_RIGHT
+        when "l", KeyCode::KEY_RIGHT
           handle_move_right
         when "w"
           handle_word_forward

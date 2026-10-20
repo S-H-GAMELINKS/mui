@@ -3,6 +3,9 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "curses"
+# Mui loads the clipboard gem only when clipboard integration is used; the
+# clipboard tests drive Clipboard directly, so load it for them here.
+require "clipboard"
 require "mui"
 
 require "minitest/autorun"

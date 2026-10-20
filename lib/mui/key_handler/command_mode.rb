@@ -22,21 +22,21 @@ module Mui
         case key
         when KeyCode::ESCAPE
           handle_escape
-        when KeyCode::BACKSPACE, Curses::KEY_BACKSPACE
+        when KeyCode::BACKSPACE, KeyCode::KEY_BACKSPACE
           handle_backspace
-        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
+        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, KeyCode::KEY_ENTER
           handle_enter
         when KeyCode::TAB
           handle_tab
         when KeyCode::SHIFT_TAB
           handle_shift_tab
-        when Curses::KEY_LEFT
+        when KeyCode::KEY_LEFT
           handle_cursor_left
-        when Curses::KEY_RIGHT
+        when KeyCode::KEY_RIGHT
           handle_cursor_right
-        when Curses::KEY_UP
+        when KeyCode::KEY_UP
           handle_history_up
-        when Curses::KEY_DOWN
+        when KeyCode::KEY_DOWN
           handle_history_down
         else
           handle_character_input(key)

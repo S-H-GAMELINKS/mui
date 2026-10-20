@@ -5,6 +5,14 @@
 - Added CommandContext#run_tty_command(cmd) for commands that need direct terminal control
   - run_tty_command now waits for Enter before returning to Mui, so command output can be reviewed
   - Documented the difference between run_interactive_command and run_tty_command
+- `TerminalAdapter::Ansi`: a terminal adapter that draws with ANSI escape sequences and needs nothing beyond `io/console`
+  - Draws into a back buffer and sends only the rows that changed on each refresh
+  - Decodes arrow keys, Home/End, Delete, Page Up/Down and Shift-Tab into the same key codes curses returns
+  - Used automatically when the `curses` gem cannot be loaded; `MUI_TERMINAL=ansi` or `MUI_TERMINAL=curses` chooses explicitly
+
+### Changed
+- Key handlers use `KeyCode::KEY_*` instead of `Curses::KEY_*` (same values), so curses is only loaded by its adapter
+- `clipboard`, `bundler/inline` and `open3` are required when first used rather than at load time
 
 ## [0.5.0] - 2025-12-26
 

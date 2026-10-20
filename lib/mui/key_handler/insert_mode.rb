@@ -22,13 +22,13 @@ module Mui
         case key
         when KeyCode::ESCAPE
           handle_escape
-        when Curses::KEY_LEFT
+        when KeyCode::KEY_LEFT
           handle_move_left
-        when Curses::KEY_RIGHT
+        when KeyCode::KEY_RIGHT
           handle_move_right
-        when Curses::KEY_UP
+        when KeyCode::KEY_UP
           completion_active? ? handle_completion_previous : handle_move_up
-        when Curses::KEY_DOWN
+        when KeyCode::KEY_DOWN
           completion_active? ? handle_completion_next : handle_move_down
         when KeyCode::CTRL_P
           completion_active? ? handle_completion_previous : handle_buffer_completion
@@ -36,9 +36,9 @@ module Mui
           completion_active? ? handle_completion_next : handle_buffer_completion
         when KeyCode::TAB
           completion_active? ? handle_completion_confirm : handle_tab
-        when KeyCode::BACKSPACE, Curses::KEY_BACKSPACE
+        when KeyCode::BACKSPACE, KeyCode::KEY_BACKSPACE
           handle_backspace
-        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
+        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, KeyCode::KEY_ENTER
           handle_enter
         when KeyCode::SHIFT_LEFT
           handle_shift_left

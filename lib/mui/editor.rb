@@ -7,7 +7,7 @@ module Mui
                 :insert_completion_state, :key_sequence_handler
     attr_accessor :message, :running
 
-    def initialize(file_path = nil, adapter: TerminalAdapter::Curses.new, load_config: true)
+    def initialize(file_path = nil, adapter: TerminalAdapter.default, load_config: true)
       Mui.load_config if load_config
 
       # Enable YJIT for Ruby 3.3+
