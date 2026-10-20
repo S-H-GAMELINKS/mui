@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "clipboard"
-
 module Mui
   # Manages yank/delete registers for copy/paste operations
   # Supports Vim-compatible registers:
@@ -115,10 +113,18 @@ module Mui
       @delete_history = @delete_history.first(9)
     end
 
+    # Loaded on first use rather than at require time, so the clipboard gem
+    # (and the system clipboard it drives) is only needed by those who turn
+    # clipboard integration on.
+    def load_clipboard
+      require "clipboard"
+    end
+
     def sync_to_clipboard(text, linewise:)
       return unless clipboard_enabled?
 
       clipboard_text = linewise ? "#{text}\n" : text
+      load_clipboard
       Clipboard.copy(clipboard_text)
     rescue StandardError
       # Silently ignore clipboard errors
@@ -127,6 +133,7 @@ module Mui
     def sync_from_clipboard
       return unless clipboard_enabled?
 
+      load_clipboard
       content = Clipboard.paste
       return if content.nil? || content.empty?
       return if content == @unnamed[:content]

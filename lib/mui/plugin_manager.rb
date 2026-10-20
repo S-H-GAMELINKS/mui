@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "bundler/inline"
-
 module Mui
   # Manages plugin lifecycle: loading, initialization, dependency resolution
   class PluginManager
@@ -43,6 +41,9 @@ module Mui
     private
 
     def install_gems
+      # Only when there are gems to install: bundler is not something every
+      # place mui runs can be expected to have.
+      require "bundler/inline"
       gems = @pending_gems
       gemfile do
         source "https://rubygems.org"

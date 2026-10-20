@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "open3"
-
 module Mui
   # Manages asynchronous job execution and result collection
   class JobManager
@@ -26,6 +24,9 @@ module Mui
     end
 
     def run_command(cmd, on_complete: nil)
+      # Required here rather than at load time: running an external command is
+      # the only thing that needs it.
+      require "open3"
       run_async(on_complete:) do
         stdout, stderr, status = Open3.capture3(*Array(cmd))
         {

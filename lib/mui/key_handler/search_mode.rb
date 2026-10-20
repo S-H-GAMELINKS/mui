@@ -30,13 +30,13 @@ module Mui
         case key
         when KeyCode::ESCAPE
           handle_escape
-        when KeyCode::BACKSPACE, Curses::KEY_BACKSPACE
+        when KeyCode::BACKSPACE, KeyCode::KEY_BACKSPACE
           handle_backspace
-        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, Curses::KEY_ENTER
+        when KeyCode::ENTER_CR, KeyCode::ENTER_LF, KeyCode::KEY_ENTER
           handle_enter
         when KeyCode::TAB
           handle_tab
-        when Curses::KEY_BTAB
+        when KeyCode::KEY_BTAB
           handle_shift_tab
         else
           handle_character_input(key)
